@@ -1,0 +1,1002 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Resume Builder by Renthel Automations</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root {
+    --bg-dark: #0B0E14;
+    --panel-bg: rgba(22, 27, 34, 0.6);
+    --border: rgba(255, 255, 255, 0.08);
+    --text-main: #E2E8F0;
+    --text-muted: #94A3B8;
+    --accent: #3B82F6;
+    --accent-hover: #2563EB;
+    --accent-glow: rgba(59, 130, 246, 0.5);
+    --paper: #ffffff;
+    --sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  
+  * { box-sizing: border-box; }
+  
+  body {
+    margin: 0;
+    background-color: var(--bg-dark);
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+    background-attachment: fixed;
+    font-family: var(--sans);
+    color: var(--text-main);
+    min-height: 100vh;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    min-height: 100vh;
+  }
+
+  @media (max-width: 1000px) {
+    .shell { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    padding: 40px 32px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .panel::-webkit-scrollbar {
+    display: none;
+  }
+  .panel::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #60A5FA, #A78BFA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 0 8px 0;
+  }
+
+  h1 {
+    font-size: 32px;
+    margin: 0 0 12px 0;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0 0 32px 0;
+    line-height: 1.6;
+  }
+
+  .profile-chip {
+    border: 1px solid var(--border);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  .profile-chip b {
+    color: var(--text-main);
+    font-weight: 600;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  textarea {
+    width: 100%;
+    flex: 1;
+    min-height: 200px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--text-main);
+    transition: all 0.2s ease;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  
+  textarea::placeholder {
+    color: rgba(148, 163, 184, 0.5);
+  }
+
+  .actions {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  button {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 15px;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 20px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  #generateBtn {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+  }
+
+  #generateBtn:hover:not(:disabled) {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  }
+
+  #generateBtn:disabled {
+    background: #334155;
+    color: #94A3B8;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  #downloadBtn {
+    background: #ffffff;
+    color: #0F172A;
+    display: none;
+  }
+  
+  #downloadBtn:hover {
+    background: #F8FAFC;
+    transform: translateY(-1px);
+  }
+
+  #fileLink {
+    display: none;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: #60A5FA;
+    text-decoration: none;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  
+  #fileLink:hover {
+    background: rgba(96, 165, 250, 0.1);
+    text-decoration: underline;
+  }
+
+  #status {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    min-height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  #status.err {
+    color: #F87171;
+  }
+
+  .spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .right {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    height: 100vh;
+  }
+
+  .right::-webkit-scrollbar {
+    width: 8px;
+  }
+  .right::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+  }
+
+  #placeholder {
+    margin: auto;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 15px;
+    max-width: 320px;
+    line-height: 1.6;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  #placeholder .icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.8;
+  }
+
+  /* --- RESUME PREVIEW CSS (EXACTLY AS PROVIDED) --- */
+  .page {
+    width: 8.5in;
+    height: 13in;
+    background: var(--paper);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    padding: 0.7in 0.75in;
+    font-family: 'Times New Roman', Georgia, serif;
+    color: #111;
+    font-size: 11pt;
+    line-height: 1.35;
+    margin-bottom: 40px;
+    animation: fadeIn 0.5s ease;
+    flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  @media print {
+    body { background: #fff !important; }
+    .panel { display: none !important; }
+    .right {
+      padding: 0 !important;
+      display: block !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+    #preview-actions { display: none !important; }
+    .page {
+      box-shadow: none !important;
+      margin: 0 !important;
+      page-break-after: always;
+    }
+    @page {
+      margin: 0;
+      size: legal portrait;
+    }
+  }
+  
+  .r-name {
+    text-align: center;
+    font-weight: 700;
+    font-size: 16pt;
+    letter-spacing: .03em;
+    margin-bottom: 3px;
+  }
+  .r-contact {
+    text-align: center;
+    font-size: 9.5pt;
+    margin-bottom: 14px;
+  }
+  .r-section {
+    font-weight: 700;
+    font-size: 10.5pt;
+    letter-spacing: .03em;
+    border-bottom: 1px solid #111;
+    padding-bottom: 2px;
+    margin: 14px 0 6px 0;
+  }
+  .r-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .r-row b { font-size: 10.5pt; }
+  .r-row i { font-size: 10.5pt; }
+  .r-bullets {
+    margin: 2px 0 8px 18px;
+    padding: 0;
+  }
+  .r-bullets li { margin-bottom: 2px; font-size: 10.2pt; }
+  .r-summary { font-size: 10.3pt; margin-bottom: 2px; }
+  .r-skills { font-size: 10.2pt; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="panel">
+    <div>
+      <p class="eyebrow">AI Resume Builder</p>
+      <h1>Tailor a resume</h1>
+      <p class="sub">Paste a job description below. The AI will pull the most relevant experience, skills, and projects from your saved profile and draft a resume in your template's format.</p>
+    </div>
+
+    <div class="profile-chip">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          Profile loaded:<br/><b>Renthel R. Cueto</b> — AI Automation Specialist.
+        </div>
+        <button id="editProfileBtn" onclick="toggleProfileEdit()" style="width: 54px; padding: 4px 0; font-size: 11px; background: rgba(255,255,255,0.1); color: #fff; margin-left: 12px; transition: all 0.3s ease; text-align: center;">Edit</button>
+      </div>
+      <div id="profileEditArea" style="display: none; margin-top: 12px;">
+        <textarea id="masterProfile" style="min-height: 200px; font-size: 12px; width: 100%; padding: 10px;"></textarea>
+      </div>
+    </div>
+
+    <label for="jd">Job description</label>
+    <textarea id="jd" placeholder="Paste the full job posting here — title, responsibilities, requirements..."></textarea>
+
+    <div class="actions">
+      <button id="generateBtn" onclick="generateResume()">
+        <span class="spinner" id="spinner"></span>
+        <span id="btnText">Generate tailored resume</span>
+      </button>
+      <div style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-muted); opacity: 0.7; font-weight: 300; letter-spacing: 0.5px;">Made by Renthel Automations</div>
+      <a id="fileLink"></a>
+      <div id="status"></div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div id="preview-actions" style="display: none; width: 100%; max-width: 8.5in; justify-content: flex-end; gap: 12px; margin-bottom: 24px; animation: fadeIn 0.5s ease;">
+      <button onclick="downloadPdf()" style="width: auto; background: #ffffff; color: #0F172A; font-size: 14px; padding: 10px 16px; border-radius: 8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        Download .pdf
+      </button>
+      <button onclick="downloadDocx()" style="width: auto; background: #3B82F6; color: #ffffff; font-size: 14px; padding: 10px 16px; border-radius: 8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download .docx
+      </button>
+    </div>
+    <div id="placeholder">
+      <div class="icon">📄</div>
+      Paste a job description on the left and generate to see your tailored resume here.
+    </div>
+    
+    <div id="loadingState" style="display: none; margin: auto; width: 100%; max-width: 400px; text-align: center; animation: fadeIn 0.5s ease;">
+      <div class="icon" style="font-size: 48px; margin-bottom: 20px; opacity: 0.8;">⚙️</div>
+      <div id="loadingText" style="margin-bottom: 24px; font-weight: 500; font-size: 16px; color: var(--text-main);">Analyzing profile and job description...</div>
+      <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);">
+        <div class="progress-bar-fill"></div>
+      </div>
+      <style>
+        .progress-bar-fill {
+          height: 100%;
+          background: linear-gradient(90deg, var(--accent), #A78BFA);
+          width: 0%;
+          border-radius: 4px;
+          animation: progressAnim 15s cubic-bezier(0.1, 0.7, 0.1, 1) forwards;
+        }
+        @keyframes progressAnim {
+          0% { width: 0%; }
+          30% { width: 40%; }
+          70% { width: 75%; }
+          95% { width: 95%; }
+          100% { width: 98%; }
+        }
+      </style>
+    </div>
+
+    <div id="pages-container" style="display: none; flex-direction: column; align-items: center; width: 100%;"></div>
+  </div>
+
+</div>
+
+<script>
+const PROFILE_TEXT = `
+PERSONAL: Renthel R. Cueto | rnthlcueto@gmail.com | +63 975 005 7000 | Rizal, Philippines | linkedin.com/in/rnthlcueto
+
+HEADLINE: AI Automation Specialist | AI Systems Integration Engineer | n8n Automation Engineer | Claude Code Specialist | AI Solutions Builder
+
+SUMMARY: AI Automation Specialist with experience designing and implementing intelligent workflow automation, AI-powered business systems, and API integrations. Specializes in building end-to-end automation solutions using n8n, Claude Code, OpenRouter, ChatGPT, Claude, Gemini, and modern SaaS platforms. Has built production-ready automation pipelines connecting AI models, CRMs, databases, Google Workspace, cloud services, and third-party APIs. Experience includes retrieval-based AI systems, workflow orchestration, prompt engineering, structured data processing, and scalable automation architectures. Also builds AI products and internal tools for business automation, opportunity matching, resume generation, content automation, and productivity systems.
+
+TARGET ROLES: AI Automation Specialist, AI Systems Integration Engineer, AI Workflow Engineer, AI Solutions Engineer, AI Automation Engineer, AI Integration Specialist, n8n Automation Engineer, Claude Code Specialist, Automation Consultant, AI Operations Engineer, Technical Automation Specialist, Solutions Architect (Automation)
+
+CORE COMPETENCIES:
+AI Development: Claude Code, OpenRouter API, OpenAI API, ChatGPT API, Claude API, Gemini API, Prompt Engineering, Context Engineering, Structured Prompt Design, AI Workflow Design, AI Reasoning Pipelines, Multi-LLM Applications, Structured JSON Generation, AI-Assisted Development, LLM Evaluation, AI Content Generation, AI Document Processing
+Workflow Automation: n8n, Zapier, Make.com, Business Process Automation, Workflow Orchestration, Event-Driven Automation, Multi-Step Workflows, Conditional Logic, Error Handling, Scheduling, Data Synchronization, Automation Documentation, Process Optimization
+Systems Integration: REST APIs, API Integration, Webhooks, JSON Processing, Google Workspace Integration, Google Drive API, CRM Integration, Supabase, Airtable, Notion, ClickUp, Meta Business Suite, Facebook Lead Ads API, Email Automation, Google Forms Integration
+Software Development: Next.js, React, TypeScript, JavaScript, Tailwind CSS, SQL (Supabase), Git, GitHub, VS Code, Postman
+AI Systems Engineering: AI Architecture, Workflow Architecture, Automation Strategy, Retrieval-Based Systems, Knowledge Management, Opportunity Matching, Resume Personalization, AI Product Development, AI Solution Design, System Documentation, Technical Documentation, Business Process Analysis
+
+EXPERIENCE:
+
+[1] AI Automation Specialist — Chasm Opps (Remote) — January 2026 – Present (Part-time, 10 hrs/week)
+
+Initiative: Built an AI-Powered Government Opportunity Matching Platform — designed an intelligent qualification system that automatically analyzes U.S. government contracting opportunities and compares them against client capabilities using LLM reasoning.
+- Reduced manual opportunity review time from 20-30 minutes to under 5 minutes per opportunity.
+- Enabled consultants to review significantly more opportunities each day through AI-assisted qualification.
+- Standardized opportunity evaluation using consistent AI reasoning instead of manual interpretation.
+Technologies: n8n, OpenRouter, DeepSeek V4 Flash, Claude Code, Supabase, REST APIs
+
+Initiative: Developed an AI Procurement Data Extraction Pipeline — built an automation workflow extracting structured procurement information from government opportunities, including scope, eligibility, deliverables, evaluation criteria, NAICS codes, budgets, and deadlines.
+- Eliminated repetitive manual data extraction.
+- Standardized procurement data for downstream automation and proposal workflows.
+- Improved consistency and accuracy of opportunity summaries across the team.
+Technologies: n8n, APIs, JSON Processing, HigherGov, OpenRouter
+
+Initiative: Built Internal AI Productivity & Research Automations — created reusable AI workflows for proposal research, document analysis, resume generation, prompt engineering, and internal knowledge retrieval.
+- Reduced repetitive administrative tasks for proposal development.
+- Increased consistency of AI-generated outputs through reusable prompt frameworks.
+- Accelerated internal research and document preparation workflows.
+
+Overall Contributions (Chasm Opps): Designed production-ready AI workflow architectures using reusable components. Integrated multiple LLM providers through OpenRouter for performance and cost optimization. Created internal documentation and workflow standards for future automation development. Contributed to the company's transition toward AI-assisted operations.
+
+[2] AI Automation Specialist — Bee Fearless Studios (Remote) — September 2024 – December 2025
+
+Initiative: Built an AI-Powered Social Media Content Pipeline — designed a complete automation system generating captions, researching hashtags, organizing publishing assets, and preparing social media content using Claude Code, ChatGPT API, and n8n.
+- Reduced daily content preparation time from 3 hours to approximately 30 minutes.
+- Increased publishing consistency by automating repetitive production tasks.
+- Allowed the team to focus more on creative work instead of manual content preparation.
+Technologies: n8n, Claude Code, ChatGPT API, Meta Business Suite
+
+Initiative: Automated Client Onboarding Workflow — built an automated onboarding system connecting Google Forms, Notion, email notifications, and internal task tracking.
+- Reduced onboarding processing time by approximately 80%.
+- Eliminated duplicate manual data entry.
+- Improved response times for new client inquiries.
+- Reduced the risk of missed onboarding tasks through automated notifications.
+Technologies: Google Forms, Notion, Gmail, n8n, Zapier
+
+Initiative: Built Internal Business Automation Systems — designed workflow automations connecting business applications, project management tools, cloud storage, and communication platforms.
+- Reduced repetitive operational work by approximately 60%.
+- Saved more than 20 hours per week across recurring business processes.
+- Improved data consistency by synchronizing information between multiple business platforms.
+Technologies: n8n, Zapier, Airtable, Google Workspace, REST APIs, Webhooks
+
+Overall Contributions (Bee Fearless Studios): Built five production automation workflows supporting daily operations. Established reusable automation templates for future projects. Documented automation systems for easier maintenance by non-technical users. Improved operational efficiency through AI-powered workflow optimization.
+
+[3] Operations Coordinator & Digital Systems Lead — Door of Faith Christian Church International — June 2022 – September 2024
+
+Initiative: Built a Centralized Content Production System — designed standardized workflows for creating weekly sermon graphics, event promotions, announcements, and ministry campaigns.
+- Produced over 1,000 branded graphics annually.
+- Reduced design turnaround time through reusable templates and standardized production workflows.
+- Improved visual consistency across all church communication channels.
+
+Initiative: Managed Digital Growth & Performance Analytics — led the organization's digital communication strategy across social media platforms.
+- Increased social media followers by approximately 60%.
+- Increased post reach by approximately 70%.
+- Improved audience engagement through data-driven content planning and scheduling.
+Technologies: Meta Business Suite, Canva, Google Workspace
+
+Initiative: Improved Ministry Operations Through Digital Systems — managed volunteer coordination, schedules, event communication, and reporting across multiple church ministries.
+- Coordinated operations for more than 50 volunteers each month.
+- Improved communication efficiency between ministry leaders and volunteers.
+- Reduced administrative overhead through organized digital workflows and reporting systems.
+
+Overall Contributions (Door of Faith): Standardized digital communication across ministries. Improved event preparation through organized operational systems. Supported leadership with performance reporting and digital asset management. Built scalable workflows that could be reused for recurring church events.
+
+
+PROJECTS:
+(Note: for AI Automation Engineer / AI Systems roles, these projects are often stronger evidence of hands-on technical ability than the employment history above — favor them heavily when tailoring.)
+
+[A] Government Opportunity Scraper & AI Matching Platform — Founder & Developer. Tech stack: n8n, OpenRouter, DeepSeek V4 Flash, Supabase, Claude Code. AI-powered government contracting platform that automatically collects procurement opportunities, extracts structured information (scope, eligibility, deliverables, evaluation criteria, NAICS codes, budgets, deadlines), and evaluates client fit using LLM reasoning. Features: opportunity scraping, procurement data extraction, NAICS identification, budget extraction, deliverables parsing, AI opportunity matching, client compatibility scoring, AI-generated opportunity summaries. Business impact: reduced opportunity review time by over 80%, standardized opportunity analysis across the organization, enabled consultants to evaluate significantly more opportunities per day through AI-assisted decision support.
+
+[B] Lyricscroll — Founder & Developer. Tech stack: Next.js, OpenRouter, Musixmatch API, AI APIs, JavaScript. AI-powered web application that transforms YouTube music links into synchronized lyrics and guitar chord sheets, giving musicians an interactive practice experience similar to Ultimate Guitar. Features: automatic lyrics retrieval from YouTube songs, AI-assisted chord generation and formatting, scrollable synchronized lyrics interface, mobile-responsive design, searchable song library, musician-focused UX. Demonstrates: product development, API integration, AI-assisted development, full-stack development, UI/UX design.
+
+[C] AI Chatbot Platform — Founder & Developer. Tech stack: OpenRouter, Claude Code, n8n, Supabase. Customizable AI chatbot system that answers business questions using company knowledge, documentation, and structured context. Features: knowledge-based conversations, context-aware responses, multi-model support, business documentation retrieval, conversation history, prompt customization. Demonstrates: conversational AI, retrieval workflows, AI architecture.
+
+[D] AI-Powered Clinic Management System — Founder & Developer. Tech stack: Next.js, Supabase, AI APIs. Clinic management platform centralizing patient records, appointment scheduling, medical documentation, and AI-assisted administrative workflows. Features: patient management, appointment scheduling, medical records, AI-assisted documentation, dashboard analytics, role-based access, administrative automation. Demonstrates: SaaS development, database design, AI integration, business systems design.
+
+[E] AI Resume Builder — Founder & Developer. Tech stack: Next.js, OpenRouter, Supabase, DeepSeek, Claude Code. AI-powered resume platform that generates ATS-optimized resumes from a structured master profile and a target job description. Features: AI job analysis, master profile management, resume customization, live resume preview, DOCX export, PDF export, resume version history, ATS keyword optimization. Demonstrates: AI applications, prompt engineering, structured JSON generation, document processing, full-stack development.
+
+[F] Deevo — Founder & Developer. Tech stack: Next.js, AI APIs, OpenRouter, Supabase. AI-powered devotional platform assisting pastors, church leaders, and Christians in creating sermons, devotionals, and Bible study materials using large language models. Features: AI sermon generation, SOAP devotional creation, scripture-based content generation, ministry resource management, personalized writing styles, content organization and retrieval. Demonstrates: prompt engineering, AI content generation, product design, knowledge management, AI workflow design.
+
+[G] CRM Pipeline Automation — Tech stack: n8n, APIs, Zoho CRM, Google Workspace. Automation workflows streamlining lead capture, qualification, onboarding, task creation, and pipeline management. Features: lead routing, CRM synchronization, automated follow-ups, task automation, pipeline updates, email automation. Business impact: reduced manual CRM administration, improved response times, standardized sales workflows.
+
+[H] Lead Generation Automation — Tech stack: n8n, Google Forms, CRM, APIs. End-to-end lead processing system that automatically captures, enriches, qualifies, and routes incoming leads to the appropriate sales pipeline (lead source → qualification → CRM → task creation → email notification → follow-up). Business impact: reduced manual lead processing, eliminated duplicate entries, improved lead response time.
+
+[I] AI LinkedIn Content Generator — Tech stack: OpenRouter, Claude Code, n8n, Next.js. AI application generating professional LinkedIn posts tailored to a user's expertise, audience, and content goals. Features: AI post generation, hook optimization, CTA generation, carousel ideas, content repurposing, personal brand optimization. Demonstrates: prompt engineering, AI content automation, workflow design.
+
+[J] Meta Ads Monitoring & Scraper — Tech stack: Meta APIs, n8n, OpenRouter. Automated monitoring system collecting advertising data, summarizing campaign performance, and generating actionable AI insights. Features: campaign monitoring, performance tracking, AI-generated summaries, automated reporting, dashboard-ready outputs. Demonstrates: API integration, automation, data analysis.
+
+[K] Invoice Generator Automation — Tech stack: n8n, Google Docs, Google Drive, Gmail. Automation workflow generating professional invoices from submitted client information and delivering them automatically via email. Features: invoice generation, PDF creation, automatic email delivery, cloud storage, payment tracking. Business impact: eliminated repetitive invoice creation, reduced administrative workload, standardized invoice formatting.
+
+EDUCATION: Bachelor of Science in Agricultural and Biosystems Engineering, Mindoro State University, 2022. Awards: DOST Scholar, Best Writer Award, Achiever's Award.
+
+CERTIFICATIONS: HubSpot SEO II Certification, HubSpot Social Media Marketing II Certification, Marketing Analytics with Meta, Google Sheets (Advanced), B2B Outbound Lead Generation.
+`;
+
+let latestResume = null;
+
+function toggleProfileEdit() {
+  const area = document.getElementById('profileEditArea');
+  const btn = document.getElementById('editProfileBtn');
+  
+  if (area.style.display === 'none' || area.style.display === '') {
+    // Open edit mode
+    area.style.display = 'block';
+    btn.textContent = 'Save';
+    btn.style.background = '#3B82F6';
+    btn.style.color = '#fff';
+  } else {
+    // Close edit mode
+    area.style.display = 'none';
+    btn.textContent = 'Saved!';
+    btn.style.background = '#10B981'; // Green
+    btn.style.color = '#fff';
+    
+    // Animate back to Edit after 1.5s
+    setTimeout(() => {
+      btn.textContent = 'Edit';
+      btn.style.background = 'rgba(255,255,255,0.1)';
+    }, 1500);
+  }
+}
+
+async function generateResume(){
+  const jd = document.getElementById('jd').value.trim();
+  const statusEl = document.getElementById('status');
+  const genBtn = document.getElementById('generateBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const spinner = document.getElementById('spinner');
+  const btnText = document.getElementById('btnText');
+
+  if(!jd){
+    statusEl.textContent = "Paste a job description first.";
+    statusEl.className = "err";
+    return;
+  }
+
+  genBtn.disabled = true;
+  if(spinner) spinner.style.display = "inline-block";
+  if(btnText) btnText.textContent = "Generating...";
+  document.getElementById('preview-actions').style.display = "none";
+  statusEl.className = "";
+  statusEl.textContent = "Analyzing job description and tailoring resume...";
+  
+  // Show right-side progress bar
+  document.getElementById('placeholder').style.display = "none";
+  document.getElementById('pages-container').style.display = "none";
+  const loadingState = document.getElementById('loadingState');
+  loadingState.style.display = "block";
+  
+  // Optional: rotate text to keep user engaged
+  const loadingText = document.getElementById('loadingText');
+  const texts = ["Analyzing profile and job description...", "Extracting key skills...", "Drafting ATS-optimized bullets...", "Formatting your resume..."];
+  let textIdx = 0;
+  const textInterval = setInterval(() => {
+    textIdx = (textIdx + 1) % texts.length;
+    if(loadingText) loadingText.textContent = texts[textIdx];
+  }, 4000);
+
+  const systemPrompt = `You are an expert resume writer and ATS optimization specialist. You will be given a candidate's master profile and a target job description. Select and rewrite the most relevant summary, skills, experience bullets, projects, education, and certifications to match the job description as closely as possible, using strong action verbs and quantified results where the profile supports it. Do not invent facts, employers, dates, or numbers not present in the profile. Keep bullets concise (one line each where possible).
+
+IMPORTANT: For AI Automation Engineer, AI Systems Integration, AI Solutions Engineer, or similar hands-on technical roles, the candidate's personal projects are stronger evidence of real engineering ability than the employment history — they show independently built, production-style systems with real architecture and measurable impact. In these cases, select MORE projects (4-6) and give them equal or greater weight and space than the experience section; write each project bullet like a software engineering accomplishment (problem solved, architecture/tech stack, measurable business impact) rather than a feature list. For roles that are less technical, 2-3 projects is enough.
+
+Return ONLY valid JSON, no markdown fences, no commentary, matching exactly this schema:
+{
+  "target_title": string,
+  "full_name": string,
+  "contact_line": string,
+  "summary": string (2-3 sentences),
+  "skills": [string] (10-14 most relevant items),
+  "experience": [
+    { "company": string, "location": string, "title": string, "dates": string, "bullets": [string] (3-5 most relevant bullets) }
+  ],
+  "projects": [
+    { "name": string, "stack": string (short tech stack, e.g. "Next.js, OpenRouter, Supabase"), "dates": string, "bullets": [string] (2-3 bullets: problem/architecture, then measurable impact) }
+  ] (2-6 most relevant projects depending on role, per the guidance above; omit only if truly not relevant),
+  "education": [ { "degree": string, "school": string, "location": string, "dates": string, "details": [string] } ],
+  "certifications": [string]
+}
+Include ALL THREE employers from the experience section (Chasm Opps, Bee Fearless Studios, Door of Faith), each with bullets re-weighted toward relevance to the job description — do not drop any employer, even if less relevant, just shorten and reframe its bullets. Prefer the quantified business-impact bullets (with specific numbers, percentages, or time savings) over generic ones when both are relevant.`;
+
+  const currentProfile = document.getElementById('masterProfile').value.trim();
+  const userMsg = `MASTER PROFILE:\n${currentProfile}\n\nJOB DESCRIPTION:\n${jd}\n\nReturn the JSON now.`;
+
+  try{
+    const response = await fetch("/api/generate", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        systemPrompt,
+        userMsg
+      })
+    });
+    const data = await response.json();
+    
+    if(data.error) {
+      throw new Error(data.error);
+    }
+
+    const text = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : "";
+    
+    // Robust JSON extraction for DeepSeek/OpenRouter which might include <think> tags or conversational text
+    let jsonString = text;
+    const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+    if (jsonMatch) {
+      jsonString = jsonMatch[1].trim();
+    } else {
+      const start = text.indexOf("{");
+      const end = text.lastIndexOf("}");
+      if(start !== -1 && end !== -1 && end > start){
+        jsonString = text.slice(start, end + 1);
+      }
+    }
+
+    let resume;
+    try {
+      resume = JSON.parse(jsonString);
+    } catch(parseErr) {
+      console.error("JSON Parse Error on string:", jsonString);
+      throw new Error("Failed to parse the AI response as JSON. Please try again.");
+    }
+    
+    latestResume = resume;
+    
+    // Hide progress bar, show preview
+    clearInterval(textInterval);
+    loadingState.style.display = "none";
+    
+    renderPreview(resume);
+    statusEl.textContent = "Resume ready. Download options are at the top of the preview.";
+    document.getElementById('preview-actions').style.display = "flex";
+  } catch(err){
+    console.error(err);
+    clearInterval(textInterval);
+    loadingState.style.display = "none";
+    document.getElementById('placeholder').style.display = "block";
+    
+    statusEl.className = "err";
+    statusEl.textContent = "Error: " + (err.message || "Something went wrong generating the resume. Please try again.");
+  } finally {
+    genBtn.disabled = false;
+    if(spinner) spinner.style.display = "none";
+    if(btnText) btnText.textContent = "Generate tailored resume";
+  }
+}
+
+function esc(s){
+  return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function renderPreview(r){
+  document.getElementById('placeholder').style.display = "none";
+  const pagesContainer = document.getElementById('pages-container');
+  pagesContainer.style.display = "flex";
+  pagesContainer.innerHTML = "";
+
+  const PAGE_HEIGHT = 1248; // 13in at 96ppi
+
+  let currentPage = createPage();
+  pagesContainer.appendChild(currentPage);
+
+  function createPage() {
+    const p = document.createElement('div');
+    p.className = 'page';
+    return p;
+  }
+
+  function appendBlock(htmlString) {
+    if(!htmlString) return;
+    const temp = document.createElement('div');
+    temp.innerHTML = htmlString.trim();
+    const elements = Array.from(temp.childNodes);
+    
+    elements.forEach(el => {
+      currentPage.appendChild(el);
+      if(currentPage.scrollHeight > PAGE_HEIGHT) {
+        currentPage.removeChild(el);
+        currentPage = createPage();
+        pagesContainer.appendChild(currentPage);
+        currentPage.appendChild(el);
+      }
+    });
+  }
+
+  function appendList(items) {
+    if(!items || !items.length) return;
+    let ul = document.createElement('ul');
+    ul.className = 'r-bullets';
+    currentPage.appendChild(ul);
+
+    items.forEach(item => {
+      let li = document.createElement('li');
+      li.innerHTML = esc(item);
+      ul.appendChild(li);
+      if(currentPage.scrollHeight > PAGE_HEIGHT) {
+        ul.removeChild(li);
+        currentPage = createPage();
+        pagesContainer.appendChild(currentPage);
+        ul = document.createElement('ul');
+        ul.className = 'r-bullets';
+        currentPage.appendChild(ul);
+        ul.appendChild(li);
+      }
+    });
+  }
+
+  appendBlock(`<div class="r-name">${esc(r.full_name || "").toUpperCase()}</div>`);
+  appendBlock(`<div class="r-contact">${esc(r.contact_line || "")}</div>`);
+  
+  if (r.summary) {
+    appendBlock(`<div class="r-section">Professional Summary</div>`);
+    appendBlock(`<div class="r-summary">${esc(r.summary)}</div>`);
+  }
+  
+  if (r.skills && r.skills.length) {
+    appendBlock(`<div class="r-section">Core Skills</div>`);
+    appendBlock(`<div class="r-skills">${r.skills.map(esc).join(" &nbsp;|&nbsp; ")}</div>`);
+  }
+
+  if (r.experience && r.experience.length) {
+    appendBlock(`<div class="r-section">Work Experience</div>`);
+    r.experience.forEach(job => {
+      appendBlock(`
+        <div>
+          <div class="r-row"><b>${esc(job.company)}</b><span>${esc(job.location||"")}</span></div>
+          <div class="r-row"><i>${esc(job.title)}</i><i>${esc(job.dates)}</i></div>
+        </div>
+      `);
+      appendList(job.bullets);
+    });
+  }
+
+  if (r.projects && r.projects.length) {
+    appendBlock(`<div class="r-section">Selected Projects</div>`);
+    r.projects.forEach(p => {
+      let stackHtml = p.stack ? `<div class="r-row"><i>${esc(p.stack)}</i></div>` : "";
+      appendBlock(`
+        <div>
+          <div class="r-row"><b>${esc(p.name)}</b><span>${esc(p.dates||"")}</span></div>
+          ${stackHtml}
+        </div>
+      `);
+      appendList(p.bullets);
+    });
+  }
+
+  if (r.education && r.education.length) {
+    appendBlock(`<div class="r-section">Education</div>`);
+    r.education.forEach(e => {
+      appendBlock(`
+        <div>
+          <div class="r-row"><b>${esc(e.degree)}</b><span>${esc(e.location||"")}</span></div>
+          <div class="r-row"><i>${esc(e.school)}</i><i>${esc(e.dates||"")}</i></div>
+        </div>
+      `);
+      appendList(e.details);
+    });
+  }
+
+  if (r.certifications && r.certifications.length) {
+    appendBlock(`<div class="r-section">Certifications</div>`);
+    appendBlock(`<div class="r-skills">${r.certifications.map(esc).join(" &nbsp;|&nbsp; ")}</div>`);
+  }
+}
+
+// ---- Minimal hand-built OOXML (.docx) generator (no external docx library needed) ----
+
+function escXml(s){
+  return (s || "").toString()
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&apos;");
+}
+
+const PAGE_W = 12240;   // 8.5in
+const PAGE_H = 18720;   // 13in
+const MARGIN = 1080;    // 0.75in
+const USABLE = PAGE_W - (MARGIN * 2); // 10080 twips = 7in
+
+function rXml(text, {bold, italics, size} = {}){
+  let props = `<w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>`;
+  if(bold) props += `<w:b/>`;
+  if(italics) props += `<w:i/>`;
+  props += `<w:sz w:val="${size||22}"/><w:szCs w:val="${size||22}"/></w:rPr>`;
+  return `<w:r>${props}<w:t xml:space="preserve">${escXml(text)}</w:t></w:r>`;
+}
+
+function tabXml(){
+  return `<w:r><w:tab/></w:r>`;
+}
+
+function paraXml(runsXml, {align, before, after, borderBottom, tabsRight} = {}){
+  let pPr = `<w:pPr>`;
+  if(align) pPr += `<w:jc w:val="${align}"/>`;
+  if(before !== undefined || after !== undefined) pPr += `<w:spacing w:before="${before||0}" w:after="${after||0}"/>`;
+  if(borderBottom) pPr += `<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="111111"/></w:pBdr>`;
+  if(tabsRight) pPr += `<w:tabs><w:tab w:val="right" w:pos="${USABLE}"/></w:tabs>`;
+  pPr += `</w:pPr>`;
+  return `<w:p>${pPr}${runsXml}</w:p>`;
+}
+
+function sectionHeaderXml(title){
+  return paraXml(rXml(title.toUpperCase(), {bold:true, size:21}), { before:220, after:100, borderBottom:true });
+}
+
+function rowXml(leftText, rightText, opts={}){
+  const left = rXml(leftText||"", { bold: opts.boldLeft, italics: opts.italicLeft, size:21 });
+  const right = rXml(rightText||"", { bold: opts.boldRight, italics: opts.italicRight, size:21 });
+  return paraXml(left + tabXml() + right, { after:20, tabsRight:true });
+}
+
+function bulletXml(text){
+  const pPr = `<w:pPr><w:spacing w:after="40"/><w:ind w:left="360" w:hanging="180"/></w:pPr>`;
+  return `<w:p>${pPr}${rXml("•  " + (text||""), {size:20})}</w:p>`;
+}
+
+function plainXml(text, opts={}){
+  return paraXml(rXml(text||"", { size:21, ...opts }), { after:120 });
+}
+
+function buildDocumentXml(r){
+  let body = "";
+
+  body += paraXml(rXml((r.full_name||"").toUpperCase(), {bold:true, size:32}), { align:"center", after:40 });
+  body += paraXml(rXml(r.contact_line||"", {size:19}), { align:"center", after:160 });
+
+  body += sectionHeaderXml("Professional Summary");
+  body += plainXml(r.summary);
+
+  body += sectionHeaderXml("Core Skills");
+  body += plainXml((r.skills||[]).join("   |   "));
+
+  body += sectionHeaderXml("Work Experience");
+  (r.experience||[]).forEach(job => {
+    body += rowXml(job.company, job.location||"", { boldLeft:true });
+    body += rowXml(job.title, job.dates||"", { italicLeft:true, italicRight:true });
+    (job.bullets||[]).forEach(b => body += bulletXml(b));
+  });
+
+  if(r.projects && r.projects.length){
+    body += sectionHeaderXml("Selected Projects");
+    r.projects.forEach(p => {
+      body += rowXml(p.name, p.dates||"", { boldLeft:true });
+      if(p.stack) body += rowXml(p.stack, "", { italicLeft:true });
+      (p.bullets||[]).forEach(b => body += bulletXml(b));
+    });
+  }
+
+  body += sectionHeaderXml("Education");
+  (r.education||[]).forEach(e => {
+    body += rowXml(e.degree, e.location||"", { boldLeft:true });
+    body += rowXml(e.school, e.dates||"", { italicLeft:true, italicRight:true });
+    (e.details||[]).forEach(d => body += bulletXml(d));
+  });
+
+  if(r.certifications && r.certifications.length){
+    body += sectionHeaderXml("Certifications");
+    body += plainXml(r.certifications.join("   |   "));
+  }
+
+  const sectPr = `<w:sectPr><w:pgSz w:w="${PAGE_W}" w:h="${PAGE_H}"/><w:pgMar w:top="${MARGIN}" w:right="${MARGIN}" w:bottom="${MARGIN}" w:left="${MARGIN}" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr>`;
+
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:body>${body}${sectPr}</w:body>
+</w:document>`;
+}
+
+async function downloadDocx(){
+  if(!latestResume) return;
+  const statusEl = document.getElementById('status');
+  try{
+    if(typeof JSZip === "undefined") throw new Error("JSZip missing");
+    const r = latestResume;
+    const documentXml = buildDocumentXml(r);
+    const contentTypesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`;
+    const rootRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`;
+    const zip = new JSZip();
+    zip.file("[Content_Types].xml", contentTypesXml);
+    zip.folder("_rels").file(".rels", rootRelsXml);
+    zip.folder("word").file("document.xml", documentXml);
+    const blob = await zip.generateAsync({type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+    const safeTitle = (r.target_title || "Resume").replace(/[^a-z0-9]+/gi, "_");
+    const filename = `Renthel_Cueto_${safeTitle}.docx`;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+  } catch(err){
+    console.error(err);
+    statusEl.className = "err";
+    statusEl.textContent = "Couldn't build the .docx file: " + (err && err.message ? err.message : err);
+  }
+}
+
+function downloadPdf() {
+  if (!latestResume) return;
+  const genBtn = document.getElementById('generateBtn');
+  const prevText = genBtn.textContent;
+  genBtn.textContent = "Generating PDF...";
+  
+  const safeTitle = (latestResume.target_title || "Resume").replace(/[^a-z0-9]+/gi, "_");
+  const filename = `Renthel_Cueto_${safeTitle}.pdf`;
+  
+  const container = document.getElementById('pages-container');
+  const clone = container.cloneNode(true);
+  clone.style.display = 'block';
+  clone.style.gap = '0';
+  
+  Array.from(clone.children).forEach(page => {
+    page.style.margin = '0';
+    page.style.boxShadow = 'none';
+    page.style.pageBreakAfter = 'always';
+    page.style.border = 'none';
+    page.style.transform = 'none';
+  });
+  
+  const opt = {
+    margin:       0,
+    filename:     filename,
+    image:        { type: 'jpeg', quality: 1 },
+    html2canvas:  { scale: 2, useCORS: true },
+    jsPDF:        { unit: 'in', format: 'legal', orientation: 'portrait' }
+  };
+  
+  html2pdf().set(opt).from(clone).save().then(() => {
+    genBtn.textContent = prevText;
+  }).catch(err => {
+    console.error(err);
+    genBtn.textContent = prevText;
+    alert("Error generating PDF.");
+  });
+}
+
+// Initialize the textarea with the hardcoded profile text on load
+window.addEventListener('DOMContentLoaded', () => {
+  const masterProfileEl = document.getElementById('masterProfile');
+  if (masterProfileEl) {
+    masterProfileEl.value = PROFILE_TEXT.trim();
+  }
+});
+</script>
+</body>
+</html>
