@@ -6,7 +6,7 @@ import StructuredProfileView from './StructuredProfileView';
 import { UserCircle, Upload, ArrowRight, Mail, Phone, Link as LinkIcon } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 
-export default function ProfileTab({ user, onAvatarUpdate }) {
+export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
   const { addToast } = useToast();
   const fileInputRef = useRef(null);
   
@@ -261,30 +261,15 @@ export default function ProfileTab({ user, onAvatarUpdate }) {
         </div>
       </div>
 
-      {!isParsed && (
-        <div className="dash-card" style={{ background: '#0B0E14', padding: '32px' }}>
-          <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: 'white' }}>Import Profile</h3>
-            <p style={{ fontSize: '14px', color: '#9ca3af', marginTop: '8px' }}>Paste your raw profile details (e.g. from LinkedIn or a master resume document). We will automatically parse and map it to a structured format.</p>
-          </div>
-          <textarea 
-            className="dash-textarea"
-            style={{ minHeight: '300px', width: '100%', marginBottom: '24px', background: '#111827' }}
-            placeholder={`PERSONAL: Name | Email | Phone...\nHEADLINE: Role...\nSUMMARY: ...\nSKILLS: React, Node...\nEXPERIENCE:\n- Company, Role, Dates...\nPROJECTS:\n- Name, Stack, Desc...`}
-            value={rawText}
-            onChange={(e) => setRawText(e.target.value)}
-          ></textarea>
-          
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <button 
-              onClick={handleParse}
-              disabled={saving}
-              className="dash-btn primary"
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 32px', fontSize: '16px', background: '#3b82f6', color: 'white', borderRadius: '8px', border: 'none', cursor: 'pointer', opacity: saving ? 0.7 : 1 }}
-            >
-              {saving ? 'Mapping...' : 'Import Profile Data'} <ArrowRight size={20} />
-            </button>
-          </div>
+      {!profileData && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
+          <button 
+            onClick={() => onSwitchTab('settings')}
+            className="dash-btn primary"
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '16px 32px', fontSize: '16px', background: '#3b82f6', color: 'white', borderRadius: '12px', border: 'none', cursor: 'pointer' }}
+          >
+            Import Profile <ArrowRight size={20} />
+          </button>
         </div>
       )}
     </div>

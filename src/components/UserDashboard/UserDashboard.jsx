@@ -36,7 +36,7 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
   const renderContent = () => {
     switch (activeTab) {
       case 'profile':
-        return <ProfileTab user={user} onAvatarUpdate={onAvatarUpdate} />;
+        return <ProfileTab user={user} onAvatarUpdate={onAvatarUpdate} onSwitchTab={setActiveTab} />;
       case 'credits':
         return <CreditsTab user={user} />;
       case 'settings':

@@ -220,6 +220,7 @@ export default function ResumeBuilder() {
                     <UserCircle size={20} />
                   </div>
                 )}
+                <span className="font-medium" style={{ fontSize: '15px' }}>Profile</span>
               </button>
             </>
           ) : (

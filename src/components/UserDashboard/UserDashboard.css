@@ -200,7 +200,6 @@
 
 .business-card {
   width: 100%;
-  max-width: 800px;
   background: linear-gradient(135deg, rgba(30, 58, 138, 0.2), rgba(88, 28, 135, 0.2));
   backdrop-filter: blur(20px);
   border-radius: 24px;
