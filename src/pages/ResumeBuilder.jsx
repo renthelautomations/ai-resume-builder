@@ -34,6 +34,7 @@ export default function ResumeBuilder() {
       setJobDescription('');
       setResumeData(null);
       setUserAvatar(null);
+      setStatus({ type: '', text: '' });
       return;
     }
     const fetchActiveProfile = async () => {
