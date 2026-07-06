@@ -16,6 +16,7 @@ module.exports = async (req, res) => {
       },
       body: JSON.stringify({
         model: "deepseek/deepseek-chat", // DeepSeek v4 flash / DeepSeek Chat
+        max_tokens: 4000,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userMsg }
