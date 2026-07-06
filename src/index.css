@@ -337,7 +337,10 @@ button {
 
 .page {
   width: 8.5in;
-  height: 13in;
+  max-width: 100%;
+  min-height: 13in;
+  height: auto;
+  box-sizing: border-box;
   background: var(--paper);
   padding: 0.75in;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -637,4 +640,10 @@ button {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 24px;
+  }
 }

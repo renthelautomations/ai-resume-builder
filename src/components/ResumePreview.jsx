@@ -541,13 +541,13 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
               <button 
                 onClick={handleEditClick}
                 style={{ 
-                  width: '100px',
+                  width: 'auto',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
                   background: 'rgba(255,255,255,0.1)', 
                   color: '#fff', 
-                  fontSize: '14px', padding: '10px 0', borderRadius: '8px', transition: 'all 0.3s ease',
+                  fontSize: '13px', padding: '6px 14px', borderRadius: '8px', transition: 'all 0.3s ease',
                   cursor: 'pointer'
                 }}
               >
@@ -560,7 +560,7 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
                   width: 'auto', 
                   background: isGeneratingPdf ? '#334155' : 'rgba(255,255,255,0.1)', 
                   color: isGeneratingPdf ? '#94A3B8' : '#fff', 
-                  fontSize: '14px', padding: '10px 16px', borderRadius: '8px', whiteSpace: 'nowrap',
+                  fontSize: '13px', padding: '6px 14px', borderRadius: '8px', whiteSpace: 'nowrap',
                   cursor: isGeneratingPdf ? 'not-allowed' : 'pointer'
                 }}
               >
@@ -573,7 +573,7 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
                   width: 'auto', 
                   background: isGeneratingPdf ? '#334155' : '#3B82F6', 
                   color: isGeneratingPdf ? '#94A3B8' : '#ffffff', 
-                  fontSize: '14px', padding: '10px 16px', borderRadius: '8px', whiteSpace: 'nowrap',
+                  fontSize: '13px', padding: '6px 14px', borderRadius: '8px', whiteSpace: 'nowrap',
                   cursor: isGeneratingPdf ? 'not-allowed' : 'pointer'
                 }}
               >
@@ -586,7 +586,7 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
                   width: 'auto', 
                   background: isSavingResume ? '#334155' : '#10B981', 
                   color: isSavingResume ? '#94A3B8' : '#ffffff', 
-                  fontSize: '14px', padding: '10px 16px', borderRadius: '8px', whiteSpace: 'nowrap',
+                  fontSize: '13px', padding: '6px 14px', borderRadius: '8px', whiteSpace: 'nowrap',
                   cursor: isSavingResume ? 'not-allowed' : 'pointer'
                 }}
               >
