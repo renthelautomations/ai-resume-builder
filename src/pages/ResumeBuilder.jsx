@@ -270,6 +270,10 @@ export default function ResumeBuilder() {
             jobDescription={jobDescription}
             setJobDescription={setJobDescription}
             onOpenDashboard={(tab = 'profile') => {
+              if (!user) {
+                setShowLoginModal(true);
+                return;
+              }
               setDashboardTab(tab);
               setShowUserDashboard(true);
             }}
