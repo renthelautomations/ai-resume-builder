@@ -29,7 +29,14 @@ Include ALL THREE employers from the experience section (Chasm Opps, Bee Fearles
     body: JSON.stringify({ systemPrompt, userMsg })
   });
   
-  const data = await response.json();
+  const textBody = await response.text();
+  let data;
+  try {
+    data = JSON.parse(textBody);
+  } catch (err) {
+    throw new Error(`API Error (${response.status}): The server took too long to respond or returned invalid data.`);
+  }
+
   if(data.error) throw new Error(data.error);
 
   const text = data.choices?.[0]?.message?.content || "";
