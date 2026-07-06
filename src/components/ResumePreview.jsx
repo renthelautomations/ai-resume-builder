@@ -307,7 +307,7 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
   if (!resumeData && !isLoading) {
     return (
       <div className="right">
-        <div className="empty-state-wrapper" style={{ margin: 'auto 0', width: '100%', padding: '20px 0' }}>
+        <div className="empty-state-wrapper" style={{ width: '100%', padding: '20px 0' }}>
           <div id="how-it-works-headers" className="mobile-order-1" style={{ maxWidth: '850px', margin: '0 auto 12px auto', width: '100%', textAlign: 'center' }}>
             <h1 style={{ fontSize: '48px', fontWeight: '800', marginBottom: '8px', letterSpacing: '-0.02em', color: '#fff', lineHeight: '1.2', paddingTop: '4px' }}>Generate a Tailored Resume</h1>
             <div style={{ fontSize: '18px', color: 'var(--text-muted)', marginBottom: '0', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Harvard Resume Template</div>

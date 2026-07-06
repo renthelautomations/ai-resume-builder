@@ -47,7 +47,7 @@ body {
 
 
 .panel {
-  padding: 40px 32px;
+  padding: 24px 32px;
   background: transparent;
   border-right: 1px solid;
   border-image: linear-gradient(to bottom, transparent, var(--border) 15%, var(--border) 85%, transparent) 1;
@@ -221,7 +221,7 @@ button {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .right {
-  padding: 40px;
+  padding: 24px 40px 40px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
