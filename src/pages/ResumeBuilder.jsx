@@ -60,18 +60,12 @@ export default function ResumeBuilder() {
     fetchActiveProfile();
   }, [user]);
 
-  // Handle restoring job description and auto-generating after OAuth redirect
+  // Handle restoring job description after OAuth redirect
   useEffect(() => {
     const savedJobDesc = localStorage.getItem('savedJobDescription');
     if (savedJobDesc) {
       setJobDescription(savedJobDesc);
       localStorage.removeItem('savedJobDescription');
-      if (user) {
-        // We delay the generate call slightly to ensure state is settled
-        setTimeout(() => {
-          handleGenerate(savedJobDesc);
-        }, 500);
-      }
     }
   }, [user]);
 
