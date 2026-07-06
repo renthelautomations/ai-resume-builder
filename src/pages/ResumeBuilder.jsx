@@ -29,7 +29,13 @@ export default function ResumeBuilder() {
 
   // Fetch active profile on load
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setProfileText('');
+      setJobDescription('');
+      setResumeData(null);
+      setUserAvatar(null);
+      return;
+    }
     const fetchActiveProfile = async () => {
       const { data: userMeta } = await supabase
         .from('profiles')
