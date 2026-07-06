@@ -285,10 +285,10 @@
     width: 8.5in;
     height: 13in;
     background: var(--paper);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    padding: 0.7in 0.75in;
+    padding: 0.6in 0.8in;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     font-family: 'Times New Roman', Georgia, serif;
-    color: #111;
+    color: #000000;
     font-size: 11pt;
     line-height: 1.35;
     margin-bottom: 40px;
@@ -393,8 +393,12 @@
 
   <div class="right">
     <div id="preview-actions" style="display: none; width: 100%; max-width: 8.5in; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 24px; animation: fadeIn 0.5s ease;">
-      <span style="font-size: 13px; color: var(--text-muted); opacity: 0.8;">💡 Tip: Click anywhere on the resume to edit before downloading as PDF!</span>
+      <span style="font-size: 13px; color: var(--text-muted); opacity: 0.8;">💡 Tip: Click Edit to tweak text before downloading.</span>
       <div style="display: flex; gap: 12px;">
+        <button id="editPreviewBtn" onclick="togglePreviewEdit()" style="width: auto; background: rgba(255,255,255,0.1); color: #fff; font-size: 14px; padding: 10px 16px; border-radius: 8px; transition: all 0.3s ease;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          Edit
+        </button>
         <button onclick="downloadDocx()" style="width: auto; background: rgba(255,255,255,0.1); color: #fff; font-size: 14px; padding: 10px 16px; border-radius: 8px;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           Download .docx
@@ -723,8 +727,6 @@ function renderPreview(r){
   function createPage() {
     const p = document.createElement('div');
     p.className = 'page';
-    p.setAttribute('contenteditable', 'true');
-    p.style.outline = 'none'; // hide blue highlight when clicking
     return p;
   }
 
@@ -745,14 +747,15 @@ function renderPreview(r){
     });
   }
 
-  function appendList(items) {
+  function appendList(items, pathPrefix) {
     if(!items || !items.length) return;
     let ul = document.createElement('ul');
     ul.className = 'r-bullets';
     currentPage.appendChild(ul);
 
-    items.forEach(item => {
+    items.forEach((item, i) => {
       let li = document.createElement('li');
+      if (pathPrefix) li.setAttribute('data-path', `${pathPrefix}.${i}`);
       li.innerHTML = esc(item);
       ul.appendChild(li);
       if(currentPage.scrollHeight > PAGE_HEIGHT) {
@@ -767,62 +770,62 @@ function renderPreview(r){
     });
   }
 
-  appendBlock(`<div class="r-name">${esc(r.full_name || "").toUpperCase()}</div>`);
-  appendBlock(`<div class="r-contact">${esc(r.contact_line || "")}</div>`);
+  appendBlock(`<div class="r-name" data-path="full_name">${esc(r.full_name || "").toUpperCase()}</div>`);
+  appendBlock(`<div class="r-contact" data-path="contact_line">${esc(r.contact_line || "")}</div>`);
   
   if (r.summary) {
     appendBlock(`<div class="r-section">Professional Summary</div>`);
-    appendBlock(`<div class="r-summary">${esc(r.summary)}</div>`);
+    appendBlock(`<div class="r-summary" data-path="summary">${esc(r.summary)}</div>`);
   }
   
   if (r.skills && r.skills.length) {
     appendBlock(`<div class="r-section">Core Skills</div>`);
-    appendBlock(`<div class="r-skills">${r.skills.map(esc).join(" &nbsp;|&nbsp; ")}</div>`);
+    appendBlock(`<div class="r-skills" data-path="skills_joined">${r.skills.map(esc).join(" &nbsp;|&nbsp; ")}</div>`);
   }
 
   if (r.experience && r.experience.length) {
     appendBlock(`<div class="r-section">Work Experience</div>`);
-    r.experience.forEach(job => {
+    r.experience.forEach((job, i) => {
       appendBlock(`
         <div>
-          <div class="r-row"><b>${esc(job.company)}</b><span>${esc(job.location||"")}</span></div>
-          <div class="r-row"><i>${esc(job.title)}</i><i>${esc(job.dates)}</i></div>
+          <div class="r-row"><b data-path="experience.${i}.company">${esc(job.company)}</b><span data-path="experience.${i}.location">${esc(job.location||"")}</span></div>
+          <div class="r-row"><i data-path="experience.${i}.title">${esc(job.title)}</i><i data-path="experience.${i}.dates">${esc(job.dates)}</i></div>
         </div>
       `);
-      appendList(job.bullets);
+      appendList(job.bullets, `experience.${i}.bullets`);
     });
   }
 
   if (r.projects && r.projects.length) {
     appendBlock(`<div class="r-section">Selected Projects</div>`);
-    r.projects.forEach(p => {
-      let stackHtml = p.stack ? `<div class="r-row"><i>${esc(p.stack)}</i></div>` : "";
+    r.projects.forEach((p, i) => {
+      let stackHtml = p.stack ? `<div class="r-row"><i data-path="projects.${i}.stack">${esc(p.stack)}</i></div>` : "";
       appendBlock(`
         <div>
-          <div class="r-row"><b>${esc(p.name)}</b><span>${esc(p.dates||"")}</span></div>
+          <div class="r-row"><b data-path="projects.${i}.name">${esc(p.name)}</b><span data-path="projects.${i}.dates">${esc(p.dates||"")}</span></div>
           ${stackHtml}
         </div>
       `);
-      appendList(p.bullets);
+      appendList(p.bullets, `projects.${i}.bullets`);
     });
   }
 
   if (r.education && r.education.length) {
     appendBlock(`<div class="r-section">Education</div>`);
-    r.education.forEach(e => {
+    r.education.forEach((e, i) => {
       appendBlock(`
         <div>
-          <div class="r-row"><b>${esc(e.degree)}</b><span>${esc(e.location||"")}</span></div>
-          <div class="r-row"><i>${esc(e.school)}</i><i>${esc(e.dates||"")}</i></div>
+          <div class="r-row"><b data-path="education.${i}.degree">${esc(e.degree)}</b><span data-path="education.${i}.location">${esc(e.location||"")}</span></div>
+          <div class="r-row"><i data-path="education.${i}.school">${esc(e.school)}</i><i data-path="education.${i}.dates">${esc(e.dates||"")}</i></div>
         </div>
       `);
-      appendList(e.details);
+      appendList(e.details, `education.${i}.details`);
     });
   }
 
   if (r.certifications && r.certifications.length) {
     appendBlock(`<div class="r-section">Certifications</div>`);
-    appendBlock(`<div class="r-skills">${r.certifications.map(esc).join(" &nbsp;|&nbsp; ")}</div>`);
+    appendBlock(`<div class="r-skills" data-path="certifications_joined">${r.certifications.map(esc).join(" &nbsp;|&nbsp; ")}</div>`);
   }
 }
 
@@ -976,6 +979,7 @@ function downloadPdf() {
     page.style.pageBreakAfter = 'always';
     page.style.border = 'none';
     page.style.transform = 'none';
+    page.style.color = '#000000'; // Force solid black
   });
   
   const opt = {
@@ -983,7 +987,7 @@ function downloadPdf() {
     filename:     filename,
     image:        { type: 'jpeg', quality: 1 },
     html2canvas:  { scale: 2, useCORS: true },
-    jsPDF:        { unit: 'in', format: 'legal', orientation: 'portrait' }
+    jsPDF:        { unit: 'in', format: [8.5, 13], orientation: 'portrait' }
   };
   
   html2pdf().set(opt).from(clone).save().then(() => {
@@ -992,6 +996,77 @@ function downloadPdf() {
     console.error(err);
     genBtn.textContent = prevText;
     alert("Error generating PDF.");
+  });
+}
+// ---- Edit Preview Logic ----
+
+let isPreviewEditing = false;
+
+function togglePreviewEdit() {
+  const btn = document.getElementById('editPreviewBtn');
+  const pages = document.querySelectorAll('.page');
+  
+  if (!isPreviewEditing) {
+    isPreviewEditing = true;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Save`;
+    btn.style.background = '#10B981';
+    
+    pages.forEach(p => {
+      p.setAttribute('contenteditable', 'true');
+      p.style.outline = '2px dashed rgba(59, 130, 246, 0.5)';
+      p.style.outlineOffset = '-4px';
+    });
+  } else {
+    isPreviewEditing = false;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><polyline points="20 6 9 17 4 12"></polyline></svg> Saved!`;
+    btn.style.background = '#3B82F6';
+    
+    pages.forEach(p => {
+      p.removeAttribute('contenteditable');
+      p.style.outline = 'none';
+    });
+    
+    scrapeResumeFromDOM();
+    
+    setTimeout(() => {
+      btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg> Edit`;
+      btn.style.background = 'rgba(255,255,255,0.1)';
+    }, 1500);
+  }
+}
+
+function scrapeResumeFromDOM() {
+  if (!latestResume) return;
+  const els = document.querySelectorAll('[data-path]');
+  els.forEach(el => {
+    const path = el.getAttribute('data-path');
+    let value = el.innerText.trim();
+    // Replace non-breaking spaces used in UI with normal spaces for data
+    value = value.replace(/\u00A0/g, " "); 
+    
+    const parts = path.split('.');
+    if (parts.length === 1) {
+      if (path === 'skills_joined') {
+        latestResume.skills = value.split('|').map(s => s.trim()).filter(Boolean);
+      } else if (path === 'certifications_joined') {
+        latestResume.certifications = value.split('|').map(s => s.trim()).filter(Boolean);
+      } else {
+        latestResume[parts[0]] = value;
+      }
+    } else if (parts.length === 3) {
+      const [arrName, idx, prop] = parts;
+      if(latestResume[arrName] && latestResume[arrName][idx]) {
+        latestResume[arrName][idx][prop] = value;
+      }
+    } else if (parts.length === 4) {
+      const [arrName, idx, prop, arrIdx] = parts;
+      if(latestResume[arrName] && latestResume[arrName][idx] && latestResume[arrName][idx][prop]) {
+        if (!latestResume[arrName][idx][prop]) {
+            latestResume[arrName][idx][prop] = [];
+        }
+        latestResume[arrName][idx][prop][arrIdx] = value;
+      }
+    }
   });
 }
 
