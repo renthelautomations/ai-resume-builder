@@ -858,14 +858,14 @@ function paraXml(runsXml, {align, before, after, borderBottom, tabsRight} = {}){
   let pPr = `<w:pPr>`;
   if(align) pPr += `<w:jc w:val="${align}"/>`;
   if(before !== undefined || after !== undefined) pPr += `<w:spacing w:before="${before||0}" w:after="${after||0}"/>`;
-  if(borderBottom) pPr += `<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="111111"/></w:pBdr>`;
+  if(borderBottom) pPr += `<w:pBdr><w:bottom w:val="single" w:sz="4" w:space="1" w:color="000000"/></w:pBdr>`;
   if(tabsRight) pPr += `<w:tabs><w:tab w:val="right" w:pos="${USABLE}"/></w:tabs>`;
   pPr += `</w:pPr>`;
   return `<w:p>${pPr}${runsXml}</w:p>`;
 }
 
 function sectionHeaderXml(title){
-  return paraXml(rXml(title.toUpperCase(), {bold:true, size:21}), { before:220, after:100, borderBottom:true });
+  return paraXml(rXml(title, {bold:true, size:21}), { before:220, after:100, borderBottom:true });
 }
 
 function rowXml(leftText, rightText, opts={}){
@@ -976,7 +976,6 @@ function downloadPdf() {
   Array.from(clone.children).forEach(page => {
     page.style.margin = '0';
     page.style.boxShadow = 'none';
-    page.style.pageBreakAfter = 'always';
     page.style.border = 'none';
     page.style.transform = 'none';
     page.style.color = '#000000'; // Force solid black
@@ -986,7 +985,7 @@ function downloadPdf() {
     margin:       0,
     filename:     filename,
     image:        { type: 'jpeg', quality: 1 },
-    html2canvas:  { scale: 2, useCORS: true },
+    html2canvas:  { scale: 4, useCORS: true },
     jsPDF:        { unit: 'in', format: [8.5, 13], orientation: 'portrait' }
   };
   
