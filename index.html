@@ -392,15 +392,18 @@
   </div>
 
   <div class="right">
-    <div id="preview-actions" style="display: none; width: 100%; max-width: 8.5in; justify-content: flex-end; gap: 12px; margin-bottom: 24px; animation: fadeIn 0.5s ease;">
-      <button onclick="downloadPdf()" style="width: auto; background: #ffffff; color: #0F172A; font-size: 14px; padding: 10px 16px; border-radius: 8px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-        Download .pdf
-      </button>
-      <button onclick="downloadDocx()" style="width: auto; background: #3B82F6; color: #ffffff; font-size: 14px; padding: 10px 16px; border-radius: 8px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-        Download .docx
-      </button>
+    <div id="preview-actions" style="display: none; width: 100%; max-width: 8.5in; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 24px; animation: fadeIn 0.5s ease;">
+      <span style="font-size: 13px; color: var(--text-muted); opacity: 0.8;">💡 Tip: Click anywhere on the resume to edit before downloading as PDF!</span>
+      <div style="display: flex; gap: 12px;">
+        <button onclick="downloadDocx()" style="width: auto; background: rgba(255,255,255,0.1); color: #fff; font-size: 14px; padding: 10px 16px; border-radius: 8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download .docx
+        </button>
+        <button onclick="downloadPdf()" style="width: auto; background: #3B82F6; color: #ffffff; font-size: 14px; padding: 10px 16px; border-radius: 8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Download .pdf
+        </button>
+      </div>
     </div>
     <div id="placeholder">
       <div class="icon">📄</div>
@@ -720,6 +723,8 @@ function renderPreview(r){
   function createPage() {
     const p = document.createElement('div');
     p.className = 'page';
+    p.setAttribute('contenteditable', 'true');
+    p.style.outline = 'none'; // hide blue highlight when clicking
     return p;
   }
 
