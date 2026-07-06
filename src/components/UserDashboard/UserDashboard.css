@@ -1,0 +1,327 @@
+.dashboard-sidebar-header {
+  padding: 32px 40px 16px 40px;
+}
+
+.sidebar-profile-card {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.sidebar-profile-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dashboard-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.dashboard-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dashboard-user-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.dashboard-user-name {
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+.dashboard-user-credits {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+.dashboard-nav {
+  flex: 1;
+  padding: 16px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dashboard-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 14px;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.dashboard-nav-item:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-main);
+}
+
+.dashboard-nav-item.active {
+  background: var(--accent);
+  color: white;
+}
+
+/* dashboard-content removed since we use right panel structure */
+
+.dashboard-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.dashboard-subtitle {
+  color: var(--text-muted);
+  font-size: 16px;
+  margin-bottom: 40px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Forms & Inputs */
+.dash-form-group {
+  margin-bottom: 20px;
+}
+.dash-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.dash-input, .dash-textarea, .dash-select {
+  width: 100%;
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+}
+.dash-input:focus, .dash-textarea:focus, .dash-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.dash-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.dash-btn:hover {
+  background: var(--accent-hover);
+}
+.dash-btn-secondary {
+  background: rgba(255,255,255,0.1);
+}
+.dash-btn-secondary:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.dash-card {
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+/* Business Card Styles */
+.business-card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.business-card {
+  width: 100%;
+  max-width: 800px;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.2), rgba(88, 28, 135, 0.2));
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  position: relative;
+}
+
+.business-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.business-card-left {
+  flex: 1;
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  background: rgba(0,0,0,0.2);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.business-card-right {
+  flex: 1.2;
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.business-card-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.8);
+  border: 4px solid rgba(96, 165, 250, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  margin-bottom: 24px;
+}
+
+.business-card-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.business-card-name {
+  font-size: 26px;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.business-card-location {
+  color: #9ca3af;
+  font-size: 14px;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.business-card-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #e5e7eb;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.business-card-contact-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(96, 165, 250, 0.3);
+  transform: translateY(-2px);
+}
+
+.business-card-contact-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .business-card {
+    flex-direction: column;
+  }
+  .business-card-left {
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 32px 24px;
+  }
+  .business-card-right {
+    padding: 32px 24px;
+  }
+}
