@@ -139,7 +139,7 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
         ul.className = 'r-bullets';
         currentPage.appendChild(ul);
 
-        items.forEach((item) => {
+        items.forEach((item, index) => {
           let li = document.createElement('li');
           li.innerHTML = esc(item);
           ul.appendChild(li);
@@ -147,9 +147,21 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
             ul.removeChild(li);
             if(ul.childNodes.length === 0) {
               currentPage.removeChild(ul);
+              // "Keep with next": if the first bullet doesn't fit, move the header block too
+              if (index === 0 && currentPage.lastChild) {
+                const headerBlock = currentPage.lastChild;
+                currentPage.removeChild(headerBlock);
+                currentPage = createPage();
+                pagesContainer.appendChild(currentPage);
+                currentPage.appendChild(headerBlock);
+              } else {
+                currentPage = createPage();
+                pagesContainer.appendChild(currentPage);
+              }
+            } else {
+              currentPage = createPage();
+              pagesContainer.appendChild(currentPage);
             }
-            currentPage = createPage();
-            pagesContainer.appendChild(currentPage);
             ul = document.createElement('ul');
             ul.className = 'r-bullets';
             currentPage.appendChild(ul);
