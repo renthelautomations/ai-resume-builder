@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     color: '#000000',
     fontSize: 11,
-    lineHeight: 1.35,
+    lineHeight: 1.25,
   },
   name: {
     fontFamily: 'Times-Bold',
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
   bulletPoint: {
     width: 14,
-    marginLeft: 18,
+    marginLeft: 4,
     fontSize: 11,
   },
   bulletText: {
