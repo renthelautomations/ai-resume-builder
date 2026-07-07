@@ -26,7 +26,12 @@ function tabXml(){
 function paraXml(runsXml, {align, before, after, borderBottom, tabsRight, keepNext} = {}){
   let pPr = `<w:pPr>`;
   if(align) pPr += `<w:jc w:val="${align}"/>`;
-  if(before !== undefined || after !== undefined) pPr += `<w:spacing w:before="${before||0}" w:after="${after||0}"/>`;
+  
+  let spacingAttr = `w:line="276" w:lineRule="auto"`;
+  if(before !== undefined) spacingAttr += ` w:before="${before}"`;
+  if(after !== undefined) spacingAttr += ` w:after="${after}"`;
+  pPr += `<w:spacing ${spacingAttr}/>`;
+  
   if(borderBottom) pPr += `<w:pBdr><w:bottom w:val="single" w:sz="4" w:space="1" w:color="000000"/></w:pBdr>`;
   if(tabsRight) pPr += `<w:tabs><w:tab w:val="right" w:pos="${USABLE}"/></w:tabs>`;
   if(keepNext) pPr += `<w:keepNext/>`;
@@ -35,7 +40,7 @@ function paraXml(runsXml, {align, before, after, borderBottom, tabsRight, keepNe
 }
 
 function sectionHeaderXml(title){
-  return paraXml(rXml(title, {bold:true, size:21}), { before:220, after:100, borderBottom:true, keepNext:true });
+  return paraXml(rXml(title.toUpperCase(), {bold:true, size:21}), { before:240, after:120, borderBottom:true, keepNext:true });
 }
 
 function rowXml(leftText, rightText, opts={}){
@@ -45,7 +50,7 @@ function rowXml(leftText, rightText, opts={}){
 }
 
 function bulletXml(text){
-  const pPr = `<w:pPr><w:spacing w:after="40"/><w:ind w:left="360" w:hanging="180"/></w:pPr>`;
+  const pPr = `<w:pPr><w:spacing w:line="276" w:lineRule="auto" w:after="40"/><w:ind w:left="360" w:hanging="180"/></w:pPr>`;
   return `<w:p>${pPr}${rXml("•  " + (text||""), {size:20})}</w:p>`;
 }
 
@@ -56,8 +61,8 @@ function plainXml(text, opts={}){
 function buildDocumentXml(r){
   let body = "";
 
-  body += paraXml(rXml((r.full_name||"").toUpperCase(), {bold:true, size:32}), { align:"center", after:40 });
-  body += paraXml(rXml(r.contact_line||"", {size:19}), { align:"center", after:160 });
+  body += paraXml(rXml((r.full_name||"").toUpperCase(), {bold:true, size:32}), { align:"center", after:60 });
+  body += paraXml(rXml(r.contact_line||"", {size:19}), { align:"center", after:240 });
 
   body += sectionHeaderXml("Professional Summary");
   body += plainXml(r.summary);

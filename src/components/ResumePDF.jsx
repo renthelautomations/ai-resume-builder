@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     color: '#000000',
     fontSize: 11,
-    lineHeight: 1.02,
+    lineHeight: 1.15,
   },
   name: {
     fontFamily: 'Times-Bold',
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   contact: {
     fontSize: 9.5,
     textAlign: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionTitle: {
     fontFamily: 'Times-Bold',
@@ -30,9 +30,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#111111',
     borderBottomStyle: 'solid',
-    marginTop: 11,
-    marginBottom: 5,
+    marginTop: 12,
+    marginBottom: 6,
     paddingBottom: 2,
+    textTransform: 'uppercase',
   },
   row: {
     flexDirection: 'row',
@@ -53,7 +54,7 @@ const styles = StyleSheet.create({
   },
   bulletPoint: {
     width: 14,
-    marginLeft: 14,
+    marginLeft: 18,
     fontSize: 10,
   },
   bulletText: {
@@ -61,11 +62,12 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   summary: {
-    fontSize: 10.3,
-    marginBottom: 2,
+    fontSize: 10.5,
+    marginBottom: 6,
   },
   skills: {
-    fontSize: 10.2,
+    fontSize: 10.5,
+    marginBottom: 6,
   }
 });
 
