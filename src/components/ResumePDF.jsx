@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     color: '#000000',
     fontSize: 11,
-    lineHeight: 1.35,
+    lineHeight: 1.2,
   },
   name: {
     fontFamily: 'Times-Bold',
@@ -39,11 +39,11 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontFamily: 'Times-Bold',
-    fontSize: 10.5,
+    fontSize: 11,
   },
   italicText: {
     fontFamily: 'Times-Italic',
-    fontSize: 10.5,
+    fontSize: 11,
   },
   bulletRow: {
     flexDirection: 'row',
@@ -52,18 +52,18 @@ const styles = StyleSheet.create({
   bulletPoint: {
     width: 14,
     marginLeft: 18,
-    fontSize: 10,
+    fontSize: 11,
   },
   bulletText: {
     flex: 1,
-    fontSize: 10,
+    fontSize: 11,
   },
   summary: {
-    fontSize: 10.5,
+    fontSize: 11,
     marginBottom: 6,
   },
   skills: {
-    fontSize: 10.5,
+    fontSize: 11,
     marginBottom: 6,
   }
 });
@@ -148,7 +148,7 @@ export default function ResumePDF({ resumeData }) {
                   </View>
                   {p.stack && (
                     <View style={styles.row}>
-                      <Text style={styles.italicText}>{p.stack}</Text>
+                      <Text style={styles.italicText}>Tech Stack: {p.stack}</Text>
                     </View>
                   )}
                   {p.bullets && p.bullets.length > 0 && (
