@@ -21,15 +21,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 12,
   },
-  sectionTitle: {
-    fontFamily: 'Times-Bold',
-    fontSize: 10.5,
+  sectionTitleContainer: {
     borderBottomWidth: 1,
     borderBottomColor: '#111111',
     borderBottomStyle: 'solid',
     marginTop: 0,
     marginBottom: 6,
     paddingBottom: 2,
+  },
+  sectionTitleText: {
+    fontFamily: 'Times-Bold',
+    fontSize: 10.5,
     textTransform: 'uppercase',
   },
   row: {
@@ -60,13 +62,21 @@ const styles = StyleSheet.create({
   },
   summary: {
     fontSize: 11,
-    marginBottom: 6,
+    marginBottom: 0,
   },
   skills: {
     fontSize: 11,
-    marginBottom: 6,
+    marginBottom: 0,
   }
 });
+
+function SectionHeader({ title }) {
+  return (
+    <View style={styles.sectionTitleContainer}>
+      <Text style={styles.sectionTitleText}>{title}</Text>
+    </View>
+  );
+}
 
 export default function ResumePDF({ resumeData }) {
   if (!resumeData) return null;
@@ -84,34 +94,32 @@ export default function ResumePDF({ resumeData }) {
         )}
 
         {resumeData.summary && (
-          <View>
+          <View style={{ marginBottom: 12 }}>
             <View wrap={false}>
-              <Text style={styles.sectionTitle}>Professional Summary</Text>
+              <SectionHeader title="Professional Summary" />
               <Text style={styles.summary}>{resumeData.summary}</Text>
             </View>
-            <View style={{ height: 6 }} />
           </View>
         )}
 
         {resumeData.skills && resumeData.skills.length > 0 && (
-          <View>
+          <View style={{ marginBottom: 12 }}>
             <View wrap={false}>
-              <Text style={styles.sectionTitle}>Core Skills</Text>
+              <SectionHeader title="Core Skills" />
               <Text style={styles.skills}>{resumeData.skills.join("   |   ")}</Text>
             </View>
-            <View style={{ height: 6 }} />
           </View>
         )}
 
         {resumeData.experience && resumeData.experience.length > 0 && (
-          <View>
+          <View style={{ marginBottom: 12 }}>
             {resumeData.experience.map((job, i) => (
               <View key={i} style={{ marginBottom: 0 }}>
                 <View wrap={false}>
-                  {i === 0 && <Text style={styles.sectionTitle}>Work Experience</Text>}
+                  {i === 0 && <SectionHeader title="Work Experience" />}
                   <View style={styles.row}>
                     <Text style={styles.boldText}>{job.company}</Text>
-                    <Text style={{ fontSize: 10.5 }}>{job.location}</Text>
+                    <Text style={styles.italicText}>{job.location}</Text>
                   </View>
                   <View style={styles.row}>
                     <Text style={styles.italicText}>{job.title}</Text>
@@ -132,19 +140,18 @@ export default function ResumePDF({ resumeData }) {
                 ))}
               </View>
             ))}
-            <View style={{ height: 10 }} />
           </View>
         )}
 
         {resumeData.projects && resumeData.projects.length > 0 && (
-          <View>
+          <View style={{ marginBottom: 12 }}>
             {resumeData.projects.map((p, i) => (
               <View key={i} style={{ marginBottom: 0 }}>
                 <View wrap={false}>
-                  {i === 0 && <Text style={styles.sectionTitle}>Selected Projects</Text>}
+                  {i === 0 && <SectionHeader title="Selected Projects" />}
                   <View style={styles.row}>
                     <Text style={styles.boldText}>{p.name}</Text>
-                    <Text style={{ fontSize: 10.5 }}>{p.dates}</Text>
+                    <Text style={styles.italicText}>{p.dates}</Text>
                   </View>
                   {p.stack && (
                     <View style={styles.row}>
@@ -166,19 +173,18 @@ export default function ResumePDF({ resumeData }) {
                 ))}
               </View>
             ))}
-            <View style={{ height: 10 }} />
           </View>
         )}
 
         {resumeData.education && resumeData.education.length > 0 && (
-          <View>
+          <View style={{ marginBottom: 12 }}>
             {resumeData.education.map((e, i) => (
               <View key={i} style={{ marginBottom: 0 }}>
                 <View wrap={false}>
-                  {i === 0 && <Text style={styles.sectionTitle}>Education</Text>}
+                  {i === 0 && <SectionHeader title="Education" />}
                   <View style={styles.row}>
                     <Text style={styles.boldText}>{e.degree}</Text>
-                    <Text style={{ fontSize: 10.5 }}>{e.location}</Text>
+                    <Text style={styles.italicText}>{e.location}</Text>
                   </View>
                   <View style={styles.row}>
                     <Text style={styles.italicText}>{e.school}</Text>
@@ -199,13 +205,12 @@ export default function ResumePDF({ resumeData }) {
                 ))}
               </View>
             ))}
-            <View style={{ height: 10 }} />
           </View>
         )}
 
         {resumeData.certifications && resumeData.certifications.length > 0 && (
           <View wrap={false}>
-            <Text style={styles.sectionTitle}>Certifications</Text>
+            <SectionHeader title="Certifications" />
             <Text style={styles.skills}>{resumeData.certifications.join("   |   ")}</Text>
           </View>
         )}
