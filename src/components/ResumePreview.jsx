@@ -617,8 +617,10 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
           jobDescription={jobDescription}
         />
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }} ref={containerRef}>
-          {/* Pages will be imperatively injected here by useLayoutEffect */}
+        <div className="preview-pages-wrapper">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }} ref={containerRef}>
+            {/* Pages will be imperatively injected here by useLayoutEffect */}
+          </div>
         </div>
       )}
 
