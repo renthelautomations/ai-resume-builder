@@ -400,8 +400,11 @@ BEGIN
             p.created_at, 
             p.credits,
             (SELECT count(*) FROM public.user_profiles up WHERE up.user_id = p.id) as total_profiles,
-            (SELECT count(*) FROM public.resumes r WHERE r.user_id = p.id) as total_resumes
+            (SELECT count(*) FROM public.resumes r WHERE r.user_id = p.id) as total_resumes,
+            au.email,
+            au.raw_user_meta_data->>'full_name' as full_name
         FROM public.profiles p
+        LEFT JOIN auth.users au ON p.id = au.id
         ORDER BY p.created_at DESC
     ) t;
 
@@ -422,13 +425,14 @@ BEGIN
     END IF;
 
     SELECT json_agg(activity) INTO result FROM (
-        SELECT type, user_id, detail, created_at FROM (
+        SELECT type, user_id, detail, created_at, au.email, au.raw_user_meta_data->>'full_name' as full_name FROM (
             (SELECT 'signup' as type, id::text as user_id, 'New user signed up' as detail, created_at FROM public.profiles ORDER BY created_at DESC LIMIT 15)
             UNION ALL
             (SELECT 'resume' as type, user_id::text, 'Generated a resume' as detail, created_at FROM public.resumes ORDER BY created_at DESC LIMIT 15)
             UNION ALL
             (SELECT 'payment' as type, user_id::text, 'Purchased ' || credits_amount || ' credits' as detail, created_at FROM public.credit_subscriptions WHERE status = 'approved' ORDER BY created_at DESC LIMIT 15)
         ) combined
+        LEFT JOIN auth.users au ON combined.user_id::uuid = au.id
         ORDER BY created_at DESC
         LIMIT 20
     ) activity;

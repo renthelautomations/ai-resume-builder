@@ -274,7 +274,7 @@ export default function AdminDashboard() {
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px', minWidth: '300px' }}>
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                          <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>User ID</th>
+                          <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>User</th>
                           <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>Resumes</th>
                           <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>Credits</th>
                         </tr>
@@ -285,7 +285,7 @@ export default function AdminDashboard() {
                         ) : (
                           [...usersList].sort((a, b) => b.total_resumes - a.total_resumes).slice(0, 5).map(u => (
                             <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                              <td style={{ padding: '12px', color: '#fff' }}>{u.id.substring(0,8)}...</td>
+                              <td style={{ padding: '12px', color: '#fff' }}>{u.full_name || u.email || u.id.substring(0,8)}</td>
                               <td style={{ padding: '12px', color: '#10B981', fontWeight: '600' }}>{u.total_resumes}</td>
                               <td style={{ padding: '12px', color: '#fff' }}>{u.credits}</td>
                             </tr>
@@ -323,7 +323,7 @@ export default function AdminDashboard() {
                             {act.detail}
                           </div>
                           <div style={{ color: 'var(--text-muted)', fontSize: '12px', display: 'flex', gap: '8px' }}>
-                            <span>User: {act.user_id.substring(0,8)}</span>
+                            <span>User: {act.full_name || act.email || act.user_id.substring(0,8)}</span>
                             <span>•</span>
                             <span>{new Date(act.created_at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                           </div>
@@ -387,7 +387,7 @@ export default function AdminDashboard() {
                 <thead>
                   <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border)' }}>
                     <th style={{ padding: '16px', color: 'var(--text-muted)' }}>Date Joined</th>
-                    <th style={{ padding: '16px', color: 'var(--text-muted)' }}>User ID</th>
+                    <th style={{ padding: '16px', color: 'var(--text-muted)' }}>User</th>
                     <th style={{ padding: '16px', color: 'var(--text-muted)' }}>Saved Profiles</th>
                     <th style={{ padding: '16px', color: 'var(--text-muted)' }}>Saved Resumes</th>
                     <th style={{ padding: '16px', color: 'var(--text-muted)' }}>Credits Left</th>
@@ -402,7 +402,10 @@ export default function AdminDashboard() {
                     usersList.map(u => (
                       <tr key={u.id} style={{ borderBottom: '1px solid var(--border)' }}>
                         <td style={{ padding: '16px', color: '#fff' }}>{new Date(u.created_at).toLocaleDateString()}</td>
-                        <td style={{ padding: '16px', color: '#fff' }}>{u.id}</td>
+                        <td style={{ padding: '16px', color: '#fff' }}>
+                          <div style={{ fontWeight: '500' }}>{u.full_name || u.email || 'Unknown User'}</div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{u.id}</div>
+                        </td>
                         <td style={{ padding: '16px', color: '#fff', fontWeight: 'bold' }}>{u.total_profiles}</td>
                         <td style={{ padding: '16px', color: '#fff', fontWeight: 'bold' }}>{u.total_resumes}</td>
                         <td style={{ padding: '16px', color: '#10B981', fontWeight: 'bold' }}>{u.credits}</td>
