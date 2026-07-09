@@ -270,17 +270,7 @@ export default function AdminDashboard() {
           </>
         );
       case 'database':
-        return (
-          <>
-            <div className="admin-header-container">
-              <h1 className="admin-header-title">Database Stats</h1>
-              <p className="admin-header-desc">System metrics and database usage statistics.</p>
-            </div>
-            <div className="admin-empty-state">
-              <p>Statistics module not yet implemented.</p>
-            </div>
-          </>
-        );
+        return <DatabaseStats />;
       case 'subscriptions':
         return (
           <>
@@ -357,8 +347,6 @@ export default function AdminDashboard() {
             </div>
           </>
         );
-      case 'database':
-        return <DatabaseStats />;
       default:
         return null;
     }
