@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
 import { useToast } from '../context/ToastContext';
-import { Settings, Users, Database, LogOut, LayoutDashboard, Eye, EyeOff, CreditCard, CheckCircle, XCircle, Activity, Globe, TrendingUp, AlertCircle, Award, Clock } from 'lucide-react';
+import { Settings, Users, Database, LogOut, LayoutDashboard, Eye, EyeOff, CreditCard, CheckCircle, XCircle, Activity, Globe, TrendingUp, AlertCircle, Award, Clock, FileText } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import '../components/UserDashboard/UserDashboard.css'; // Reuse dashboard styles
 import './AdminDashboard.css'; // Admin specific styles
@@ -471,14 +471,29 @@ export default function AdminDashboard() {
       {/* Sidebar / Bottom Nav */}
       <div className="dashboard-sidebar panel" style={{ padding: 0 }}>
         <div className="dashboard-sidebar-header">
-          <div className="sidebar-profile-card">
-            <div className="dashboard-avatar">
-              <Settings className="w-6 h-6 text-white" />
+          <div 
+            className="sidebar-profile-card" 
+            style={{ cursor: 'pointer', transition: 'transform 0.2s ease, opacity 0.2s ease' }}
+            onClick={() => navigate('/')}
+            onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.opacity = '0.9'; }}
+            onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.opacity = '1'; }}
+          >
+            <div className="dashboard-avatar" style={{ background: 'rgba(96, 165, 250, 0.15)' }}>
+              <FileText size={22} color="#60A5FA" />
             </div>
             <div className="dashboard-user-info">
-              <h3 className="dashboard-user-name">Admin Portal</h3>
-              <div className="dashboard-user-credits">
-                {user?.email}
+              <h3 className="dashboard-user-name" style={{ 
+                fontSize: '16px', 
+                fontWeight: '800', 
+                background: 'linear-gradient(to right, #60A5FA, #A78BFA)', 
+                WebkitBackgroundClip: 'text', 
+                WebkitTextFillColor: 'transparent',
+                letterSpacing: '0.5px'
+              }}>
+                AI Resume Builder
+              </h3>
+              <div className="dashboard-user-credits" style={{ color: '#9ca3af', fontSize: '12px' }}>
+                Return to Home
               </div>
             </div>
           </div>
