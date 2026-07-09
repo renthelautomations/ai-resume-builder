@@ -339,41 +339,7 @@ export default function AdminDashboard() {
             <div style={{ height: '100px', flexShrink: 0, width: '100%' }} />
           </>
         );
-      case 'settings':
-        return (
-          <>
-            <div className="admin-header-container">
-              <h1 className="admin-header-title">API Configurations</h1>
-              <p className="admin-header-desc">Manage external API integrations and keys.</p>
-            </div>
-            <div className="dash-card admin-settings-card">
-              <label className="dash-label">OpenRouter API Key (Placeholder)</label>
-              <div className="admin-settings-input-group" style={{ display: 'flex', gap: '12px', alignItems: 'center', width: '100%' }}>
-                <div className="admin-input-wrapper" style={{ position: 'relative', flex: 1, display: 'flex' }}>
-                  <input 
-                    type={showApiKey ? "text" : "password"} 
-                    value="sk-or-v1-***************************"
-                    readOnly
-                    className="dash-input"
-                    style={{ width: '100%', paddingRight: '44px' }}
-                  />
-                  <button 
-                    type="button" 
-                    className="admin-toggle-visibility-btn"
-                    onClick={() => setShowApiKey(!showApiKey)}
-                    title={showApiKey ? "Hide API Key" : "Show API Key"}
-                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
-                  >
-                    {showApiKey ? <EyeOff size={18} color="var(--text-muted)" /> : <Eye size={18} color="var(--text-muted)" />}
-                  </button>
-                </div>
-                <button className="admin-update-btn">
-                  Update
-                </button>
-              </div>
-            </div>
-          </>
-        );
+
       case 'users':
         return (
           <>
@@ -525,12 +491,7 @@ export default function AdminDashboard() {
           >
             <LayoutDashboard size={18} /> Overview
           </button>
-          <button 
-            onClick={() => setActiveTab('settings')}
-            className={`dashboard-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-          >
-            <Settings size={18} /> API Configurations
-          </button>
+
           <button 
             onClick={() => setActiveTab('subscriptions')}
             className={`dashboard-nav-item ${activeTab === 'subscriptions' ? 'active' : ''}`}
