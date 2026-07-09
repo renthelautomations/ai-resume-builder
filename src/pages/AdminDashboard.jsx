@@ -184,79 +184,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="admin-overview-grid">
-              {/* Subscriptions Card */}
-              <div 
-                onClick={() => setActiveTab('subscriptions')}
-                className="admin-dash-card"
-              >
-                <div className="admin-dash-card-bg"></div>
-                <div className="admin-dash-card-content">
-                  <div className="admin-dash-card-header">
-                    <div className="admin-dash-icon-wrapper">
-                      <CreditCard size={24} />
-                    </div>
-                    <span className="admin-dash-arrow">&rarr;</span>
-                  </div>
-                  <h3 className="admin-dash-title">Credit Subscriptions</h3>
-                  <p className="admin-dash-desc">Approve pending credit purchase requests.</p>
-                </div>
-              </div>
 
-              {/* Settings Card */}
-              <div 
-                onClick={() => setActiveTab('settings')}
-                className="admin-dash-card"
-              >
-                <div className="admin-dash-card-bg"></div>
-                <div className="admin-dash-card-content">
-                  <div className="admin-dash-card-header">
-                    <div className="admin-dash-icon-wrapper">
-                      <Settings size={24} />
-                    </div>
-                    <span className="admin-dash-arrow">&rarr;</span>
-                  </div>
-                  <h3 className="admin-dash-title">General Settings</h3>
-                  <p className="admin-dash-desc">Configure global application variables and limits.</p>
-                </div>
-              </div>
-
-              {/* Users Card */}
-              <div 
-                onClick={() => setActiveTab('users')}
-                className="admin-dash-card"
-              >
-                <div className="admin-dash-card-bg"></div>
-                <div className="admin-dash-card-content">
-                  <div className="admin-dash-card-header">
-                    <div className="admin-dash-icon-wrapper">
-                      <Users size={24} />
-                    </div>
-                    <span className="admin-dash-arrow">&rarr;</span>
-                  </div>
-                  <h3 className="admin-dash-title">User Management</h3>
-                  <p className="admin-dash-desc">View and manage authenticated users and profiles.</p>
-                </div>
-              </div>
-
-              {/* Database Card */}
-              <div 
-                onClick={() => setActiveTab('database')}
-                className="admin-dash-card"
-              >
-                <div className="admin-dash-card-bg"></div>
-                <div className="admin-dash-card-content">
-                  <div className="admin-dash-card-header">
-                    <div className="admin-dash-icon-wrapper">
-                      <Database size={24} />
-                    </div>
-                    <span className="admin-dash-arrow">&rarr;</span>
-                  </div>
-                  <h3 className="admin-dash-title">Database Stats</h3>
-                  <p className="admin-dash-desc">Monitor database storage, resumes generated, and API usage.</p>
-                </div>
-              </div>
-            </div>
           </>
         );
       case 'settings':
