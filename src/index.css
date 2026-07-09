@@ -521,14 +521,14 @@ button {
   }
 
   .mobile-order-1 { order: 1; }
-  .mobile-order-2 { order: 2; padding: 24px 16px; border-bottom: 1px solid; border-image: linear-gradient(to right, transparent, var(--border) 15%, var(--border) 85%, transparent) 1; }
-  .mobile-order-3 { order: 3; padding: 16px; }
-  .mobile-order-4 { order: 4; padding: 16px; }
-  .mobile-order-5 { order: 5; padding: 24px 16px; }
+  .mobile-order-2 { order: 2; padding: 24px 20px; border-bottom: 1px solid; border-image: linear-gradient(to right, transparent, var(--border) 15%, var(--border) 85%, transparent) 1; }
+  .mobile-order-3 { order: 3; padding: 16px 20px; }
+  .mobile-order-4 { order: 4; padding: 16px 20px; }
+  .mobile-order-5 { order: 5; padding: 24px 20px; }
   
   /* Navbar */
   .top-nav {
-    padding: 20px 16px;
+    padding: 20px 20px;
   }
 }
 
