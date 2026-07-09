@@ -405,6 +405,9 @@
   .balance-info {
     flex-direction: column;
   }
+  .balance-amount {
+    justify-content: center;
+  }
   .balance-desc {
     text-align: center;
   }
