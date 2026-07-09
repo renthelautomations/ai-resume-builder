@@ -67,7 +67,7 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
       {/* Sidebar */}
       <div className="panel" style={{ padding: 0 }}>
 
-          <div className="dashboard-nav">
+          <div className="dashboard-nav dashboard-padded-section">
             <button 
               onClick={() => setActiveTab('profile')}
               className={`dashboard-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
@@ -94,7 +94,7 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
             </button>
           </div>
           
-          <div style={{ padding: '16px 40px', borderTop: '1px solid var(--border)' }}>
+          <div className="dashboard-padded-section" style={{ borderTop: '1px solid var(--border)' }}>
             <button 
               onClick={handleSignOut}
               className="dashboard-nav-item"
@@ -105,7 +105,7 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
           </div>
         </div>
       {/* Content Area */}
-      <div className="panel" style={{ position: 'relative', overflowY: 'auto', padding: '16px 40px', background: 'transparent' }}>
+      <div className="dashboard-content-area dashboard-padded-section panel" style={{ position: 'relative', overflowY: 'auto', background: 'transparent' }}>
           {renderContent()}
         </div>
         

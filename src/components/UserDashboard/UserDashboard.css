@@ -65,7 +65,6 @@
 
 .dashboard-nav {
   flex: 1;
-  padding: 16px 40px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -99,7 +98,12 @@
   color: white;
 }
 
-/* dashboard-content removed since we use right panel structure */
+.dashboard-content-area {
+}
+
+.dashboard-padded-section {
+  padding: 16px 40px;
+}
 
 .dashboard-title {
   font-size: 32px;
@@ -312,6 +316,12 @@
 }
 
 @media (max-width: 768px) {
+  .dashboard-content-area {
+    display: block !important;
+  }
+  .dashboard-padded-section {
+    padding: 16px 20px !important;
+  }
   .business-card {
     flex-direction: column;
   }
