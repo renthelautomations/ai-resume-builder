@@ -3,7 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
 import { useToast } from '../context/ToastContext';
-import { Settings, Users, Database, LogOut, LayoutDashboard, Eye, EyeOff, CreditCard, CheckCircle, XCircle, Activity, Globe } from 'lucide-react';
+import { Settings, Users, Database, LogOut, LayoutDashboard, Eye, EyeOff, CreditCard, CheckCircle, XCircle, Activity, Globe, TrendingUp, AlertCircle, Award, Clock } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import '../components/UserDashboard/UserDashboard.css'; // Reuse dashboard styles
 import './AdminDashboard.css'; // Admin specific styles
 import DatabaseStats from '../components/AdminDashboard/DatabaseStats';
@@ -21,6 +22,11 @@ export default function AdminDashboard() {
   const [loadingUsers, setLoadingUsers] = useState(false);
 
   const [webAnalytics, setWebAnalytics] = useState({ pageViews: 0, visitors: 0, loading: true });
+  
+  // New state for Overview
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [dbStats, setDbStats] = useState(null);
+  const [loadingOverview, setLoadingOverview] = useState(true);
 
   useEffect(() => {
     if (activeTab === 'subscriptions') {
@@ -29,6 +35,9 @@ export default function AdminDashboard() {
       fetchUsersStats();
     } else if (activeTab === 'overview') {
       fetchWebAnalytics();
+      fetchOverviewData();
+      fetchPendingSubscriptions(); // Needed for the 'Needs Attention' alert
+      fetchUsersStats(); // Needed for the 'Leaderboard'
     }
   }, [activeTab]);
 
@@ -52,6 +61,19 @@ export default function AdminDashboard() {
       console.error('Failed to fetch web analytics:', err);
       setWebAnalytics({ pageViews: 0, visitors: 0, loading: false });
     }
+  };
+
+  const fetchOverviewData = async () => {
+    setLoadingOverview(true);
+    // Fetch stats for chart
+    const { data: statsData } = await supabase.rpc('get_database_stats');
+    if (statsData) setDbStats(statsData);
+    
+    // Fetch recent activity
+    const { data: activityData } = await supabase.rpc('get_recent_activity');
+    if (activityData) setRecentActivity(activityData);
+    
+    setLoadingOverview(false);
   };
 
   const fetchUsersStats = async () => {
@@ -184,7 +206,132 @@ export default function AdminDashboard() {
               </div>
             </div>
 
+            {/* NEW OVERVIEW COMPONENTS */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '24px', alignItems: 'start' }}>
+              
+              {/* Left Column: Chart and Leaderboard */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                
+                {/* Needs Attention Alert (Only if there are pending subs) */}
+                {pendingSubs.length > 0 && (
+                  <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.2)', borderRadius: '16px', padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      <div style={{ color: '#F59E0B' }}><AlertCircle size={24} /></div>
+                      <div>
+                        <h3 style={{ color: '#F59E0B', margin: 0, fontSize: '16px', fontWeight: '600' }}>Needs Attention</h3>
+                        <p style={{ color: 'var(--text-muted)', margin: '4px 0 0 0', fontSize: '14px' }}>You have {pendingSubs.length} pending credit subscription{pendingSubs.length > 1 ? 's' : ''}.</p>
+                      </div>
+                    </div>
+                    <button onClick={() => setActiveTab('subscriptions')} className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '14px' }}>Review</button>
+                  </div>
+                )}
 
+                {/* Growth Chart */}
+                <div className="dash-card">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                    <TrendingUp size={20} color="#60A5FA" />
+                    <h3 style={{ margin: 0, color: '#fff', fontSize: '18px', fontWeight: '600' }}>Platform Growth (30 Days)</h3>
+                  </div>
+                  <div style={{ height: '300px', width: '100%' }}>
+                    {loadingOverview || !dbStats ? (
+                      <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></div>
+                    ) : (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={dbStats.signups_over_time.map((s, i) => ({
+                          date: new Date(s.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+                          Signups: i + 1, // Cumulative mockup for demo based on recent users
+                          Resumes: dbStats.resumes_over_time[i] ? i + 1 : 0
+                        }))}>
+                          <defs>
+                            <linearGradient id="colorSignups" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+                              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                            </linearGradient>
+                            <linearGradient id="colorResumes" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
+                              <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                          <XAxis dataKey="date" stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
+                          <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
+                          <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }} />
+                          <Area type="monotone" dataKey="Signups" stroke="#3B82F6" strokeWidth={2} fillOpacity={1} fill="url(#colorSignups)" />
+                          <Area type="monotone" dataKey="Resumes" stroke="#10B981" strokeWidth={2} fillOpacity={1} fill="url(#colorResumes)" />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    )}
+                  </div>
+                </div>
+
+                {/* Power Users Leaderboard */}
+                <div className="dash-card">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                    <Award size={20} color="#F59E0B" />
+                    <h3 style={{ margin: 0, color: '#fff', fontSize: '18px', fontWeight: '600' }}>Power Users</h3>
+                  </div>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                        <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>User ID</th>
+                        <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>Resumes</th>
+                        <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>Credits</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loadingUsers ? (
+                        <tr><td colSpan="3" style={{ padding: '12px', textAlign: 'center' }}><div className="spinner" /></td></tr>
+                      ) : (
+                        [...usersList].sort((a, b) => b.total_resumes - a.total_resumes).slice(0, 5).map(u => (
+                          <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                            <td style={{ padding: '12px', color: '#fff' }}>{u.id.substring(0,8)}...</td>
+                            <td style={{ padding: '12px', color: '#10B981', fontWeight: '600' }}>{u.total_resumes}</td>
+                            <td style={{ padding: '12px', color: '#fff' }}>{u.credits}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+
+              {/* Right Column: Activity Feed */}
+              <div className="dash-card" style={{ height: '100%' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                  <Clock size={20} color="#8B5CF6" />
+                  <h3 style={{ margin: 0, color: '#fff', fontSize: '18px', fontWeight: '600' }}>Recent Activity</h3>
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  {loadingOverview ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}><div className="spinner" /></div>
+                  ) : recentActivity.length === 0 ? (
+                    <div style={{ color: 'var(--text-muted)', fontSize: '14px', textAlign: 'center' }}>No recent activity.</div>
+                  ) : (
+                    recentActivity.map((act, idx) => (
+                      <div key={idx} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                        <div style={{
+                          width: '8px', height: '8px', borderRadius: '50%', marginTop: '6px',
+                          background: act.type === 'signup' ? '#3B82F6' : act.type === 'resume' ? '#10B981' : '#F59E0B',
+                          boxShadow: `0 0 10px ${act.type === 'signup' ? '#3B82F6' : act.type === 'resume' ? '#10B981' : '#F59E0B'}`
+                        }} />
+                        <div>
+                          <div style={{ color: '#fff', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}>
+                            {act.detail}
+                          </div>
+                          <div style={{ color: 'var(--text-muted)', fontSize: '12px', display: 'flex', gap: '8px' }}>
+                            <span>User: {act.user_id.substring(0,8)}</span>
+                            <span>•</span>
+                            <span>{new Date(act.created_at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
           </>
         );
       case 'settings':

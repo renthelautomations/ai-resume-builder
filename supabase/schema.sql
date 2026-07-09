@@ -408,3 +408,31 @@ BEGIN
     RETURN COALESCE(result, '[]'::json);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 10. Get Recent Activity (Admin Only)
+DROP FUNCTION IF EXISTS get_recent_activity();
+CREATE OR REPLACE FUNCTION get_recent_activity()
+RETURNS json AS $$
+DECLARE
+    result JSON;
+BEGIN
+    -- Verify Admin
+    IF auth.uid() != 'b0b909eb-4831-445a-9622-733a1d823f35' THEN
+        RAISE EXCEPTION 'Unauthorized - Admin Only';
+    END IF;
+
+    SELECT json_agg(activity) INTO result FROM (
+        SELECT type, user_id, detail, created_at FROM (
+            (SELECT 'signup' as type, id::text as user_id, 'New user signed up' as detail, created_at FROM public.profiles ORDER BY created_at DESC LIMIT 15)
+            UNION ALL
+            (SELECT 'resume' as type, user_id::text, 'Generated a resume' as detail, created_at FROM public.resumes ORDER BY created_at DESC LIMIT 15)
+            UNION ALL
+            (SELECT 'payment' as type, user_id::text, 'Purchased ' || credits_amount || ' credits' as detail, created_at FROM public.credit_subscriptions WHERE status = 'approved' ORDER BY created_at DESC LIMIT 15)
+        ) combined
+        ORDER BY created_at DESC
+        LIMIT 20
+    ) activity;
+
+    RETURN COALESCE(result, '[]'::json);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
