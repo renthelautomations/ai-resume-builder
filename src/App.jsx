@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { Analytics } from '@vercel/analytics/react';
@@ -17,6 +17,22 @@ function LogoutRoute() {
 }
 
 export default function App() {
+  useEffect(() => {
+    // Supabase OAuth often leaves a trailing '#' in the URL after parsing the session token
+    const clearHash = () => {
+      if (window.location.hash === '') {
+        const cleanUrl = window.location.href.replace(/#$/, '');
+        if (cleanUrl !== window.location.href) {
+          window.history.replaceState(null, '', cleanUrl);
+        }
+      }
+    };
+
+    clearHash();
+    window.addEventListener('hashchange', clearHash);
+    return () => window.removeEventListener('hashchange', clearHash);
+  }, []);
+
   return (
     <AuthProvider>
       <ToastProvider>
