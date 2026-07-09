@@ -187,65 +187,59 @@ export default function SettingsTab({ user, onProfileSelect }) {
         </button>
       </div>
 
-      <div className="settings-card">
-        <div className="settings-card-header">
-          <h3 className="settings-card-title">Active Profile</h3>
-        </div>
-        
-        {profiles.length === 0 ? (
-          <div style={{ color: 'var(--text-muted)' }}>For new users, you can add a profile by clicking the "Add Profile" button and following the instructions.</div>
-        ) : (
-          <div className="profiles-grid">
-            {profiles.map(profile => {
-              const isActive = profile.id === activeProfileId;
-              
-              return (
+      {profiles.length === 0 ? (
+        <div style={{ color: 'var(--text-muted)' }}>For new users, you can add a profile by clicking the "Add Profile" button and following the instructions.</div>
+      ) : (
+        <div className="profiles-grid">
+          {profiles.map(profile => {
+            const isActive = profile.id === activeProfileId;
+            
+            return (
+              <div 
+                key={profile.id}
+                className={`profile-item ${isActive ? 'active' : ''}`}
+              >
                 <div 
-                  key={profile.id}
-                  className={`profile-item ${isActive ? 'active' : ''}`}
+                  onClick={() => { setSelectedProfile(profile); setIsEditing(false); setShowViewModal(true); }}
+                  className="profile-item-header"
                 >
-                  <div 
-                    onClick={() => { setSelectedProfile(profile); setIsEditing(false); setShowViewModal(true); }}
-                    className="profile-item-header"
-                  >
-                    {profile.avatar_url ? (
-                      <img src={profile.avatar_url} alt="Avatar" className="profile-avatar" />
-                    ) : (
-                      <div className="profile-avatar-fallback">
-                        <UserCircle size={28} color="#9ca3af" />
-                      </div>
-                    )}
-                    <div className="profile-info">
-                      <div className="profile-name">
-                        {profile.profile_name || 'Unnamed Profile'}
-                        <Search size={14} color="#6b7280" />
-                      </div>
-                      <div className="profile-summary">
-                        {profile.parsed_data?.summary || 'No summary available.'}
-                      </div>
+                  {profile.avatar_url ? (
+                    <img src={profile.avatar_url} alt="Avatar" className="profile-avatar" />
+                  ) : (
+                    <div className="profile-avatar-fallback">
+                      <UserCircle size={28} color="#9ca3af" />
+                    </div>
+                  )}
+                  <div className="profile-info">
+                    <div className="profile-name">
+                      {profile.profile_name || 'Unnamed Profile'}
+                      <Search size={14} color="#6b7280" />
+                    </div>
+                    <div className="profile-summary">
+                      {profile.parsed_data?.summary || 'No summary available.'}
                     </div>
                   </div>
-                  
-                  <div className="profile-actions">
-                    {isActive ? (
-                      <div className="active-badge">
-                        <CheckCircle2 size={16} /> Active
-                      </div>
-                    ) : (
-                      <button 
-                        onClick={() => handleSelectProfile(profile)}
-                        className="btn-set-active"
-                      >
-                        Set Active
-                      </button>
-                    )}
-                  </div>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+                
+                <div className="profile-actions">
+                  {isActive ? (
+                    <div className="active-badge">
+                      <CheckCircle2 size={16} /> Active
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => handleSelectProfile(profile)}
+                      className="btn-set-active"
+                    >
+                      Set Active
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Add Profile Modal */}
       {showAddModal && (
