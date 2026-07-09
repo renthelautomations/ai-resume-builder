@@ -27,60 +27,19 @@ export default function DatabaseStats() {
   const fetchDatabaseStats = async () => {
     setLoading(true);
     try {
-      // 1. Fetch KPI Counts
-      const { count: usersCount, error: usersErr } = await supabase
-        .from('profiles')
-        .select('*', { count: 'exact', head: true });
-      if (usersErr) throw usersErr;
-      setTotalUsers(usersCount || 0);
+      const { data, error } = await supabase.rpc('get_database_stats');
+      if (error) throw error;
 
-      const { count: resumesCount, error: resumesErr } = await supabase
-        .from('resumes')
-        .select('*', { count: 'exact', head: true });
-      if (resumesErr) throw resumesErr;
-      setTotalResumes(resumesCount || 0);
+      if (data) {
+        setTotalUsers(data.total_users || 0);
+        setTotalResumes(data.total_resumes || 0);
+        setTotalRevenue(data.total_revenue || 0);
+        setTotalCreditsSold(data.total_credits_sold || 0);
 
-      // 2. Fetch Revenue & Credits Sold
-      const { data: subs, error: subsErr } = await supabase
-        .from('credit_subscriptions')
-        .select('price_php, credits_amount')
-        .eq('status', 'approved');
-      if (subsErr) throw subsErr;
-
-      let revenue = 0;
-      let creditsSold = 0;
-      subs?.forEach(s => {
-        revenue += Number(s.price_php || 0);
-        creditsSold += Number(s.credits_amount || 0);
-      });
-      setTotalRevenue(revenue);
-      setTotalCreditsSold(creditsSold);
-
-      // 3. Fetch Data for Charts (Last 30 Days)
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const isoDateStr = thirtyDaysAgo.toISOString();
-
-      // Fetch recent profiles for signups chart
-      const { data: recentProfiles, error: rpErr } = await supabase
-        .from('profiles')
-        .select('created_at')
-        .gte('created_at', isoDateStr)
-        .order('created_at', { ascending: true });
-      if (rpErr) throw rpErr;
-
-      // Fetch recent resumes for generation chart
-      const { data: recentResumes, error: rrErr } = await supabase
-        .from('resumes')
-        .select('created_at')
-        .gte('created_at', isoDateStr)
-        .order('created_at', { ascending: true });
-      if (rrErr) throw rrErr;
-
-      // Bucket data by Date
-      setSignupsOverTime(bucketDataByDate(recentProfiles, 30));
-      setResumesOverTime(bucketDataByDate(recentResumes, 30));
-
+        // Format dates and bucket missing days
+        setSignupsOverTime(bucketDataByDate(data.signups_over_time || [], 30));
+        setResumesOverTime(bucketDataByDate(data.resumes_over_time || [], 30));
+      }
     } catch (err) {
       console.error('Error fetching stats:', err);
       addToast('Failed to load database statistics', 'error');
