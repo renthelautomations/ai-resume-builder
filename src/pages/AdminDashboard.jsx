@@ -207,7 +207,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* NEW OVERVIEW COMPONENTS */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '24px', alignItems: 'start' }}>
+            <div className="admin-overview-layout">
               
               {/* Left Column: Chart and Leaderboard */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -270,28 +270,30 @@ export default function AdminDashboard() {
                     <Award size={20} color="#F59E0B" />
                     <h3 style={{ margin: 0, color: '#fff', fontSize: '18px', fontWeight: '600' }}>Power Users</h3>
                   </div>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
-                    <thead>
-                      <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                        <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>User ID</th>
-                        <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>Resumes</th>
-                        <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>Credits</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {loadingUsers ? (
-                        <tr><td colSpan="3" style={{ padding: '12px', textAlign: 'center' }}><div className="spinner" /></td></tr>
-                      ) : (
-                        [...usersList].sort((a, b) => b.total_resumes - a.total_resumes).slice(0, 5).map(u => (
-                          <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                            <td style={{ padding: '12px', color: '#fff' }}>{u.id.substring(0,8)}...</td>
-                            <td style={{ padding: '12px', color: '#10B981', fontWeight: '600' }}>{u.total_resumes}</td>
-                            <td style={{ padding: '12px', color: '#fff' }}>{u.credits}</td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px', minWidth: '300px' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                          <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>User ID</th>
+                          <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>Resumes</th>
+                          <th style={{ padding: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>Credits</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {loadingUsers ? (
+                          <tr><td colSpan="3" style={{ padding: '12px', textAlign: 'center' }}><div className="spinner" /></td></tr>
+                        ) : (
+                          [...usersList].sort((a, b) => b.total_resumes - a.total_resumes).slice(0, 5).map(u => (
+                            <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                              <td style={{ padding: '12px', color: '#fff' }}>{u.id.substring(0,8)}...</td>
+                              <td style={{ padding: '12px', color: '#10B981', fontWeight: '600' }}>{u.total_resumes}</td>
+                              <td style={{ padding: '12px', color: '#fff' }}>{u.credits}</td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
 
               </div>
