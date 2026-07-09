@@ -64,8 +64,8 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
     <div className="shell">
       {showWelcome && <WelcomeModal user={user} onClaimed={handleClaimed} />}
       
-      {/* Sidebar */}
-      <div className="panel" style={{ padding: 0 }}>
+      {/* Sidebar / Bottom Nav */}
+      <div className="dashboard-sidebar panel" style={{ padding: 0 }}>
 
           <div className="dashboard-nav dashboard-padded-section">
             <button 
@@ -94,7 +94,7 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
             </button>
           </div>
           
-          <div className="dashboard-padded-section" style={{ borderTop: '1px solid var(--border)' }}>
+          <div className="dashboard-signout dashboard-padded-section" style={{ borderTop: '1px solid var(--border)' }}>
             <button 
               onClick={handleSignOut}
               className="dashboard-nav-item"

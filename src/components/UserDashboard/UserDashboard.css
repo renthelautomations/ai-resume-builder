@@ -318,10 +318,60 @@
 @media (max-width: 768px) {
   .dashboard-content-area {
     display: block !important;
+    padding-bottom: 80px !important; /* Space for bottom nav */
   }
   .dashboard-padded-section {
     padding: 16px 20px !important;
   }
+  
+  /* Mobile Bottom Nav */
+  .dashboard-sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 100;
+    background: #0B0F19;
+    border-top: 1px solid var(--border);
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    padding: 0 !important;
+  }
+  
+  .dashboard-nav {
+    flex-direction: row;
+    gap: 2px;
+    padding: 8px 8px !important;
+    flex: 1;
+    justify-content: space-around;
+  }
+
+  .dashboard-signout {
+    border-top: none !important;
+    padding: 8px 8px 8px 0 !important;
+    display: flex;
+    align-items: center;
+  }
+
+  .dashboard-nav-item {
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 4px;
+    font-size: 10px;
+    text-align: center;
+    width: auto;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .dashboard-nav-item svg {
+    margin: 0;
+    width: 20px;
+    height: 20px;
+  }
+
   .business-card {
     flex-direction: column;
   }
