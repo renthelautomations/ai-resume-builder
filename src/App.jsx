@@ -50,10 +50,11 @@ export default function App() {
               } 
             />
             
-            <Route 
-              path="/" 
-              element={<ResumeBuilder />} 
-            />
+            <Route path="/" element={<ResumeBuilder />} />
+            <Route path="/contactcard" element={<ResumeBuilder />} />
+            <Route path="/loadprofile" element={<ResumeBuilder />} />
+            <Route path="/savedresumes" element={<ResumeBuilder />} />
+            <Route path="/credits" element={<ResumeBuilder />} />
             
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

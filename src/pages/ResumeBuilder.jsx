@@ -8,7 +8,7 @@ import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../utils/supabaseClient';
 import { LogOut, LayoutDashboard, UserCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import UserDashboard from '../components/UserDashboard/UserDashboard';
 import InsufficientCreditsModal from '../components/InsufficientCreditsModal';
 import PurchaseSuccessModal from '../components/PurchaseSuccessModal';
@@ -16,9 +16,16 @@ import PurchaseSuccessModal from '../components/PurchaseSuccessModal';
 export default function ResumeBuilder() {
   const { addToast } = useToast();
   const { user, isAdmin, signOut, signInWithGoogle } = useAuth();
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showUserDashboard, setShowUserDashboard] = useState(false);
-  const [dashboardTab, setDashboardTab] = useState('profile');
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const path = location.pathname;
+  const showUserDashboard = path !== '/';
+  
+  let dashboardTab = 'profile';
+  if (path === '/loadprofile') dashboardTab = 'settings';
+  else if (path === '/savedresumes') dashboardTab = 'resumes';
+  else if (path === '/credits') dashboardTab = 'credits';
   const [userAvatar, setUserAvatar] = useState(null);
   const [profileText, setProfileText] = useState('');
   const [jobDescription, setJobDescription] = useState('');
@@ -269,7 +276,7 @@ export default function ResumeBuilder() {
       <nav className="top-nav">
         <div 
           className="nav-logo cursor-pointer" 
-          onClick={() => setShowUserDashboard(false)}
+          onClick={() => navigate('/')}
         >
           <span className="font-bold tracking-tight">AI Resume Builder</span>
         </div>
@@ -287,7 +294,7 @@ export default function ResumeBuilder() {
               )}
               
               <button 
-                onClick={() => setShowUserDashboard(true)}
+                onClick={() => navigate('/contactcard')}
                 className="nav-profile-btn"
               >
                 {userAvatar ? (
@@ -313,7 +320,7 @@ export default function ResumeBuilder() {
 
       {showUserDashboard ? (
         <UserDashboard 
-          onClose={() => setShowUserDashboard(false)} 
+          onClose={() => navigate('/')} 
           initialTab={dashboardTab}
           onProfileSelect={(profile) => {
             if (profile.raw_text) setProfileText(profile.raw_text);
@@ -335,7 +342,7 @@ export default function ResumeBuilder() {
             setJobDescription(resume.job_description || '');
             setCurrentResumeId(resume.id);
             addToast('Saved resume loaded!', 'success');
-            setShowUserDashboard(false);
+            navigate('/');
           }}
           userAvatar={userAvatar}
           onAvatarUpdate={setUserAvatar}
@@ -352,8 +359,10 @@ export default function ResumeBuilder() {
                 setShowLoginModal(true);
                 return;
               }
-              setDashboardTab(tab);
-              setShowUserDashboard(true);
+              if (tab === 'profile') navigate('/contactcard');
+              else if (tab === 'settings') navigate('/loadprofile');
+              else if (tab === 'resumes') navigate('/savedresumes');
+              else if (tab === 'credits') navigate('/credits');
             }}
           />
           <ResumePreview 

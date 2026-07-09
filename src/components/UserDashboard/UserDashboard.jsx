@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../utils/supabaseClient';
 import { useAuth } from '../../context/AuthContext';
 import { User, CreditCard, Settings as SettingsIcon, LogOut, X, FileText, UserCircle } from 'lucide-react';
@@ -10,9 +11,17 @@ import WelcomeModal from './WelcomeModal';
 import ConfirmationModal from '../ConfirmationModal';
 import './UserDashboard.css';
 
-export default function UserDashboard({ onClose, onProfileSelect, onSelectResume, userAvatar, onAvatarUpdate, initialTab = 'profile' }) {
+export default function UserDashboard({ onClose, onProfileSelect, onSelectResume, userAvatar, onAvatarUpdate }) {
   const { user, signOut } = useAuth();
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const path = location.pathname;
+  let activeTab = 'profile';
+  if (path === '/loadprofile') activeTab = 'settings';
+  else if (path === '/savedresumes') activeTab = 'resumes';
+  else if (path === '/credits') activeTab = 'credits';
+
   const [credits, setCredits] = useState(0);
   const [showWelcome, setShowWelcome] = useState(false);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
@@ -55,7 +64,12 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
   const renderContent = () => {
     switch (activeTab) {
       case 'profile':
-        return <ProfileTab user={user} onAvatarUpdate={onAvatarUpdate} onSwitchTab={setActiveTab} />;
+        return <ProfileTab user={user} onAvatarUpdate={onAvatarUpdate} onSwitchTab={(tab) => {
+          if (tab === 'settings') navigate('/loadprofile');
+          else if (tab === 'resumes') navigate('/savedresumes');
+          else if (tab === 'credits') navigate('/credits');
+          else navigate('/contactcard');
+        }} />;
       case 'credits':
         return <CreditsTab user={user} />;
       case 'settings':
@@ -76,25 +90,25 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
 
           <div className="dashboard-nav dashboard-padded-section">
             <button 
-              onClick={() => setActiveTab('profile')}
+              onClick={() => navigate('/contactcard')}
               className={`dashboard-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
             >
               <User size={18} /> Contact Card
             </button>
             <button 
-              onClick={() => setActiveTab('settings')}
+              onClick={() => navigate('/loadprofile')}
               className={`dashboard-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
             >
               <SettingsIcon size={18} /> Load Profile
             </button>
             <button 
-              onClick={() => setActiveTab('resumes')}
+              onClick={() => navigate('/savedresumes')}
               className={`dashboard-nav-item ${activeTab === 'resumes' ? 'active' : ''}`}
             >
               <FileText size={18} /> Saved Resumes
             </button>
             <button 
-              onClick={() => setActiveTab('credits')}
+              onClick={() => navigate('/credits')}
               className={`dashboard-nav-item ${activeTab === 'credits' ? 'active' : ''}`}
             >
               <CreditCard size={18} /> Credits
