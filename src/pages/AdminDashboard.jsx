@@ -323,8 +323,8 @@ export default function AdminDashboard() {
                       <tr key={u.id} style={{ borderBottom: '1px solid var(--border)' }}>
                         <td style={{ padding: '16px', color: '#fff' }}>{new Date(u.created_at).toLocaleDateString()}</td>
                         <td style={{ padding: '16px', color: '#fff' }}>{u.id}</td>
-                        <td style={{ padding: '16px', color: '#fff', fontWeight: 'bold' }}>{u.profiles_count}</td>
-                        <td style={{ padding: '16px', color: '#fff', fontWeight: 'bold' }}>{u.resumes_count}</td>
+                        <td style={{ padding: '16px', color: '#fff', fontWeight: 'bold' }}>{u.total_profiles}</td>
+                        <td style={{ padding: '16px', color: '#fff', fontWeight: 'bold' }}>{u.total_resumes}</td>
                         <td style={{ padding: '16px', color: '#10B981', fontWeight: 'bold' }}>{u.credits}</td>
                       </tr>
                     ))
