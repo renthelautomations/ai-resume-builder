@@ -488,11 +488,19 @@ button {
   gap: 16px;
 }
 
+.mobile-break {
+  display: none;
+}
+
 /* ==========================================================================
    MOBILE RESPONSIVENESS
    ========================================================================== */
 
 @media (max-width: 1000px) {
+  .mobile-break {
+    display: block !important;
+  }
+  
   /* Global Layout */
   body {
     height: auto;
