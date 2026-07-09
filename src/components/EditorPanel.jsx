@@ -22,7 +22,7 @@ export default function EditorPanel({ profileText, setProfileText, jobDescriptio
     <div className="panel">
       <div className="mobile-order-2" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '24px' }}>
+        <div className="step-header" style={{ gap: '16px', marginBottom: '24px' }}>
           <div style={{ 
             background: 'rgba(59, 130, 246, 0.1)', 
             color: '#60A5FA', 

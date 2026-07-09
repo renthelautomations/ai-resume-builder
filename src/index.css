@@ -488,6 +488,11 @@ button {
   gap: 16px;
 }
 
+.step-header {
+  display: flex;
+  align-items: flex-start;
+}
+
 .mobile-break {
   display: none;
 }
@@ -499,6 +504,13 @@ button {
 @media (max-width: 1000px) {
   .mobile-break {
     display: block !important;
+  }
+  
+  .step-header {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 12px !important;
   }
   
   /* Global Layout */
