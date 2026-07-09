@@ -1,4 +1,4 @@
-export async function generateResumeApi(profileText, jobDescription) {
+export async function generateResumeApi(profileText, jobDescription, token) {
   const systemPrompt = `You are an expert resume writer and ATS optimization specialist. You will be given a candidate's master profile and a target job description. Select and rewrite the most relevant summary, skills, experience bullets, projects, education, and certifications to match the job description as closely as possible, using strong action verbs and quantified results where the profile supports it. Do not invent facts, employers, dates, or numbers not present in the profile. Keep bullets concise (one line each where possible).
 
 IMPORTANT: For AI Automation Engineer, AI Systems Integration, AI Solutions Engineer, or similar hands-on technical roles, the candidate's personal projects are stronger evidence of real engineering ability than the employment history — they show independently built, production-style systems with real architecture and measurable impact. In these cases, select MORE projects (4-6) and give them equal or greater weight and space than the experience section; write each project bullet like a software engineering accomplishment (problem solved, architecture/tech stack, measurable business impact) rather than a feature list. For roles that are less technical, 2-3 projects is enough.
@@ -25,7 +25,10 @@ Include ALL THREE employers from the experience section (Chasm Opps, Bee Fearles
 
   const response = await fetch("/api/generate", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}` 
+    },
     body: JSON.stringify({ systemPrompt, userMsg })
   });
   

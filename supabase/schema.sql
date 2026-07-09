@@ -270,6 +270,11 @@ DECLARE
     v_credits INT;
     v_status TEXT;
 BEGIN
+    -- Verify Admin
+    IF auth.uid() != 'b0b909eb-4831-445a-9622-733a1d823f35' THEN
+        RAISE EXCEPTION 'Unauthorized - Admin Only';
+    END IF;
+
     -- Get subscription details
     SELECT user_id, credits_amount, status INTO v_user_id, v_credits, v_status 
     FROM public.credit_subscriptions 
@@ -290,6 +295,11 @@ RETURNS void AS $$
 DECLARE
     v_status TEXT;
 BEGIN
+    -- Verify Admin
+    IF auth.uid() != 'b0b909eb-4831-445a-9622-733a1d823f35' THEN
+        RAISE EXCEPTION 'Unauthorized - Admin Only';
+    END IF;
+
     -- Get subscription details
     SELECT status INTO v_status 
     FROM public.credit_subscriptions 
@@ -322,3 +332,72 @@ DROP POLICY IF EXISTS "Users can upload receipts" ON storage.objects;
 CREATE POLICY "Users can upload receipts"
     ON storage.objects FOR INSERT
     WITH CHECK (bucket_id = 'receipts' AND auth.role() = 'authenticated');
+
+-- 8. Get Database Stats (Admin Only)
+CREATE OR REPLACE FUNCTION get_database_stats()
+RETURNS json AS $$
+DECLARE
+    total_users INT;
+    total_resumes INT;
+    total_revenue NUMERIC;
+    total_credits_sold INT;
+    resumes_time JSON;
+    signups_time JSON;
+BEGIN
+    -- Verify Admin
+    IF auth.uid() != 'b0b909eb-4831-445a-9622-733a1d823f35' THEN
+        RAISE EXCEPTION 'Unauthorized - Admin Only';
+    END IF;
+
+    SELECT count(*) INTO total_users FROM public.profiles;
+    SELECT count(*) INTO total_resumes FROM public.resumes;
+    
+    SELECT sum(price_php), sum(credits_amount) 
+    INTO total_revenue, total_credits_sold 
+    FROM public.credit_subscriptions 
+    WHERE status = 'approved';
+
+    SELECT json_agg(row_to_json(r)) INTO resumes_time FROM (
+        SELECT created_at FROM public.resumes WHERE created_at >= NOW() - INTERVAL '30 days' ORDER BY created_at ASC
+    ) r;
+
+    SELECT json_agg(row_to_json(s)) INTO signups_time FROM (
+        SELECT created_at FROM public.profiles WHERE created_at >= NOW() - INTERVAL '30 days' ORDER BY created_at ASC
+    ) s;
+
+    RETURN json_build_object(
+        'total_users', total_users,
+        'total_resumes', total_resumes,
+        'total_revenue', COALESCE(total_revenue, 0),
+        'total_credits_sold', COALESCE(total_credits_sold, 0),
+        'resumes_over_time', COALESCE(resumes_time, '[]'::json),
+        'signups_over_time', COALESCE(signups_time, '[]'::json)
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 9. Get Admin User Stats (Admin Only)
+CREATE OR REPLACE FUNCTION get_admin_user_stats()
+RETURNS json AS $$
+DECLARE
+    result JSON;
+BEGIN
+    -- Verify Admin
+    IF auth.uid() != 'b0b909eb-4831-445a-9622-733a1d823f35' THEN
+        RAISE EXCEPTION 'Unauthorized - Admin Only';
+    END IF;
+
+    SELECT json_agg(row_to_json(t)) INTO result FROM (
+        SELECT 
+            p.id, 
+            p.created_at, 
+            p.credits,
+            (SELECT count(*) FROM public.user_profiles up WHERE up.user_id = p.id) as total_profiles,
+            (SELECT count(*) FROM public.resumes r WHERE r.user_id = p.id) as total_resumes
+        FROM public.profiles p
+        ORDER BY p.created_at DESC
+    ) t;
+
+    RETURN COALESCE(result, '[]'::json);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

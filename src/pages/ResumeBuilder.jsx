@@ -169,15 +169,15 @@ export default function ResumeBuilder() {
     }, 4000);
 
     try {
-      const data = await generateResumeApi(profileText, jdToUse);
-      
-      // Deduct credit after successful generation
-      const { error: deductErr } = await supabase.rpc('decrement_credit');
-      if (deductErr) {
-        console.error("Failed to deduct credit:", deductErr);
-      } else {
-        setCredits(prev => (prev > 0 ? prev - 1 : 0));
+      const { data: { session }, error: sessionErr } = await supabase.auth.getSession();
+      if (sessionErr || !session) {
+        throw new Error('You must be logged in to generate a resume.');
       }
+
+      const data = await generateResumeApi(profileText, jdToUse, session.access_token);
+      
+      // Backend handles credit deduction now
+      setCredits(prev => (prev > 0 ? prev - 1 : 0));
 
       setResumeData(data);
       setStatus({ type: 'success', text: '' });
