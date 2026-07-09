@@ -180,7 +180,7 @@ export default function ResumeBuilder() {
       }
 
       setResumeData(data);
-      setStatus({ type: 'success', text: 'Resume ready. Download options are at the top of the preview.' });
+      setStatus({ type: 'success', text: '' });
       addToast('Resume generated successfully! 1 Credit used.', 'success');
     } catch (err) {
       console.error(err);
@@ -369,6 +369,10 @@ export default function ResumeBuilder() {
             onGenerate={handleGenerate}
             status={status}
             credits={credits}
+            onGenerateAnother={() => {
+              setResumeData(null);
+              setJobDescription('');
+            }}
           />
         </div>
       )}

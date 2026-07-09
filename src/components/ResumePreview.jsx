@@ -86,7 +86,7 @@ function esc(s) {
   return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
-export default function ResumePreview({ resumeData, setResumeData, isLoading, loadingStep, onDownloadDocx, onSaveResume, isSavingResume, profileText, jobDescription, onGenerate, status, credits }) {
+export default function ResumePreview({ resumeData, setResumeData, isLoading, loadingStep, onDownloadDocx, onSaveResume, isSavingResume, profileText, jobDescription, onGenerate, status, credits, onGenerateAnother }) {
   const [isEditing, setIsEditing] = useState(false);
   const [draftData, setDraftData] = useState(null);
   const [saveStatus, setSaveStatus] = useState('idle');
@@ -488,23 +488,56 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
   return (
     <div className="right">
       <div className="mobile-order-3" style={{ width: '100%', maxWidth: '8.5in', margin: '0 auto 16px auto' }}>
-        <button 
-          className="primary-btn" 
-          onClick={handleGenerateClick} 
-          disabled={isLoading}
-          style={{ 
-            width: '100%', 
-            padding: '16px', 
-            fontSize: '18px', 
-            fontWeight: '700',
-            background: buttonError ? '#EF4444' : buttonSuccess ? '#10B981' : '', 
-            animation: buttonError ? 'errorGlowLoop 2s infinite ease-in-out' : buttonSuccess ? 'successGlowLoop 2s infinite ease-in-out' : 'buttonGlowLoop 2s infinite ease-in-out',
-            transition: 'all 0.3s ease'
-          }}
-        >
-          {isLoading && <span className="spinner"></span>}
-          <span>{buttonError ? buttonError : buttonSuccess ? buttonSuccess : (isLoading ? 'Generating...' : 'Re-generate Resume (1 Credit)')}</span>
-        </button>
+        <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
+          <button 
+            className="primary-btn" 
+            onClick={handleGenerateClick} 
+            disabled={isLoading}
+            style={{ 
+              flex: 1, 
+              padding: '16px', 
+              fontSize: '18px', 
+              fontWeight: '700',
+              background: buttonError ? '#EF4444' : buttonSuccess ? '#10B981' : '', 
+              animation: buttonError ? 'errorGlowLoop 2s infinite ease-in-out' : buttonSuccess ? 'successGlowLoop 2s infinite ease-in-out' : 'buttonGlowLoop 2s infinite ease-in-out',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            {isLoading && <span className="spinner"></span>}
+            <span>{buttonError ? buttonError : buttonSuccess ? buttonSuccess : (isLoading ? 'Generating...' : 'Re-generate Resume (1 Credit)')}</span>
+          </button>
+
+          <button 
+            onClick={onGenerateAnother} 
+            disabled={isLoading}
+            style={{ 
+              flex: 1, 
+              padding: '16px', 
+              fontSize: '18px', 
+              fontWeight: '700',
+              background: 'rgba(255,255,255,0.05)',
+              color: '#fff',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '8px',
+              transition: 'all 0.3s ease',
+              cursor: isLoading ? 'not-allowed' : 'pointer'
+            }}
+            onMouseOver={(e) => {
+              if(!isLoading) {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                e.currentTarget.style.border = '1px solid rgba(255,255,255,0.2)';
+              }
+            }}
+            onMouseOut={(e) => {
+              if(!isLoading) {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                e.currentTarget.style.border = '1px solid rgba(255,255,255,0.1)';
+              }
+            }}
+          >
+            Generate Another
+          </button>
+        </div>
         {credits !== null && (
           <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', marginTop: '8px', marginBottom: status?.text ? '-4px' : '8px' }}>
             Remaining balance: {credits} credit{credits !== 1 ? 's' : ''}
@@ -580,8 +613,8 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
                 disabled={isGeneratingPdf}
                 style={{ 
                   width: 'auto', 
-                  background: isGeneratingPdf ? '#334155' : 'rgba(255,255,255,0.1)', 
-                  color: isGeneratingPdf ? '#94A3B8' : '#fff', 
+                  background: isGeneratingPdf ? '#334155' : '#3B82F6', 
+                  color: isGeneratingPdf ? '#94A3B8' : '#ffffff', 
                   fontSize: '13px', padding: '6px 14px', borderRadius: '8px', whiteSpace: 'nowrap',
                   cursor: isGeneratingPdf ? 'not-allowed' : 'pointer'
                 }}
