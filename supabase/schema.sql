@@ -161,8 +161,13 @@ CREATE TRIGGER on_auth_user_created
 INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true) ON CONFLICT DO NOTHING;
 
 -- Storage policies for avatars
+DROP POLICY IF EXISTS "Avatar images are publicly accessible." ON storage.objects;
 CREATE POLICY "Avatar images are publicly accessible." ON storage.objects FOR SELECT USING ( bucket_id = 'avatars' );
+
+DROP POLICY IF EXISTS "Anyone can upload an avatar." ON storage.objects;
 CREATE POLICY "Anyone can upload an avatar." ON storage.objects FOR INSERT WITH CHECK ( bucket_id = 'avatars' );
+
+DROP POLICY IF EXISTS "Anyone can update an avatar." ON storage.objects;
 CREATE POLICY "Anyone can update an avatar." ON storage.objects FOR UPDATE WITH CHECK ( bucket_id = 'avatars' );
 
 -- ==========================================
@@ -334,6 +339,7 @@ CREATE POLICY "Users can upload receipts"
     WITH CHECK (bucket_id = 'receipts' AND auth.role() = 'authenticated');
 
 -- 8. Get Database Stats (Admin Only)
+DROP FUNCTION IF EXISTS get_database_stats();
 CREATE OR REPLACE FUNCTION get_database_stats()
 RETURNS json AS $$
 DECLARE
@@ -377,6 +383,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 9. Get Admin User Stats (Admin Only)
+DROP FUNCTION IF EXISTS get_admin_user_stats();
 CREATE OR REPLACE FUNCTION get_admin_user_stats()
 RETURNS json AS $$
 DECLARE
