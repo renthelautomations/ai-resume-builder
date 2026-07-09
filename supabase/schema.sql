@@ -425,7 +425,7 @@ BEGIN
     END IF;
 
     SELECT json_agg(activity) INTO result FROM (
-        SELECT type, user_id, detail, created_at, au.email, au.raw_user_meta_data->>'full_name' as full_name FROM (
+        SELECT type, user_id, detail, combined.created_at, au.email, au.raw_user_meta_data->>'full_name' as full_name FROM (
             (SELECT 'signup' as type, id::text as user_id, 'New user signed up' as detail, created_at FROM public.profiles ORDER BY created_at DESC LIMIT 15)
             UNION ALL
             (SELECT 'resume' as type, user_id::text, 'Generated a resume' as detail, created_at FROM public.resumes ORDER BY created_at DESC LIMIT 15)
