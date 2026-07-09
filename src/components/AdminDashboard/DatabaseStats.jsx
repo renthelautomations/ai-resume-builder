@@ -166,6 +166,9 @@ export default function DatabaseStats() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Bottom Spacer */}
+      <div style={{ height: '100px', flexShrink: 0, width: '100%' }} />
     </div>
   );
 }
