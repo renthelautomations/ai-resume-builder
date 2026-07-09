@@ -1,0 +1,206 @@
+.admin-header-container {
+  margin-bottom: 32px;
+}
+
+.admin-header-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.admin-header-desc {
+  color: var(--text-muted);
+  font-size: 15px;
+  margin: 0;
+}
+
+.admin-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.admin-dash-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+}
+
+.admin-dash-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.1);
+  background: rgba(30, 41, 59, 0.4);
+}
+
+.admin-dash-card-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.admin-dash-card:hover .admin-dash-card-bg {
+  opacity: 1;
+}
+
+.admin-dash-card-content {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-dash-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.admin-dash-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  transition: transform 0.3s ease;
+}
+
+.admin-dash-card:hover .admin-dash-icon-wrapper {
+  transform: scale(1.1);
+}
+
+.admin-dash-arrow {
+  color: var(--accent);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.admin-dash-card:hover .admin-dash-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.admin-dash-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px 0;
+  transition: color 0.3s ease;
+}
+
+.admin-dash-card:hover .admin-dash-title {
+  color: var(--accent);
+}
+
+.admin-dash-desc {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* API Settings */
+.admin-settings-card {
+  max-width: 600px;
+}
+
+.admin-settings-input-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  align-items: center;
+}
+
+.admin-settings-input-group .dash-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-family: monospace;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.admin-settings-input-group .dash-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.admin-settings-input-group .admin-update-btn {
+  width: auto;
+  padding: 14px 24px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+}
+
+.admin-settings-input-group .admin-update-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.admin-input-wrapper {
+  position: relative;
+  flex: 1;
+  width: 100%;
+}
+
+.admin-toggle-visibility-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.admin-toggle-visibility-btn:hover {
+  color: var(--text-main);
+}
+
+/* Empty States */
+.admin-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  color: var(--text-muted);
+  font-size: 15px;
+}

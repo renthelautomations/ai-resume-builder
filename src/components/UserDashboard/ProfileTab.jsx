@@ -3,7 +3,7 @@ import { supabase } from '../../utils/supabaseClient';
 import { parseProfileText } from '../../utils/parseProfileText';
 import { stringifyProfileText } from '../../utils/stringifyProfileText';
 import StructuredProfileView from './StructuredProfileView';
-import { UserCircle, Upload, ArrowRight, Mail, Phone, Link as LinkIcon } from 'lucide-react';
+import { UserCircle, Upload, ArrowRight, Mail, Phone, Link as LinkIcon, FileText, FileJson, Zap } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 
 export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
@@ -17,6 +17,7 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [userStats, setUserStats] = useState({ profiles: 0, resumes: 0, credits: 0 });
 
   // For new users without a profile
   const [rawText, setRawText] = useState('');
@@ -26,11 +27,20 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
     if (!user) return;
     const fetchActiveProfile = async () => {
       try {
-        const { data: userMeta } = await supabase
-          .from('profiles')
-          .select('active_profile_id')
-          .eq('id', user.id)
-          .single();
+        // Fetch stats
+        const [profilesCountRes, resumesCountRes, userMetaRes] = await Promise.all([
+          supabase.from('user_profiles').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+          supabase.from('resumes').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+          supabase.from('profiles').select('active_profile_id, credits').eq('id', user.id).single()
+        ]);
+        
+        const userMeta = userMetaRes.data;
+        
+        setUserStats({
+          profiles: profilesCountRes.count || 0,
+          resumes: resumesCountRes.count || 0,
+          credits: userMeta?.credits || 0
+        });
 
         if (userMeta?.active_profile_id) {
           const { data: profile } = await supabase
@@ -259,6 +269,41 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
           )}
           
         </div>
+      </div>
+
+      {/* Stats Cards Row */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginTop: '24px' }}>
+        
+        <div style={{ background: 'var(--panel-bg)', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', border: '1px solid var(--border)', boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
+          <div style={{ background: 'rgba(96, 165, 250, 0.1)', padding: '16px', borderRadius: '12px', color: '#60a5fa' }}>
+            <FileJson size={28} />
+          </div>
+          <div>
+            <div style={{ fontSize: '13px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Profiles</div>
+            <div style={{ fontSize: '28px', fontWeight: '800', color: '#fff', lineHeight: '1' }}>{userStats.profiles}</div>
+          </div>
+        </div>
+
+        <div style={{ background: 'var(--panel-bg)', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', border: '1px solid var(--border)', boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
+          <div style={{ background: 'rgba(52, 211, 153, 0.1)', padding: '16px', borderRadius: '12px', color: '#34d399' }}>
+            <FileText size={28} />
+          </div>
+          <div>
+            <div style={{ fontSize: '13px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Resumes</div>
+            <div style={{ fontSize: '28px', fontWeight: '800', color: '#fff', lineHeight: '1' }}>{userStats.resumes}</div>
+          </div>
+        </div>
+
+        <div style={{ background: 'var(--panel-bg)', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', border: '1px solid var(--border)', boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
+          <div style={{ background: 'rgba(167, 139, 250, 0.1)', padding: '16px', borderRadius: '12px', color: '#a78bfa' }}>
+            <Zap size={28} />
+          </div>
+          <div>
+            <div style={{ fontSize: '13px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Credits</div>
+            <div style={{ fontSize: '28px', fontWeight: '800', color: '#fff', lineHeight: '1' }}>{userStats.credits}</div>
+          </div>
+        </div>
+
       </div>
 
       {!profileData && (

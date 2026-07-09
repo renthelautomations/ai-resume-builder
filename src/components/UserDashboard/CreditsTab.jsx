@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../utils/supabaseClient';
-import { CreditCard, Zap, Check, Star, Shield, Sparkles } from 'lucide-react';
+import { useToast } from '../../context/ToastContext';
+import { CreditCard, Zap, Check, Star, Shield, Sparkles, Clock, CheckCircle } from 'lucide-react';
 import './CreditsTab.css';
+import BuyCreditsModal from './BuyCreditsModal';
 
 export default function CreditsTab({ user }) {
   const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [subscriptions, setSubscriptions] = useState([]);
+  const [isRequesting, setIsRequesting] = useState(false);
+  const [showBuyModal, setShowBuyModal] = useState(false);
+  const [selectedPack, setSelectedPack] = useState(null);
+  const { addToast } = useToast();
 
   useEffect(() => {
     if (!user) return;
@@ -21,14 +28,107 @@ export default function CreditsTab({ user }) {
       }
       setLoading(false);
     };
+
+    const fetchSubscriptions = async () => {
+      const { data, error } = await supabase
+        .from('credit_subscriptions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      
+      if (!error && data) {
+        setSubscriptions(data);
+      }
+    };
+
     fetchCredits();
+    fetchSubscriptions();
   }, [user]);
+
+  const handleRequestPurchase = (packName) => {
+    setSelectedPack({ name: packName });
+    setShowBuyModal(true);
+  };
+
+  const handleSubmitPurchase = async (purchaseData) => {
+    setIsRequesting(true);
+    try {
+      let receipt_url = null;
+      if (purchaseData.receipt_file) {
+        const file = purchaseData.receipt_file;
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('receipts')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicUrlData } = supabase.storage
+          .from('receipts')
+          .getPublicUrl(fileName);
+          
+        receipt_url = publicUrlData.publicUrl;
+      }
+
+      const { data, error } = await supabase
+        .from('credit_subscriptions')
+        .insert([
+          { 
+            user_id: user.id, 
+            credits_amount: purchaseData.credits_amount, 
+            price_php: purchaseData.price_php, 
+            status: 'pending',
+            full_name: purchaseData.full_name,
+            mobile_number: purchaseData.mobile_number,
+            reference_number: purchaseData.reference_number,
+            receipt_url: receipt_url
+          }
+        ])
+        .select();
+
+      if (error) throw error;
+      
+      setSubscriptions(prev => [data[0], ...prev]);
+      return true;
+    } catch (err) {
+      console.error(err);
+      addToast('Failed to submit purchase request.', 'error');
+      return false;
+    } finally {
+      setIsRequesting(false);
+    }
+  };
 
   return (
     <div className="credits-container">
-      <div className="credits-header">
-        <h2 className="credits-title">Your Credits</h2>
-        <p className="credits-subtitle">Manage your balance and fuel your AI-powered career growth.</p>
+      <div className="credits-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h2 className="credits-title">Your Credits</h2>
+          <p className="credits-subtitle">Manage your balance and fuel your AI-powered career growth.</p>
+        </div>
+        <button 
+          onClick={() => handleRequestPurchase('Basic')}
+          style={{ 
+            padding: '10px 20px', 
+            borderRadius: '8px', 
+            background: 'linear-gradient(135deg, #60A5FA, #A78BFA)', 
+            color: '#fff', 
+            border: 'none', 
+            fontWeight: '700',
+            cursor: 'pointer',
+            boxShadow: '0 4px 15px rgba(96, 165, 250, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '16px',
+            width: 'fit-content',
+            height: 'fit-content'
+          }}
+        >
+          <CreditCard size={18} /> Buy Credits
+        </button>
       </div>
 
       <div className="balance-card">
@@ -52,7 +152,7 @@ export default function CreditsTab({ user }) {
         </div>
       </div>
 
-      <div className="pricing-section-title">
+      <div className="pricing-section-title" id="pricing-section">
         <Sparkles size={24} />
         <h3>Power Up Your Profile</h3>
         <Sparkles size={24} />
@@ -65,10 +165,10 @@ export default function CreditsTab({ user }) {
           <div className="pricing-content">
             <div className="pricing-header">
               <div>
-                <h4>Starter Pack</h4>
-                <div className="pricing-credits">10 Credits</div>
+                <h4>Basic Pack</h4>
+                <div className="pricing-credits">20 Credits</div>
               </div>
-              <div className="pricing-price">$5</div>
+              <div className="pricing-price">₱20</div>
             </div>
             
             <p className="pricing-desc">
@@ -76,75 +176,134 @@ export default function CreditsTab({ user }) {
             </p>
 
             <ul className="pricing-features">
-              <li>
-                <div className="feature-check"><Check size={14} strokeWidth={3} /></div>
-                <span>10 AI Generations</span>
-              </li>
-              <li>
-                <div className="feature-check"><Check size={14} strokeWidth={3} /></div>
-                <span>Standard ATS Formatting</span>
-              </li>
-              <li>
-                <div className="feature-check"><Check size={14} strokeWidth={3} /></div>
-                <span>Email Support</span>
-              </li>
+              <li><div className="feature-check"><Check size={14} strokeWidth={3} /></div><span>20 AI Generations</span></li>
+              <li><div className="feature-check"><Check size={14} strokeWidth={3} /></div><span>Standard ATS Formatting</span></li>
             </ul>
             
-            <button className="pricing-btn btn-secondary">
-              <CreditCard size={18} /> Buy Starter
+            <button 
+              className="pricing-btn btn-secondary"
+              onClick={() => handleRequestPurchase('Basic')}
+              disabled={isRequesting}
+            >
+              <CreditCard size={18} /> Request Purchase
             </button>
           </div>
         </div>
 
         {/* Tier 2 */}
         <div className="pricing-card popular">
-          <div className="popular-badge">
-            <Star size={12} fill="#fff" /> MOST POPULAR
-          </div>
+          <div className="popular-badge">Most Popular</div>
           <div className="pricing-card-bg"></div>
-          
           <div className="pricing-content">
             <div className="pricing-header">
               <div>
                 <h4>Pro Pack</h4>
-                <div className="pricing-credits">25 Credits</div>
+                <div className="pricing-credits">60 Credits</div>
               </div>
-              <div className="pricing-price">$10</div>
+              <div className="pricing-price">₱50</div>
             </div>
             
             <p className="pricing-desc">
-              Best value. Comprehensive AI assistance for a full job search campaign and multiple roles.
+              The sweet spot. Great for active job seekers applying to multiple roles.
             </p>
 
             <ul className="pricing-features">
-              <li>
-                <div className="feature-check"><Check size={14} strokeWidth={3} /></div>
-                <span><strong>25 AI Generations</strong></span>
-              </li>
-              <li>
-                <div className="feature-check"><Check size={14} strokeWidth={3} /></div>
-                <span>Premium ATS Optimization</span>
-              </li>
-              <li>
-                <div className="feature-check"><Check size={14} strokeWidth={3} /></div>
-                <span>24/7 Priority Support</span>
-              </li>
-              <li>
-                <div className="feature-check"><Check size={14} strokeWidth={3} /></div>
-                <span>Cover Letter Gen <span className="new-tag">New</span></span>
-              </li>
+              <li><div className="feature-check"><Check size={14} strokeWidth={3} /></div><span>60 AI Generations</span></li>
+              <li><div className="feature-check"><Check size={14} strokeWidth={3} /></div><span>Priority Processing</span></li>
+              <li><div className="feature-check"><Check size={14} strokeWidth={3} /></div><span>Discounted Rate</span></li>
             </ul>
             
-            <button className="pricing-btn btn-primary">
-              <Zap size={18} fill="rgba(255,255,255,0.2)" /> Get Pro Pack
+            <button 
+              className="pricing-btn btn-primary"
+              onClick={() => handleRequestPurchase('Pro')}
+              disabled={isRequesting}
+            >
+              <Star size={18} fill="currentColor" /> Request Purchase
+            </button>
+          </div>
+        </div>
+
+        {/* Tier 3 */}
+        <div className="pricing-card">
+          <div className="pricing-card-bg"></div>
+          <div className="pricing-content">
+            <div className="pricing-header">
+              <div>
+                <h4>Ultimate Pack</h4>
+                <div className="pricing-credits">120 Credits</div>
+              </div>
+              <div className="pricing-price">₱100</div>
+            </div>
+            
+            <p className="pricing-desc">
+              For serious professionals who want limitless generation power and variations.
+            </p>
+
+            <ul className="pricing-features">
+              <li><div className="feature-check"><Check size={14} strokeWidth={3} /></div><span>120 AI Generations</span></li>
+              <li><div className="feature-check"><Check size={14} strokeWidth={3} /></div><span>Best Value</span></li>
+              <li><div className="feature-check"><Check size={14} strokeWidth={3} /></div><span>VIP Support</span></li>
+            </ul>
+            
+            <button 
+              className="pricing-btn btn-secondary"
+              onClick={() => handleRequestPurchase('Ultimate')}
+              disabled={isRequesting}
+            >
+              <Shield size={18} /> Request Purchase
             </button>
           </div>
         </div>
       </div>
-      
-      <div className="secure-note">
-        <Shield size={16} /> Payments are secure and encrypted.
-      </div>
+
+      {subscriptions.length > 0 && (
+        <div className="subscription-history" style={{ marginTop: '40px' }}>
+          <h3 style={{ marginBottom: '16px', fontSize: '18px', fontWeight: '700', color: '#fff' }}>Purchase History</h3>
+          <div className="dash-card" style={{ padding: 0, overflow: 'hidden' }}>
+            <table style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
+              <thead>
+                <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border)' }}>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)', width: '25%' }}>Date</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)', width: '25%' }}>Credits</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)', width: '25%' }}>Price</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)', width: '25%' }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {subscriptions.map(sub => (
+                  <tr key={sub.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '12px 16px', color: '#fff' }}>{new Date(sub.created_at).toLocaleDateString()}</td>
+                    <td style={{ padding: '12px 16px', color: '#fff', fontWeight: '600' }}>{sub.credits_amount}</td>
+                    <td style={{ padding: '12px 16px', color: '#fff' }}>₱{sub.price_php}</td>
+                    <td style={{ padding: '12px 16px' }}>
+                      {sub.status === 'pending' ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#F59E0B', background: 'rgba(245, 158, 11, 0.1)', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>
+                          <Clock size={14} /> Pending
+                        </span>
+                      ) : sub.status === 'approved' ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#10B981', background: 'rgba(16, 185, 129, 0.1)', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>
+                          <CheckCircle size={14} /> Approved
+                        </span>
+                      ) : (
+                        <span style={{ color: '#EF4444' }}>{sub.status}</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {showBuyModal && (
+        <BuyCreditsModal 
+          selectedPack={selectedPack}
+          isSubmitting={isRequesting}
+          onClose={() => setShowBuyModal(false)}
+          onSubmitPurchase={handleSubmitPurchase}
+        />
+      )}
     </div>
   );
 }

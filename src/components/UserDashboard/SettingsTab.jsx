@@ -56,8 +56,8 @@ export default function SettingsTab({ user, onProfileSelect }) {
     fetchSettings();
   }, [user]);
 
-  const handleSelectProfile = (profileId, rawText) => {
-    setProfileToSetActive({ id: profileId, rawText });
+  const handleSelectProfile = (profile) => {
+    setProfileToSetActive(profile);
   };
 
   const confirmSetActiveProfile = async () => {
@@ -69,7 +69,7 @@ export default function SettingsTab({ user, onProfileSelect }) {
       .eq('id', user.id);
     
     setActiveProfileId(profileToSetActive.id);
-    if (onProfileSelect) onProfileSelect(profileToSetActive.rawText);
+    if (onProfileSelect) onProfileSelect(profileToSetActive);
     addToast('Active profile updated', 'success');
     
     setProfileToSetActive(null);
@@ -108,7 +108,7 @@ export default function SettingsTab({ user, onProfileSelect }) {
           .eq('id', user.id);
         
         setActiveProfileId(newProfile.id);
-        if (onProfileSelect) onProfileSelect(newRawText);
+        if (onProfileSelect) onProfileSelect(newProfile);
         addToast('Profile set as active by default!', 'success');
       }
       
@@ -145,7 +145,7 @@ export default function SettingsTab({ user, onProfileSelect }) {
       setIsEditing(false);
       
       if (activeProfileId === selectedProfile.id && onProfileSelect) {
-         onProfileSelect(editRawText);
+         onProfileSelect(updatedProfile);
       }
     }
     setSaving(false);
@@ -175,8 +175,8 @@ export default function SettingsTab({ user, onProfileSelect }) {
   return (
     <div className="settings-container">
       <div className="settings-header">
-        <h2 className="settings-title">Settings</h2>
-        <p className="settings-subtitle">Manage your account and profile settings.</p>
+        <h2 className="settings-title">Load Profile</h2>
+        <p className="settings-subtitle">Manage your profiles and set your active profile.</p>
       </div>
 
       <div className="settings-card">
@@ -231,7 +231,7 @@ export default function SettingsTab({ user, onProfileSelect }) {
                       </div>
                     ) : (
                       <button 
-                        onClick={() => handleSelectProfile(profile.id, profile.raw_text)}
+                        onClick={() => handleSelectProfile(profile)}
                         className="btn-set-active"
                       >
                         Set Active

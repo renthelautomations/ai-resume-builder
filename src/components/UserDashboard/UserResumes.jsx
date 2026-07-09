@@ -58,7 +58,10 @@ export default function UserResumes({ user, onSelectResume }) {
 
   return (
     <div className="resumes-container">
-      <h2 className="resumes-title">Saved Resumes</h2>
+      <div className="resumes-header">
+        <h2 className="resumes-title">Saved Resumes</h2>
+        <p className="resumes-subtitle">View, edit, and manage all of your AI-generated resumes.</p>
+      </div>
       
       {resumes.length === 0 ? (
         <div className="resumes-empty">

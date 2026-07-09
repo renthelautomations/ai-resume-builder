@@ -11,6 +11,7 @@
 .credits-title {
   font-size: 28px;
   font-weight: 800;
+  margin-top: 0;
   margin-bottom: 8px;
   background: linear-gradient(to right, #60A5FA, #A78BFA);
   -webkit-background-clip: text;
@@ -154,7 +155,7 @@
 
 .pricing-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   position: relative;
   z-index: 10;

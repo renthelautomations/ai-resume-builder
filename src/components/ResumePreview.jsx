@@ -86,7 +86,7 @@ function esc(s) {
   return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
-export default function ResumePreview({ resumeData, setResumeData, isLoading, loadingStep, onDownloadDocx, onSaveResume, isSavingResume, profileText, jobDescription, onGenerate, status }) {
+export default function ResumePreview({ resumeData, setResumeData, isLoading, loadingStep, onDownloadDocx, onSaveResume, isSavingResume, profileText, jobDescription, onGenerate, status, credits }) {
   const [isEditing, setIsEditing] = useState(false);
   const [draftData, setDraftData] = useState(null);
   const [saveStatus, setSaveStatus] = useState('idle');
@@ -319,8 +319,8 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
   if (!resumeData && !isLoading) {
     return (
       <div className="right">
-        <div className="empty-state-wrapper" style={{ width: '100%', padding: '20px 0' }}>
-          <div id="how-it-works-headers" className="mobile-order-1" style={{ maxWidth: '850px', margin: '0 auto 12px auto', width: '100%', textAlign: 'center' }}>
+        <div className="empty-state-wrapper" style={{ width: '100%', padding: '10px 0 20px 0' }}>
+          <div id="how-it-works-headers" className="mobile-order-1" style={{ maxWidth: '850px', margin: '-10px auto 48px auto', width: '100%', textAlign: 'center' }}>
             <h1 style={{ fontSize: '48px', fontWeight: '800', marginBottom: '8px', letterSpacing: '-0.02em', color: '#fff', lineHeight: '1.2', paddingTop: '4px' }}>Generate a Tailored Resume</h1>
             <div style={{ fontSize: '18px', color: 'var(--text-muted)', marginBottom: '0', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Harvard Resume Template</div>
           </div>
@@ -359,8 +359,13 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
                 }}
               >
                 {isLoading && <span className="spinner"></span>}
-                <span>{buttonError ? buttonError : buttonSuccess ? buttonSuccess : (isLoading ? 'Generating...' : 'Generate Resume')}</span>
+                <span>{buttonError ? buttonError : buttonSuccess ? buttonSuccess : (isLoading ? 'Generating...' : 'Generate Resume (1 Credit)')}</span>
               </button>
+              {credits !== null && (
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', marginTop: '8px' }}>
+                  Remaining balance: {credits} credit{credits !== 1 ? 's' : ''}
+                </div>
+              )}
               {status?.text && !buttonError && !buttonSuccess && (
                 <div id="status" className={status.type === 'err' ? 'err' : ''} style={{ marginTop: '16px', textAlign: 'center' }}>
                   {status.text}
@@ -498,8 +503,13 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
           }}
         >
           {isLoading && <span className="spinner"></span>}
-          <span>{buttonError ? buttonError : buttonSuccess ? buttonSuccess : (isLoading ? 'Generating...' : 'Re-generate Resume')}</span>
+          <span>{buttonError ? buttonError : buttonSuccess ? buttonSuccess : (isLoading ? 'Generating...' : 'Re-generate Resume (1 Credit)')}</span>
         </button>
+        {credits !== null && (
+          <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', marginTop: '8px', marginBottom: status?.text ? '-4px' : '8px' }}>
+            Remaining balance: {credits} credit{credits !== 1 ? 's' : ''}
+          </div>
+        )}
         {status?.text && !buttonError && !buttonSuccess && (
           <div id="status" className={status.type === 'err' ? 'err' : ''} style={{ textAlign: 'center', marginTop: '-4px', marginBottom: '8px' }}>
             {status.text}

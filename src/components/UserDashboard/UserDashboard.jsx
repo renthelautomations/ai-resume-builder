@@ -6,25 +6,37 @@ import ProfileTab from './ProfileTab';
 import CreditsTab from './CreditsTab';
 import SettingsTab from './SettingsTab';
 import UserResumes from './UserResumes';
+import WelcomeModal from './WelcomeModal';
 import './UserDashboard.css';
 
 export default function UserDashboard({ onClose, onProfileSelect, onSelectResume, userAvatar, onAvatarUpdate, initialTab = 'profile' }) {
   const { user, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [credits, setCredits] = useState(0);
+  const [showWelcome, setShowWelcome] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     const fetchCredits = async () => {
-      let { data, error } = await supabase.from('profiles').select('credits').eq('id', user.id).maybeSingle();
+      let { data, error } = await supabase.from('profiles').select('credits, has_received_welcome_credits').eq('id', user.id).maybeSingle();
       if (!data && !error) {
         await supabase.from('profiles').insert([{ id: user.id }]);
-        data = { credits: 0 };
+        data = { credits: 0, has_received_welcome_credits: false };
       }
-      if (data) setCredits(data.credits || 0);
+      if (data) {
+        setCredits(data.credits || 0);
+        if (data.has_received_welcome_credits === false) {
+          setShowWelcome(true);
+        }
+      }
     };
     fetchCredits();
   }, [user]);
+
+  const handleClaimed = () => {
+    setShowWelcome(false);
+    setCredits(prev => prev + 2);
+  };
 
   const displayName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email;
 
@@ -50,33 +62,23 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
 
   return (
     <div className="shell">
+      {showWelcome && <WelcomeModal user={user} onClaimed={handleClaimed} />}
       
       {/* Sidebar */}
       <div className="panel" style={{ padding: 0 }}>
-          <div className="dashboard-sidebar-header">
-            <div className="sidebar-profile-card">
-              <div className="dashboard-avatar">
-                {userAvatar ? (
-                  <img src={userAvatar} alt="Avatar" />
-                ) : (
-                  <UserCircle size={24} color="#9ca3af" />
-                )}
-              </div>
-              <div className="dashboard-user-info">
-                <h3 className="dashboard-user-name">{displayName}</h3>
-                <div className="dashboard-user-credits">
-                  <span style={{ fontSize: '12px' }}>⚡</span> {credits} Credits
-                </div>
-              </div>
-            </div>
-          </div>
-          
+
           <div className="dashboard-nav">
             <button 
               onClick={() => setActiveTab('profile')}
               className={`dashboard-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
             >
-              <User size={18} /> My Profile
+              <User size={18} /> Contact Card
+            </button>
+            <button 
+              onClick={() => setActiveTab('settings')}
+              className={`dashboard-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
+            >
+              <SettingsIcon size={18} /> Load Profile
             </button>
             <button 
               onClick={() => setActiveTab('resumes')}
@@ -89,12 +91,6 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
               className={`dashboard-nav-item ${activeTab === 'credits' ? 'active' : ''}`}
             >
               <CreditCard size={18} /> Credits
-            </button>
-            <button 
-              onClick={() => setActiveTab('settings')}
-              className={`dashboard-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-            >
-              <SettingsIcon size={18} /> Settings
             </button>
           </div>
           
@@ -109,7 +105,7 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
           </div>
         </div>
       {/* Content Area */}
-      <div className="panel" style={{ position: 'relative', overflowY: 'auto', padding: '24px 40px', background: 'transparent' }}>
+      <div className="panel" style={{ position: 'relative', overflowY: 'auto', padding: '16px 40px', background: 'transparent' }}>
           {renderContent()}
         </div>
         

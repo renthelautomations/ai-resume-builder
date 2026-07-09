@@ -10,6 +10,8 @@ import { supabase } from '../utils/supabaseClient';
 import { LogOut, LayoutDashboard, UserCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import UserDashboard from '../components/UserDashboard/UserDashboard';
+import InsufficientCreditsModal from '../components/InsufficientCreditsModal';
+import PurchaseSuccessModal from '../components/PurchaseSuccessModal';
 
 export default function ResumeBuilder() {
   const { addToast } = useToast();
@@ -26,8 +28,11 @@ export default function ResumeBuilder() {
   const [loadingStep, setLoadingStep] = useState('');
   const [currentResumeId, setCurrentResumeId] = useState(null);
   const [isSavingResume, setIsSavingResume] = useState(false);
+  const [credits, setCredits] = useState(null);
+  const [showInsufficientModal, setShowInsufficientModal] = useState(false);
+  const [successPurchaseData, setSuccessPurchaseData] = useState(null);
 
-  // Fetch active profile on load
+  // Fetch active profile and credits on load
   useEffect(() => {
     if (!user) {
       setProfileText('');
@@ -35,29 +40,84 @@ export default function ResumeBuilder() {
       setResumeData(null);
       setUserAvatar(null);
       setStatus({ type: '', text: '' });
+      setCredits(null);
       return;
     }
-    const fetchActiveProfile = async () => {
-      const { data: userMeta } = await supabase
+    const fetchUserData = async () => {
+      // Fetch credits
+      const { data: profileData } = await supabase
         .from('profiles')
-        .select('active_profile_id')
+        .select('credits, active_profile_id')
         .eq('id', user.id)
         .single();
-      
-      if (userMeta?.active_profile_id) {
-        const { data: profile } = await supabase
-          .from('user_profiles')
-          .select('raw_text, avatar_url')
-          .eq('id', userMeta.active_profile_id)
-          .single();
         
-        if (profile) {
-          if (profile.raw_text) setProfileText(profile.raw_text);
-          if (profile.avatar_url) setUserAvatar(profile.avatar_url);
+      if (profileData) {
+        setCredits(profileData.credits);
+        
+        if (profileData.active_profile_id) {
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('raw_text, avatar_url')
+            .eq('id', profileData.active_profile_id)
+            .single();
+          
+          if (profile) {
+            if (profile.raw_text) setProfileText(profile.raw_text);
+            setUserAvatar(profile.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null);
+          } else {
+            setUserAvatar(user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null);
+          }
+        } else {
+          setUserAvatar(user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null);
+        }
+      } else {
+        setUserAvatar(user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null);
+      }
+    };
+    fetchUserData();
+  }, [user]);
+
+  // Poll for approved, unacknowledged credit purchases
+  useEffect(() => {
+    if (!user) return;
+    
+    const checkApprovedPurchases = async () => {
+      const { data, error } = await supabase
+        .from('credit_subscriptions')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', 'approved')
+        .eq('acknowledged', false)
+        .limit(1);
+
+      if (data && data.length > 0) {
+        const sub = data[0];
+        setSuccessPurchaseData(sub);
+        
+        // Mark as acknowledged
+        await supabase
+          .from('credit_subscriptions')
+          .update({ acknowledged: true })
+          .eq('id', sub.id);
+          
+        // Refresh credits
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('credits')
+          .eq('id', user.id)
+          .single();
+          
+        if (profileData) {
+          setCredits(profileData.credits);
         }
       }
     };
-    fetchActiveProfile();
+
+    // Check immediately, then every 10 seconds
+    checkApprovedPurchases();
+    const interval = setInterval(checkApprovedPurchases, 10000);
+    
+    return () => clearInterval(interval);
   }, [user]);
 
   // Handle restoring job description after OAuth redirect
@@ -88,8 +148,15 @@ export default function ResumeBuilder() {
       return;
     }
 
+    setIsLoading(true); // show quick loading state while checking credits
+    const { data: profile, error: profileErr } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
+    if (profileErr || !profile || profile.credits <= 0) {
+      setIsLoading(false);
+      setShowInsufficientModal(true);
+      return;
+    }
+
     setCurrentResumeId(null);
-    setIsLoading(true);
     setStatus({ type: 'info', text: 'Analyzing job description and tailoring resume...' });
     
     // Simulate loading steps visually
@@ -103,9 +170,18 @@ export default function ResumeBuilder() {
 
     try {
       const data = await generateResumeApi(profileText, jdToUse);
+      
+      // Deduct credit after successful generation
+      const { error: deductErr } = await supabase.rpc('decrement_credit');
+      if (deductErr) {
+        console.error("Failed to deduct credit:", deductErr);
+      } else {
+        setCredits(prev => (prev > 0 ? prev - 1 : 0));
+      }
+
       setResumeData(data);
       setStatus({ type: 'success', text: 'Resume ready. Download options are at the top of the preview.' });
-      addToast('Resume generated successfully!', 'success');
+      addToast('Resume generated successfully! 1 Credit used.', 'success');
     } catch (err) {
       console.error(err);
       setStatus({ type: 'err', text: 'Error: ' + err.message });
@@ -239,8 +315,9 @@ export default function ResumeBuilder() {
         <UserDashboard 
           onClose={() => setShowUserDashboard(false)} 
           initialTab={dashboardTab}
-          onProfileSelect={(text) => {
-            setProfileText(text);
+          onProfileSelect={(profile) => {
+            if (profile.raw_text) setProfileText(profile.raw_text);
+            setUserAvatar(profile.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null);
             addToast('Profile loaded into builder!', 'success');
           }}
           onSelectResume={(resume) => {
@@ -291,6 +368,7 @@ export default function ResumeBuilder() {
             jobDescription={jobDescription}
             onGenerate={handleGenerate}
             status={status}
+            credits={credits}
           />
         </div>
       )}
@@ -315,6 +393,24 @@ export default function ResumeBuilder() {
             </button>
           </div>
         </div>
+      )}
+
+      {showInsufficientModal && (
+        <InsufficientCreditsModal 
+          onClose={() => setShowInsufficientModal(false)}
+          onBuyCredits={() => {
+            setShowInsufficientModal(false);
+            setDashboardTab('credits');
+            setShowUserDashboard(true);
+          }}
+        />
+      )}
+
+      {successPurchaseData && (
+        <PurchaseSuccessModal 
+          creditsAmount={successPurchaseData.credits_amount}
+          onClose={() => setSuccessPurchaseData(null)}
+        />
       )}
     </div>
   );

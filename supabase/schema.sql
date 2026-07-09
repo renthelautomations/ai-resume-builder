@@ -164,3 +164,161 @@ INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', tru
 CREATE POLICY "Avatar images are publicly accessible." ON storage.objects FOR SELECT USING ( bucket_id = 'avatars' );
 CREATE POLICY "Anyone can upload an avatar." ON storage.objects FOR INSERT WITH CHECK ( bucket_id = 'avatars' );
 CREATE POLICY "Anyone can update an avatar." ON storage.objects FOR UPDATE WITH CHECK ( bucket_id = 'avatars' );
+
+-- ==========================================
+-- CREDITS & SUBSCRIPTION MANAGEMENT
+-- ==========================================
+
+-- 1. Update Profiles Table
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS has_received_welcome_credits BOOLEAN DEFAULT FALSE;
+
+-- 2. Create Credit Subscriptions Table
+CREATE TABLE IF NOT EXISTS public.credit_subscriptions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    credits_amount INT NOT NULL,
+    price_php DECIMAL(10,2) NOT NULL,
+    status TEXT DEFAULT 'pending', -- 'pending', 'approved', 'rejected'
+    full_name TEXT,
+    mobile_number TEXT,
+    reference_number TEXT,
+    receipt_url TEXT,
+    acknowledged BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.credit_subscriptions ENABLE ROW LEVEL SECURITY;
+
+-- Users can view their own subscriptions
+DROP POLICY IF EXISTS "Users can view own subscriptions" ON public.credit_subscriptions;
+CREATE POLICY "Users can view own subscriptions" 
+    ON public.credit_subscriptions FOR SELECT 
+    USING (auth.uid() = user_id);
+
+-- Users can insert their own subscriptions
+DROP POLICY IF EXISTS "Users can insert own subscriptions" ON public.credit_subscriptions;
+CREATE POLICY "Users can insert own subscriptions" 
+    ON public.credit_subscriptions FOR INSERT 
+    WITH CHECK (auth.uid() = user_id);
+
+-- Users can update their own subscriptions (needed for acknowledging purchases)
+DROP POLICY IF EXISTS "Users can update own subscriptions" ON public.credit_subscriptions;
+CREATE POLICY "Users can update own subscriptions" 
+    ON public.credit_subscriptions FOR UPDATE 
+    USING (auth.uid() = user_id);
+
+-- 3. Auto-Updating Updated_At Trigger for Subscriptions
+DROP TRIGGER IF EXISTS update_credit_subscriptions_updated_at ON public.credit_subscriptions;
+CREATE TRIGGER update_credit_subscriptions_updated_at
+    BEFORE UPDATE ON public.credit_subscriptions
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- ==========================================
+-- RPC FUNCTIONS (Stored Procedures)
+-- ==========================================
+
+-- 4. Claim Welcome Credits RPC
+CREATE OR REPLACE FUNCTION claim_welcome_credits()
+RETURNS void AS $$
+DECLARE
+    v_user_id UUID := auth.uid();
+    v_has_received BOOLEAN;
+BEGIN
+    IF v_user_id IS NULL THEN
+        RAISE EXCEPTION 'Not authenticated';
+    END IF;
+
+    SELECT has_received_welcome_credits INTO v_has_received FROM public.profiles WHERE id = v_user_id;
+
+    IF v_has_received IS NULL OR v_has_received = FALSE THEN
+        UPDATE public.profiles 
+        SET credits = COALESCE(credits, 0) + 2, has_received_welcome_credits = TRUE 
+        WHERE id = v_user_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 5. Decrement Credit RPC
+CREATE OR REPLACE FUNCTION decrement_credit()
+RETURNS boolean AS $$
+DECLARE
+    v_user_id UUID := auth.uid();
+    v_credits INT;
+BEGIN
+    IF v_user_id IS NULL THEN
+        RAISE EXCEPTION 'Not authenticated';
+    END IF;
+
+    SELECT credits INTO v_credits FROM public.profiles WHERE id = v_user_id;
+
+    IF v_credits > 0 THEN
+        UPDATE public.profiles SET credits = credits - 1 WHERE id = v_user_id;
+        RETURN TRUE;
+    ELSE
+        RETURN FALSE;
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 6. Approve Subscription RPC (For Admin Use)
+CREATE OR REPLACE FUNCTION approve_subscription(p_subscription_id UUID)
+RETURNS void AS $$
+DECLARE
+    v_user_id UUID;
+    v_credits INT;
+    v_status TEXT;
+BEGIN
+    -- Get subscription details
+    SELECT user_id, credits_amount, status INTO v_user_id, v_credits, v_status 
+    FROM public.credit_subscriptions 
+    WHERE id = p_subscription_id;
+
+    IF v_status = 'pending' THEN
+        -- Update subscription status
+        UPDATE public.credit_subscriptions SET status = 'approved' WHERE id = p_subscription_id;
+        -- Add credits to user profile
+        UPDATE public.profiles SET credits = credits + v_credits WHERE id = v_user_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 7. Reject Subscription RPC (For Admin Use)
+CREATE OR REPLACE FUNCTION reject_subscription(p_subscription_id UUID)
+RETURNS void AS $$
+DECLARE
+    v_status TEXT;
+BEGIN
+    -- Get subscription details
+    SELECT status INTO v_status 
+    FROM public.credit_subscriptions 
+    WHERE id = p_subscription_id;
+
+    IF v_status = 'pending' THEN
+        -- Update subscription status
+        UPDATE public.credit_subscriptions SET status = 'rejected', acknowledged = TRUE WHERE id = p_subscription_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- ==========================================
+-- 8. Storage Setup for Receipts
+-- ==========================================
+
+-- Create the receipts bucket if it doesn't exist
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('receipts', 'receipts', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Allow public to view receipts
+DROP POLICY IF EXISTS "Public receipts viewable" ON storage.objects;
+CREATE POLICY "Public receipts viewable"
+    ON storage.objects FOR SELECT
+    USING (bucket_id = 'receipts');
+
+-- Allow authenticated users to upload receipts
+DROP POLICY IF EXISTS "Users can upload receipts" ON storage.objects;
+CREATE POLICY "Users can upload receipts"
+    ON storage.objects FOR INSERT
+    WITH CHECK (bucket_id = 'receipts' AND auth.role() = 'authenticated');
