@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext';
 import { Settings, Users, Database, LogOut, LayoutDashboard, Eye, EyeOff, CreditCard, CheckCircle, XCircle } from 'lucide-react';
 import '../components/UserDashboard/UserDashboard.css'; // Reuse dashboard styles
 import './AdminDashboard.css'; // Admin specific styles
+import DatabaseStats from '../components/AdminDashboard/DatabaseStats';
 
 export default function AdminDashboard() {
   const { user, signOut } = useAuth();
@@ -356,6 +357,8 @@ export default function AdminDashboard() {
             </div>
           </>
         );
+      case 'database':
+        return <DatabaseStats />;
       default:
         return null;
     }
