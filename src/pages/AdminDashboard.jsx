@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
 import { useToast } from '../context/ToastContext';
-import { Settings, Users, Database, LogOut, LayoutDashboard, Eye, EyeOff, CreditCard, CheckCircle, XCircle } from 'lucide-react';
+import { Settings, Users, Database, LogOut, LayoutDashboard, Eye, EyeOff, CreditCard, CheckCircle, XCircle, Activity, Globe } from 'lucide-react';
 import '../components/UserDashboard/UserDashboard.css'; // Reuse dashboard styles
 import './AdminDashboard.css'; // Admin specific styles
 import DatabaseStats from '../components/AdminDashboard/DatabaseStats';
@@ -20,13 +20,39 @@ export default function AdminDashboard() {
   const [usersList, setUsersList] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
+  const [webAnalytics, setWebAnalytics] = useState({ pageViews: 0, visitors: 0, loading: true });
+
   useEffect(() => {
     if (activeTab === 'subscriptions') {
       fetchPendingSubscriptions();
     } else if (activeTab === 'users') {
       fetchUsersStats();
+    } else if (activeTab === 'overview') {
+      fetchWebAnalytics();
     }
   }, [activeTab]);
+
+  const fetchWebAnalytics = async () => {
+    setWebAnalytics(prev => ({ ...prev, loading: true }));
+    try {
+      const res = await fetch('/api/analytics');
+      if (res.ok) {
+        const data = await res.json();
+        // The Vercel endpoint /visits/count returns something like { "pageviews": 100, "visitors": 50 }
+        // We will just try to extract those values. Note: Vercel may return "total" depending on the exact route
+        setWebAnalytics({
+          pageViews: data.pageviews || data.total || 0,
+          visitors: data.visitors || 0,
+          loading: false
+        });
+      } else {
+        setWebAnalytics({ pageViews: 0, visitors: 0, loading: false });
+      }
+    } catch (err) {
+      console.error('Failed to fetch web analytics:', err);
+      setWebAnalytics({ pageViews: 0, visitors: 0, loading: false });
+    }
+  };
 
   const fetchUsersStats = async () => {
     setLoadingUsers(true);
@@ -114,9 +140,48 @@ export default function AdminDashboard() {
       case 'overview':
         return (
           <>
-            <div className="admin-header-container">
+            <div className="admin-header-container" style={{ marginBottom: '32px' }}>
               <h1 className="admin-header-title">Platform Overview</h1>
               <p className="admin-header-desc">Manage your AI Resume Builder configurations and users.</p>
+            </div>
+
+            {/* Vercel Web Analytics KPI Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+              {/* Page Views Card */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)',
+                borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '20px',
+                position: 'relative', overflow: 'hidden'
+              }}>
+                <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: `radial-gradient(circle, #3B82F622 0%, transparent 70%)`, borderRadius: '50%' }} />
+                <div style={{ background: `#3B82F615`, color: '#3B82F6', padding: '12px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid #3B82F630` }}>
+                  <Globe size={24} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500', marginBottom: '4px' }}>Total Page Views</div>
+                  <div style={{ fontSize: '24px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+                    {webAnalytics.loading ? <div className="spinner" style={{width: '20px', height: '20px'}} /> : webAnalytics.pageViews.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+
+              {/* Visitors Card */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)',
+                borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '20px',
+                position: 'relative', overflow: 'hidden'
+              }}>
+                <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: `radial-gradient(circle, #10B98122 0%, transparent 70%)`, borderRadius: '50%' }} />
+                <div style={{ background: `#10B98115`, color: '#10B981', padding: '12px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid #10B98130` }}>
+                  <Users size={24} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500', marginBottom: '4px' }}>Unique Visitors</div>
+                  <div style={{ fontSize: '24px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+                    {webAnalytics.loading ? <div className="spinner" style={{width: '20px', height: '20px'}} /> : webAnalytics.visitors.toLocaleString()}
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="admin-overview-grid">

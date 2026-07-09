@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { Analytics } from '@vercel/analytics/react';
 import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboard from './pages/AdminDashboard';
 import ResumeBuilder from './pages/ResumeBuilder';
@@ -40,6 +41,7 @@ export default function App() {
             
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <Analytics />
         </BrowserRouter>
       </ToastProvider>
     </AuthProvider>
