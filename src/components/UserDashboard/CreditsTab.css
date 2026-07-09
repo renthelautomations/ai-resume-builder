@@ -190,7 +190,6 @@
   flex-direction: column;
   transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
 }
 
 .pricing-card:hover {
@@ -205,6 +204,7 @@
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
   opacity: 0;
   transition: opacity 0.3s;
+  border-radius: inherit;
 }
 .pricing-card:hover .pricing-card-bg {
   opacity: 1;
