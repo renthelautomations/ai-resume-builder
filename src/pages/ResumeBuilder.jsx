@@ -16,6 +16,7 @@ import PurchaseSuccessModal from '../components/PurchaseSuccessModal';
 export default function ResumeBuilder() {
   const { addToast } = useToast();
   const { user, isAdmin, signOut, signInWithGoogle } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
