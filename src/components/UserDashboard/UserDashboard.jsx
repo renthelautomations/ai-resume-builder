@@ -7,6 +7,7 @@ import CreditsTab from './CreditsTab';
 import SettingsTab from './SettingsTab';
 import UserResumes from './UserResumes';
 import WelcomeModal from './WelcomeModal';
+import ConfirmationModal from '../ConfirmationModal';
 import './UserDashboard.css';
 
 export default function UserDashboard({ onClose, onProfileSelect, onSelectResume, userAvatar, onAvatarUpdate, initialTab = 'profile' }) {
@@ -14,6 +15,7 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
   const [activeTab, setActiveTab] = useState(initialTab);
   const [credits, setCredits] = useState(0);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -40,8 +42,13 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
 
   const displayName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email;
 
-  const handleSignOut = async () => {
+  const handleSignOutClick = () => {
+    setShowSignOutModal(true);
+  };
+
+  const confirmSignOut = async () => {
     await signOut();
+    setShowSignOutModal(false);
     onClose();
   };
 
@@ -96,7 +103,7 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
           
           <div className="dashboard-signout dashboard-padded-section" style={{ borderTop: '1px solid var(--border)' }}>
             <button 
-              onClick={handleSignOut}
+              onClick={handleSignOutClick}
               className="dashboard-nav-item"
               style={{ color: '#ef4444' }}
             >
@@ -109,6 +116,16 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
           {renderContent()}
         </div>
         
+        <ConfirmationModal
+          isOpen={showSignOutModal}
+          title="Sign Out"
+          message="Are you sure you want to sign out?"
+          confirmText="Sign Out"
+          cancelText="Cancel"
+          onConfirm={confirmSignOut}
+          onCancel={() => setShowSignOutModal(false)}
+          type="info"
+        />
       </div>
   );
 }
