@@ -323,6 +323,9 @@
   .dashboard-padded-section {
     padding: 16px 20px !important;
   }
+  .dashboard-sidebar-header {
+    display: none !important;
+  }
   
   /* Mobile Bottom Nav */
   .dashboard-sidebar {

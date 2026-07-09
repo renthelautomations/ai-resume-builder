@@ -363,8 +363,8 @@ export default function AdminDashboard() {
 
   return (
     <div className="shell">
-      {/* Sidebar */}
-      <div className="panel" style={{ padding: 0 }}>
+      {/* Sidebar / Bottom Nav */}
+      <div className="dashboard-sidebar panel" style={{ padding: 0 }}>
         <div className="dashboard-sidebar-header">
           <div className="sidebar-profile-card">
             <div className="dashboard-avatar">
@@ -379,7 +379,7 @@ export default function AdminDashboard() {
           </div>
         </div>
         
-        <div className="dashboard-nav">
+        <div className="dashboard-nav dashboard-padded-section">
           <button 
             onClick={() => setActiveTab('overview')}
             className={`dashboard-nav-item ${activeTab === 'overview' ? 'active' : ''}`}
@@ -411,20 +411,10 @@ export default function AdminDashboard() {
             <Database size={18} /> Database Stats
           </button>
         </div>
-        
-        <div style={{ padding: '16px 40px', borderTop: '1px solid var(--border)' }}>
-          <button 
-            onClick={handleSignOut}
-            className="dashboard-nav-item"
-            style={{ color: '#ef4444' }}
-          >
-            <LogOut size={18} /> Sign Out
-          </button>
-        </div>
       </div>
 
       {/* Content Area */}
-      <div className="panel" style={{ position: 'relative', overflowY: 'auto', padding: '24px 40px', background: 'transparent' }}>
+      <div className="dashboard-content-area dashboard-padded-section panel" style={{ position: 'relative', overflowY: 'auto', background: 'transparent' }}>
         {renderContent()}
       </div>
     </div>
