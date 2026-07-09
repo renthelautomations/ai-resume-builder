@@ -460,7 +460,7 @@ button {
 .top-nav {
   background: transparent;
   border-bottom: none;
-  padding: 24px 32px;
+  padding: 12px 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -548,7 +548,7 @@ button {
   
   /* Navbar */
   .top-nav {
-    padding: 20px 20px;
+    padding: 12px 20px;
   }
 }
 
