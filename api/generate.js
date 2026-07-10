@@ -60,8 +60,9 @@ export default async function handler(req, res) {
       global: { headers: { Authorization: `Bearer ${token}` } }
     });
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     if (authError || !user) {
+      console.error('Auth Error in generate.js:', authError);
       return res.status(401).json({ error: 'Unauthorized: Invalid token' });
     }
 
