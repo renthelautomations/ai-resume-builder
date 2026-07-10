@@ -78,7 +78,7 @@ function buildDocumentXml(r){
   });
 
   if(r.projects && r.projects.length && !r.hide_projects){
-    body += sectionHeaderXml("Selected Projects");
+    body += sectionHeaderXml("Projects");
     r.projects.forEach(p => {
       body += rowXml(p.name, p.dates||"", { boldLeft:true, keepNext:true });
       if(p.stack) body += rowXml(p.stack, "", { italicLeft:true, keepNext:true });

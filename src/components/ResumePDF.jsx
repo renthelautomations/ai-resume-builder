@@ -142,7 +142,7 @@ export default function ResumePDF({ resumeData }) {
             {resumeData.projects.map((p, i) => (
               <View key={i} style={{ marginBottom: 0 }}>
                 <View wrap={false}>
-                  {i === 0 && <SectionHeader title="Selected Projects" />}
+                  {i === 0 && <SectionHeader title="Projects" />}
                   <View style={styles.row}>
                     <Text style={styles.boldText}>{p.name}</Text>
                     <Text style={styles.italicText}>{p.dates}</Text>
