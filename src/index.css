@@ -803,6 +803,31 @@ button {
   95%, 100% { width: 0; }
 }
 
+@keyframes typingOnce {
+  0%, 5% { width: 0; animation-timing-function: steps(25); }
+  35%, 85% { width: 100%; animation-timing-function: steps(25); }
+  95%, 100% { width: 0; }
+}
+
+.motivational-container {
+  display: inline-grid;
+  margin: 0 auto;
+}
+
+.motivational-placeholder {
+  grid-area: 1 / 1;
+  visibility: hidden;
+  padding-right: 2px;
+}
+
+.motivational-typing {
+  grid-area: 1 / 1;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid #60a5fa;
+  animation: typingOnce 5s forwards, blinkCursor 0.7s step-end infinite;
+}
+
 @keyframes blinkCursor {
   from, to { border-right-color: transparent; }
   50% { border-right-color: var(--text-muted); }

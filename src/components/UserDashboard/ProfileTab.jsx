@@ -35,9 +35,16 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
   const [saving, setSaving] = useState(false);
   const [userStats, setUserStats] = useState({ profiles: 0, resumes: 0, credits: 0 });
 
-  const motivationalMessage = useMemo(() => {
-    return MOTIVATIONAL_MESSAGES[Math.floor(Math.random() * MOTIVATIONAL_MESSAGES.length)];
+  const [messageIndex, setMessageIndex] = useState(() => Math.floor(Math.random() * MOTIVATIONAL_MESSAGES.length));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMessageIndex(prev => (prev + 1) % MOTIVATIONAL_MESSAGES.length);
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
+
+  const motivationalMessage = MOTIVATIONAL_MESSAGES[messageIndex];
 
   const fullName = profileData?.personal?.name || profileName;
   const firstName = fullName ? fullName.split(' ')[0] : 'User';
@@ -248,11 +255,16 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
                 {uploading ? <div className="spinner" style={{width: '16px', height: '16px', borderTopColor: '#fff'}} /> : <Camera size={16} />}
               </button>
             </div>
-            <div style={{ fontSize: '13px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px', fontWeight: '500' }}>
-              {motivationalMessage}
+            <div className="motivational-container" style={{ fontSize: '14px', color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '2px', fontWeight: '700' }}>
+              <div className="motivational-placeholder">
+                {motivationalMessage},
+              </div>
+              <div key={messageIndex} className="motivational-typing">
+                {motivationalMessage},
+              </div>
             </div>
-            <h1 className="business-card-name" style={{ marginBottom: 0 }}>
-              {firstName}
+            <h1 className="business-card-name" style={{ marginBottom: 0, marginTop: 0 }}>
+              {firstName}!
             </h1>
           </div>
 
