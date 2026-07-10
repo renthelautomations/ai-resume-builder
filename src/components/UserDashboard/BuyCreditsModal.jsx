@@ -181,7 +181,7 @@ export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchas
                 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                   <div style={{ background: '#fff', padding: '8px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}>
-                    <img src="/gcash-qr.png" alt="GCash QR Code" style={{ width: '130px', height: '130px', objectFit: 'contain', display: 'block' }} />
+                    <img src="/gcash-qr.png" alt="GCash QR Code" style={{ width: '160px', height: '160px', objectFit: 'contain', display: 'block' }} />
                   </div>
                   
                   <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '16px', width: '100%', textAlign: 'center' }}>
