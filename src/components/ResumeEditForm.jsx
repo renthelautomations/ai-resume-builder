@@ -6,6 +6,7 @@ import ConfirmationModal from './ConfirmationModal';
 export default function ResumeEditForm({ resumeData, setResumeData, profileText, jobDescription }) {
   const { addToast } = useToast();
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [hideTarget, setHideTarget] = useState(null);
 
   if (!resumeData) return null;
 
@@ -13,13 +14,15 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
     setResumeData(prev => ({ ...prev, [field]: value }));
   };
 
-  const toggleHideSection = (section) => {
-    const field = `hide_${section}`;
+  const confirmToggleHide = () => {
+    if (!hideTarget) return;
+    const field = `hide_${hideTarget}`;
     const willBeHidden = !resumeData[field];
     setResumeData(prev => ({ ...prev, [field]: willBeHidden }));
     
-    const sectionName = section.charAt(0).toUpperCase() + section.slice(1);
+    const sectionName = hideTarget.charAt(0).toUpperCase() + hideTarget.slice(1);
     addToast(`Success! ${sectionName} are ${willBeHidden ? 'hidden' : 'visible'}!`, 'success');
+    setHideTarget(null);
   };
 
   const confirmDeleteEntry = () => {
@@ -323,7 +326,7 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #E2E8F0', paddingTop: '16px', marginTop: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#334155' }}>Projects</h3>
-              <button onClick={() => toggleHideSection('projects')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: resumeData.hide_projects ? '#94A3B8' : '#3B82F6', cursor: 'pointer', padding: '4px' }} title={resumeData.hide_projects ? "Unhide Projects" : "Hide Projects"}>
+              <button onClick={() => setHideTarget('projects')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: resumeData.hide_projects ? '#94A3B8' : '#3B82F6', cursor: 'pointer', padding: '4px' }} title={resumeData.hide_projects ? "Unhide Projects" : "Hide Projects"}>
                 {resumeData.hide_projects ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
@@ -388,7 +391,7 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #E2E8F0', paddingTop: '16px', marginTop: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#334155' }}>Education</h3>
-              <button onClick={() => toggleHideSection('education')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: resumeData.hide_education ? '#94A3B8' : '#3B82F6', cursor: 'pointer', padding: '4px' }} title={resumeData.hide_education ? "Unhide Education" : "Hide Education"}>
+              <button onClick={() => setHideTarget('education')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: resumeData.hide_education ? '#94A3B8' : '#3B82F6', cursor: 'pointer', padding: '4px' }} title={resumeData.hide_education ? "Unhide Education" : "Hide Education"}>
                 {resumeData.hide_education ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
@@ -454,7 +457,7 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #E2E8F0', paddingTop: '16px', marginTop: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#334155' }}>Certifications</h3>
-            <button onClick={() => toggleHideSection('certifications')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: resumeData.hide_certifications ? '#94A3B8' : '#3B82F6', cursor: 'pointer', padding: '4px' }} title={resumeData.hide_certifications ? "Unhide Certifications" : "Hide Certifications"}>
+            <button onClick={() => setHideTarget('certifications')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: resumeData.hide_certifications ? '#94A3B8' : '#3B82F6', cursor: 'pointer', padding: '4px' }} title={resumeData.hide_certifications ? "Unhide Certifications" : "Hide Certifications"}>
               {resumeData.hide_certifications ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
@@ -479,6 +482,16 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
         onConfirm={confirmDeleteEntry}
         onCancel={() => setDeleteTarget(null)}
         type="warning"
+      />
+
+      <ConfirmationModal
+        isOpen={!!hideTarget}
+        title={`${hideTarget && resumeData[`hide_${hideTarget}`] ? 'Unhide' : 'Hide'} Section`}
+        message={`Are you sure you want to ${hideTarget && resumeData[`hide_${hideTarget}`] ? 'unhide' : 'hide'} the ${hideTarget ? hideTarget.charAt(0).toUpperCase() + hideTarget.slice(1) : ''} section?`}
+        confirmText={hideTarget && resumeData[`hide_${hideTarget}`] ? 'Unhide' : 'Hide'}
+        onConfirm={confirmToggleHide}
+        onCancel={() => setHideTarget(null)}
+        type="info"
       />
 
     </div>
