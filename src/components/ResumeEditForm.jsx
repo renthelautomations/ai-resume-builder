@@ -15,7 +15,11 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
 
   const toggleHideSection = (section) => {
     const field = `hide_${section}`;
-    setResumeData(prev => ({ ...prev, [field]: !prev[field] }));
+    const willBeHidden = !resumeData[field];
+    setResumeData(prev => ({ ...prev, [field]: willBeHidden }));
+    
+    const sectionName = section.charAt(0).toUpperCase() + section.slice(1);
+    addToast(`Success! ${sectionName} are ${willBeHidden ? 'hidden' : 'visible'}!`, 'success');
   };
 
   const confirmDeleteEntry = () => {
@@ -317,12 +321,15 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
       {resumeData.projects && resumeData.projects.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #E2E8F0', paddingTop: '16px', marginTop: '16px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#334155' }}>Projects</h3>
-            <button onClick={() => toggleHideSection('projects')} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'transparent', border: 'none', color: resumeData.hide_projects ? '#94A3B8' : '#3B82F6', cursor: 'pointer', fontSize: '13px', fontWeight: '500' }}>
-              {resumeData.hide_projects ? <><EyeOff size={16} /> Hidden</> : <><Eye size={16} /> Visible</>}
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#334155' }}>Projects</h3>
+              <button onClick={() => toggleHideSection('projects')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: resumeData.hide_projects ? '#94A3B8' : '#3B82F6', cursor: 'pointer', padding: '4px' }} title={resumeData.hide_projects ? "Unhide Projects" : "Hide Projects"}>
+                {resumeData.hide_projects ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
-          {resumeData.projects.map((proj, idx) => (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', opacity: resumeData.hide_projects ? 0.4 : 1, pointerEvents: resumeData.hide_projects ? 'none' : 'auto', transition: 'all 0.2s ease' }}>
+            {resumeData.projects.map((proj, idx) => (
             <div key={`proj-${idx}`} style={{ background: '#F8FAFC', padding: '16px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <input 
@@ -365,12 +372,13 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
               </div>
             </div>
           ))}
-          <button 
-            onClick={() => addSectionEntry('projects', { name: '', dates: '', stack: '', link: '', location: '', bullets: [] })} 
-            style={{ width: '100%', padding: '12px', background: 'rgba(59, 130, 246, 0.1)', color: '#3B82F6', border: '1px dashed #3B82F6', borderRadius: '8px', cursor: 'pointer', fontWeight: '500', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'all 0.2s ease' }}
-          >
-            <Plus size={16} /> Add Project
-          </button>
+            <button 
+              onClick={() => addSectionEntry('projects', { name: '', dates: '', stack: '', link: '', location: '', bullets: [] })} 
+              style={{ width: '100%', padding: '12px', background: 'rgba(59, 130, 246, 0.1)', color: '#3B82F6', border: '1px dashed #3B82F6', borderRadius: '8px', cursor: 'pointer', fontWeight: '500', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'all 0.2s ease' }}
+            >
+              <Plus size={16} /> Add Project
+            </button>
+          </div>
         </div>
       )}
 
@@ -378,12 +386,15 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
       {resumeData.education && resumeData.education.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #E2E8F0', paddingTop: '16px', marginTop: '16px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#334155' }}>Education</h3>
-            <button onClick={() => toggleHideSection('education')} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'transparent', border: 'none', color: resumeData.hide_education ? '#94A3B8' : '#3B82F6', cursor: 'pointer', fontSize: '13px', fontWeight: '500' }}>
-              {resumeData.hide_education ? <><EyeOff size={16} /> Hidden</> : <><Eye size={16} /> Visible</>}
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#334155' }}>Education</h3>
+              <button onClick={() => toggleHideSection('education')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: resumeData.hide_education ? '#94A3B8' : '#3B82F6', cursor: 'pointer', padding: '4px' }} title={resumeData.hide_education ? "Unhide Education" : "Hide Education"}>
+                {resumeData.hide_education ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
-          {resumeData.education.map((edu, idx) => (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', opacity: resumeData.hide_education ? 0.4 : 1, pointerEvents: resumeData.hide_education ? 'none' : 'auto', transition: 'all 0.2s ease' }}>
+            {resumeData.education.map((edu, idx) => (
             <div key={`edu-${idx}`} style={{ background: '#F8FAFC', padding: '16px', borderRadius: '8px', border: '1px solid #E2E8F0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <input 
                 type="text" placeholder="Degree" value={edu.degree || ''} onChange={e => handleArrayChange('education', idx, 'degree', e.target.value)}
@@ -428,31 +439,36 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
               </div>
             </div>
           ))}
-          <button 
-            onClick={() => addSectionEntry('education', { degree: '', school: '', location: '', dates: '', details: [] })} 
-            style={{ width: '100%', padding: '12px', background: 'rgba(59, 130, 246, 0.1)', color: '#3B82F6', border: '1px dashed #3B82F6', borderRadius: '8px', cursor: 'pointer', fontWeight: '500', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'all 0.2s ease' }}
-          >
-            <Plus size={16} /> Add Education
-          </button>
+            <button 
+              onClick={() => addSectionEntry('education', { degree: '', school: '', location: '', dates: '', details: [] })} 
+              style={{ width: '100%', padding: '12px', background: 'rgba(59, 130, 246, 0.1)', color: '#3B82F6', border: '1px dashed #3B82F6', borderRadius: '8px', cursor: 'pointer', fontWeight: '500', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'all 0.2s ease' }}
+            >
+              <Plus size={16} /> Add Education
+            </button>
+          </div>
         </div>
       )}
 
       {/* Certifications */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingBottom: '32px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #E2E8F0', paddingTop: '16px', marginTop: '16px' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#334155' }}>Certifications</h3>
-          <button onClick={() => toggleHideSection('certifications')} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'transparent', border: 'none', color: resumeData.hide_certifications ? '#94A3B8' : '#3B82F6', cursor: 'pointer', fontSize: '13px', fontWeight: '500' }}>
-            {resumeData.hide_certifications ? <><EyeOff size={16} /> Hidden</> : <><Eye size={16} /> Visible</>}
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#334155' }}>Certifications</h3>
+            <button onClick={() => toggleHideSection('certifications')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: resumeData.hide_certifications ? '#94A3B8' : '#3B82F6', cursor: 'pointer', padding: '4px' }} title={resumeData.hide_certifications ? "Unhide Certifications" : "Hide Certifications"}>
+              {resumeData.hide_certifications ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
         </div>
-        <p style={{ fontSize: '12px', color: '#64748B', margin: 0 }}>Separate with commas or pipes (|)</p>
-        <textarea 
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', opacity: resumeData.hide_certifications ? 0.4 : 1, pointerEvents: resumeData.hide_certifications ? 'none' : 'auto', transition: 'all 0.2s ease' }}>
+          <p style={{ fontSize: '12px', color: '#64748B', margin: 0 }}>Separate with commas or pipes (|)</p>
+          <textarea 
           value={certsText} 
           onChange={e => setCertsText(e.target.value)}
           onBlur={handleCertsBlur}
           rows={2}
           style={{ width: '100%', padding: '12px', border: '1px solid #CBD5E1', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical' }}
         />
+        </div>
       </div>
 
       <ConfirmationModal
