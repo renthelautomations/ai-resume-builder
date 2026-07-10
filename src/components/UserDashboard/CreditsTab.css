@@ -487,14 +487,27 @@
     padding: 10px 6px;
   }
   
-  .purchase-history-table th:first-child,
-  .purchase-history-table td:first-child {
+  .purchase-history-table th:nth-child(1),
+  .purchase-history-table td:nth-child(1) {
+    width: 30%;
     padding-left: 12px;
+  }
+
+  .purchase-history-table th:nth-child(2),
+  .purchase-history-table td:nth-child(2) {
+    width: 20%;
+  }
+
+  .purchase-history-table th:nth-child(3),
+  .purchase-history-table td:nth-child(3) {
+    width: 20%;
   }
   
   .purchase-history-table th:last-child,
   .purchase-history-table td:last-child {
+    width: 30%;
     padding-right: 12px;
+    text-align: right;
   }
   
   .status-badge {
