@@ -685,48 +685,13 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
       </div>
 
       <div className="mobile-order-4" style={{ width: '100%', maxWidth: '8.5in', padding: '0 16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <div id="preview-actions" style={{ width: '100%', padding: '16px 0 0 0', marginBottom: '24px', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '16px', animation: 'fadeIn 0.5s ease' }}>
-        <span style={{ fontSize: '13px', color: 'var(--text-muted)', opacity: 0.8, flexShrink: 1, textAlign: 'center', minWidth: '100%' }}>
-          💡 Tip: Click Edit to tweak text before downloading.
-        </span>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', justifyContent: 'center' }}>
-          {isEditing ? (
-            <>
-              <button 
-                onClick={handleBackClick}
-                disabled={saveStatus !== 'idle'}
-                style={{ 
-                  width: '80px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  background: 'rgba(255,255,255,0.1)', 
-                  color: '#fff', 
-                  fontSize: '14px', padding: '10px 0', borderRadius: '8px', transition: 'all 0.3s ease',
-                  cursor: saveStatus !== 'idle' ? 'not-allowed' : 'pointer'
-                }}
-              >
-                Back
-              </button>
-              <button 
-              onClick={handleSaveClick}
-              disabled={saveStatus !== 'idle' || !hasChanges}
-              style={{ 
-                width: '100px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                background: saveStatus === 'saved' ? '#22C55E' : hasChanges ? '#22C55E' : '#334155', 
-                color: hasChanges || saveStatus === 'saved' ? '#ffffff' : '#94A3B8', 
-                fontSize: '14px', padding: '10px 0', borderRadius: '8px', transition: 'all 0.3s ease',
-                cursor: (saveStatus !== 'idle' || !hasChanges) ? 'not-allowed' : 'pointer'
-              }}
-            >
-              {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved!' : 'Save'}
-              </button>
-            </>
-          ) : (
-            <>
+      <div id="preview-actions" className="preview-actions-container" style={{ width: '100%', padding: '16px 0 0 0', marginBottom: '24px', animation: 'fadeIn 0.5s ease' }}>
+        <div className="preview-actions-inner">
+          <div className="preview-actions-left">
+            <span style={{ fontSize: '13px', color: 'var(--text-muted)', opacity: 0.8, textAlign: 'left' }}>
+              💡 Tip: Click Edit to tweak text before downloading.
+            </span>
+            {!isEditing && (
               <button 
                 onClick={handleEditClick}
                 style={{ 
@@ -742,47 +707,88 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
               >
                 Edit
               </button>
-              <button 
-                onClick={onDownloadDocx} 
-                disabled={isGeneratingPdf}
-                style={{ 
-                  width: 'auto', 
-                  background: isGeneratingPdf ? '#334155' : '#3B82F6', 
-                  color: isGeneratingPdf ? '#94A3B8' : '#ffffff', 
-                  fontSize: '13px', padding: '6px 14px', borderRadius: '8px', whiteSpace: 'nowrap',
-                  cursor: isGeneratingPdf ? 'not-allowed' : 'pointer'
-                }}
-              >
-                Download .docx
-              </button>
-              <button 
-                onClick={handleDownloadPdf}
-                disabled={isGeneratingPdf}
-                style={{ 
-                  width: 'auto', 
-                  background: isGeneratingPdf ? '#334155' : '#3B82F6', 
-                  color: isGeneratingPdf ? '#94A3B8' : '#ffffff', 
-                  fontSize: '13px', padding: '6px 14px', borderRadius: '8px', whiteSpace: 'nowrap',
-                  cursor: isGeneratingPdf ? 'not-allowed' : 'pointer'
-                }}
-              >
-                {isGeneratingPdf ? 'Preparing PDF...' : 'Download .pdf'}
-              </button>
-              <button 
-                onClick={onSaveResume}
-                disabled={isSavingResume}
-                style={{ 
-                  width: 'auto', 
-                  background: isSavingResume ? '#334155' : '#10B981', 
-                  color: isSavingResume ? '#94A3B8' : '#ffffff', 
-                  fontSize: '13px', padding: '6px 14px', borderRadius: '8px', whiteSpace: 'nowrap',
-                  cursor: isSavingResume ? 'not-allowed' : 'pointer'
-                }}
-              >
-                {isSavingResume ? 'Saving...' : 'Save Resume'}
-              </button>
-            </>
-          )}
+            )}
+          </div>
+          <div className="preview-actions-right">
+            {isEditing ? (
+              <>
+                <button 
+                  onClick={handleBackClick}
+                  disabled={saveStatus !== 'idle'}
+                  style={{ 
+                    width: '80px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    background: 'rgba(255,255,255,0.1)', 
+                    color: '#fff', 
+                    fontSize: '14px', padding: '10px 0', borderRadius: '8px', transition: 'all 0.3s ease',
+                    cursor: saveStatus !== 'idle' ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  Back
+                </button>
+                <button 
+                  onClick={handleSaveClick}
+                  disabled={saveStatus !== 'idle' || !hasChanges}
+                  style={{ 
+                    width: '100px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    background: saveStatus === 'saved' ? '#22C55E' : hasChanges ? '#22C55E' : '#334155', 
+                    color: hasChanges || saveStatus === 'saved' ? '#ffffff' : '#94A3B8', 
+                    fontSize: '14px', padding: '10px 0', borderRadius: '8px', transition: 'all 0.3s ease',
+                    cursor: (saveStatus !== 'idle' || !hasChanges) ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved!' : 'Save'}
+                </button>
+              </>
+            ) : (
+              <>
+                <button 
+                  onClick={onDownloadDocx} 
+                  disabled={isGeneratingPdf}
+                  style={{ 
+                    width: 'auto', 
+                    background: isGeneratingPdf ? '#334155' : '#3B82F6', 
+                    color: isGeneratingPdf ? '#94A3B8' : '#ffffff', 
+                    fontSize: '13px', padding: '6px 14px', borderRadius: '8px', whiteSpace: 'nowrap',
+                    cursor: isGeneratingPdf ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  Download .docx
+                </button>
+                <button 
+                  onClick={handleDownloadPdf}
+                  disabled={isGeneratingPdf}
+                  style={{ 
+                    width: 'auto', 
+                    background: isGeneratingPdf ? '#334155' : '#3B82F6', 
+                    color: isGeneratingPdf ? '#94A3B8' : '#ffffff', 
+                    fontSize: '13px', padding: '6px 14px', borderRadius: '8px', whiteSpace: 'nowrap',
+                    cursor: isGeneratingPdf ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {isGeneratingPdf ? 'Preparing PDF...' : 'Download .pdf'}
+                </button>
+                <button 
+                  onClick={onSaveResume}
+                  disabled={isSavingResume}
+                  style={{ 
+                    width: 'auto', 
+                    background: isSavingResume ? '#334155' : '#10B981', 
+                    color: isSavingResume ? '#94A3B8' : '#ffffff', 
+                    fontSize: '13px', padding: '6px 14px', borderRadius: '8px', whiteSpace: 'nowrap',
+                    cursor: isSavingResume ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {isSavingResume ? 'Saving...' : 'Save Resume'}
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

@@ -917,3 +917,39 @@ button {
   }
 }
 
+/* --- PREVIEW ACTIONS (DESKTOP ALIGNMENT) --- */
+.preview-actions-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.preview-actions-left,
+.preview-actions-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .preview-actions-inner {
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+  
+  .preview-actions-left {
+    justify-content: flex-start;
+    width: auto;
+  }
+  
+  .preview-actions-right {
+    justify-content: flex-end;
+    width: auto;
+  }
+}
