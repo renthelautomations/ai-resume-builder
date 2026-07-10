@@ -244,30 +244,30 @@ export default function CreditsTab({ user }) {
       {subscriptions.length > 0 && (
         <div className="subscription-history" style={{ marginTop: '40px' }}>
           <h3 style={{ marginBottom: '16px', fontSize: '18px', fontWeight: '700', color: '#fff' }}>Purchase History</h3>
-          <div className="dash-card" style={{ padding: 0, overflowX: 'auto', overflowY: 'hidden' }}>
-            <table style={{ width: '100%', minWidth: '450px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
+          <div className="dash-card purchase-history-card">
+            <table className="purchase-history-table">
               <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border)' }}>
-                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)' }}>Date</th>
-                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)' }}>Credits</th>
-                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)' }}>Price</th>
-                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)' }}>Status</th>
+                <tr>
+                  <th>Date</th>
+                  <th>Credits</th>
+                  <th>Price</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {subscriptions.map(sub => (
-                  <tr key={sub.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ padding: '12px 16px', color: '#fff' }}>{new Date(sub.created_at).toLocaleDateString()}</td>
-                    <td style={{ padding: '12px 16px', color: '#fff', fontWeight: '600' }}>{sub.credits_amount}</td>
-                    <td style={{ padding: '12px 16px', color: '#fff' }}>₱{sub.price_php}</td>
-                    <td style={{ padding: '12px 16px' }}>
+                  <tr key={sub.id}>
+                    <td className="date-col">{new Date(sub.created_at).toLocaleDateString()}</td>
+                    <td className="credits-col">{sub.credits_amount}</td>
+                    <td className="price-col">₱{sub.price_php}</td>
+                    <td className="status-col">
                       {sub.status === 'pending' ? (
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#F59E0B', background: 'rgba(245, 158, 11, 0.1)', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>
-                          <Clock size={14} /> Pending
+                        <span className="status-badge pending">
+                          <Clock size={12} /> Pending
                         </span>
                       ) : sub.status === 'approved' ? (
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#10B981', background: 'rgba(16, 185, 129, 0.1)', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>
-                          <CheckCircle size={14} /> Approved
+                        <span className="status-badge approved">
+                          <CheckCircle size={12} /> Approved
                         </span>
                       ) : (
                         <span style={{ color: '#EF4444' }}>{sub.status}</span>

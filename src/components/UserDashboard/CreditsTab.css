@@ -419,3 +419,87 @@
     margin-top: 0;
   }
 }
+
+/* Purchase History Table Styles */
+.purchase-history-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.purchase-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.purchase-history-table thead tr {
+  background: rgba(255,255,255,0.05);
+  border-bottom: 1px solid var(--border);
+}
+
+.purchase-history-table th {
+  padding: 12px 16px;
+  color: var(--text-muted);
+}
+
+.purchase-history-table tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.purchase-history-table td {
+  padding: 12px 16px;
+  color: #fff;
+}
+
+.purchase-history-table .credits-col {
+  font-weight: 600;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.pending {
+  color: #F59E0B;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.status-badge.approved {
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+/* Mobile responsive table */
+@media (max-width: 768px) {
+  .purchase-history-table {
+    font-size: 12px;
+  }
+  
+  .purchase-history-table th,
+  .purchase-history-table td {
+    padding: 10px 6px;
+  }
+  
+  .purchase-history-table th:first-child,
+  .purchase-history-table td:first-child {
+    padding-left: 12px;
+  }
+  
+  .purchase-history-table th:last-child,
+  .purchase-history-table td:last-child {
+    padding-right: 12px;
+  }
+  
+  .status-badge {
+    padding: 4px 6px;
+    font-size: 11px;
+    gap: 4px;
+  }
+}
