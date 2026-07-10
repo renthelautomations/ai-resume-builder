@@ -43,43 +43,29 @@ export default async function handler(req, res) {
       return res.status(403).json({ error: 'Insufficient credits. Please purchase more.' });
     }
 
-    // 3. Call Gemini API
-    const geminiKey = process.env.GEMINI_API_KEY;
-    if (!geminiKey) {
-      throw new Error("Server configuration error: Missing Gemini API Key");
-    }
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+    // 3. Call OpenRouter API
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "HTTP-Referer": "https://renthelautomations.com", // Adjust as needed
+        "X-Title": "AI Resume Builder"
       },
       body: JSON.stringify({
-        system_instruction: {
-          parts: [{ text: systemPrompt }]
-        },
-        contents: [
-          { role: "user", parts: [{ text: userMsg }] }
-        ],
-        generationConfig: {
-          responseMimeType: "application/json"
-        }
+        model: "deepseek/deepseek-chat", // DeepSeek v4 flash / DeepSeek Chat
+        max_tokens: 4000,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userMsg }
+        ]
       })
     });
 
-    const geminiData = await response.json();
-    if (!response.ok || geminiData.error) {
-      throw new Error((geminiData.error && geminiData.error.message) || "Gemini API Error");
+    const data = await response.json();
+    if (!response.ok || data.error) {
+      throw new Error((data.error && data.error.message) || "OpenRouter API Error");
     }
-
-    // Map Gemini response to match OpenRouter/OpenAI format for the frontend
-    const generatedText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    const data = {
-      choices: [
-        {
-          message: { content: generatedText }
-        }
-      ]
-    };
 
     // 4. Deduct 1 Credit
     // Calling the decrement_credit RPC, which relies on the user's token
