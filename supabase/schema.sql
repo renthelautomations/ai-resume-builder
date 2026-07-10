@@ -487,3 +487,36 @@ BEGIN
     );
 END;
 $$;
+
+-- 11. Get Pending Subscriptions (Admin Only)
+DROP FUNCTION IF EXISTS get_pending_subscriptions();
+CREATE OR REPLACE FUNCTION get_pending_subscriptions()
+RETURNS json AS $$
+DECLARE
+    result JSON;
+BEGIN
+    -- Verify Admin
+    IF auth.uid() != 'b0b909eb-4831-445a-9622-733a1d823f35' THEN
+        RAISE EXCEPTION 'Unauthorized - Admin Only';
+    END IF;
+
+    SELECT json_agg(row_to_json(t)) INTO result FROM (
+        SELECT 
+            cs.id, 
+            cs.credits_amount, 
+            cs.price_php, 
+            cs.status, 
+            cs.created_at, 
+            cs.full_name, 
+            cs.mobile_number, 
+            cs.reference_number, 
+            cs.receipt_url,
+            json_build_object('id', cs.user_id) as profiles
+        FROM public.credit_subscriptions cs
+        WHERE cs.status = 'pending'
+        ORDER BY cs.created_at DESC
+    ) t;
+
+    RETURN COALESCE(result, '[]'::json);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

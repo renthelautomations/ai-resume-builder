@@ -107,18 +107,27 @@ export default function AdminDashboard() {
 
   const fetchPendingSubscriptions = async () => {
     setLoadingSubs(true);
-    // Fetch pending subscriptions along with user info
-    const { data, error } = await supabase
-      .from('credit_subscriptions')
-      .select(`
-        id, credits_amount, price_php, status, created_at, full_name, mobile_number, reference_number, receipt_url,
-        profiles ( id )
-      `)
-      .eq('status', 'pending')
-      .order('created_at', { ascending: false });
+    // Fetch pending subscriptions using RPC to bypass RLS safely for admins
+    const { data, error } = await supabase.rpc('get_pending_subscriptions');
       
     if (!error && data) {
       setPendingSubs(data);
+    } else {
+      // Fallback if RPC is not installed (will only work if RLS allows it)
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from('credit_subscriptions')
+        .select(`
+          id, credits_amount, price_php, status, created_at, full_name, mobile_number, reference_number, receipt_url,
+          profiles ( id )
+        `)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+        
+      if (!fallbackError && fallbackData) {
+        setPendingSubs(fallbackData);
+      } else {
+        console.error('Failed to fetch subscriptions via RPC or Fallback:', error || fallbackError);
+      }
     }
     setLoadingSubs(false);
   };
