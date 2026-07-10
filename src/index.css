@@ -753,3 +753,31 @@ button {
     headlineFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards, 
     headlineShimmer 6s linear infinite;
 }
+
+/* --- ANIMATED SUBTITLE --- */
+@keyframes subtitleReveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    letter-spacing: 0em;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    letter-spacing: 0.05em;
+  }
+}
+
+.animated-subtitle {
+  font-size: 18px;
+  color: var(--text-muted);
+  margin-bottom: 0;
+  text-transform: uppercase;
+  
+  /* Initial state before animation starts */
+  opacity: 0;
+  
+  /* Animation */
+  animation: subtitleReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.2s; /* Wait for main headline */
+}
