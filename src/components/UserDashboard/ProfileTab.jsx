@@ -272,10 +272,10 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
       </div>
 
       {/* Stats Cards Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginTop: '24px' }}>
+      <div className="stat-cards-grid">
         
-        <div style={{ background: 'var(--panel-bg)', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', border: '1px solid var(--border)', boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
-          <div style={{ background: 'rgba(96, 165, 250, 0.1)', padding: '16px', borderRadius: '12px', color: '#60a5fa' }}>
+        <div className="stat-card">
+          <div className="stat-card-icon" style={{ background: 'rgba(96, 165, 250, 0.1)', color: '#60a5fa' }}>
             <FileJson size={28} />
           </div>
           <div>
@@ -284,8 +284,8 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
           </div>
         </div>
 
-        <div style={{ background: 'var(--panel-bg)', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', border: '1px solid var(--border)', boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
-          <div style={{ background: 'rgba(52, 211, 153, 0.1)', padding: '16px', borderRadius: '12px', color: '#34d399' }}>
+        <div className="stat-card">
+          <div className="stat-card-icon" style={{ background: 'rgba(52, 211, 153, 0.1)', color: '#34d399' }}>
             <FileText size={28} />
           </div>
           <div>
@@ -294,8 +294,8 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
           </div>
         </div>
 
-        <div style={{ background: 'var(--panel-bg)', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', border: '1px solid var(--border)', boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
-          <div style={{ background: 'rgba(167, 139, 250, 0.1)', padding: '16px', borderRadius: '12px', color: '#a78bfa' }}>
+        <div className="stat-card">
+          <div className="stat-card-icon" style={{ background: 'rgba(167, 139, 250, 0.1)', color: '#a78bfa' }}>
             <Zap size={28} />
           </div>
           <div>
