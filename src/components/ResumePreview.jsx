@@ -485,7 +485,7 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
           </div>
 
           <div id="how-it-works-steps" className="mobile-order-1" style={{ maxWidth: '850px', margin: '0 auto', width: '100%', textAlign: 'center' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '24px', background: 'linear-gradient(90deg, #60A5FA, #A78BFA)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'inline-block' }}>How It Works</h2>
+            <h2 style={{ fontSize: '26px', fontWeight: '700', marginBottom: '24px', background: 'linear-gradient(90deg, #60A5FA, #A78BFA)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'inline-block' }}>How It Works</h2>
             
             <div className="stepper-container" ref={stepperRef}>
               {/* The Connecting Line (Only visible on desktop) */}
