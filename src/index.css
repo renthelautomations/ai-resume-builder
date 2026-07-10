@@ -337,9 +337,10 @@ button {
 
 .page {
   width: 816px;
-  min-height: 1248px;
-  height: auto;
+  height: 1248px;
   box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   background: var(--paper);
   padding: 0.75in;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);

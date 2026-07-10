@@ -790,12 +790,14 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
               flexDirection: 'column', 
               alignItems: 'center', 
               width: '816px',
+              minWidth: '816px',
+              flexShrink: 0,
               transform: `scale(${scale})`,
               transformOrigin: 'top center',
               marginBottom: scale < 1 ? `-${(1 - scale) * (containerRef.current?.clientHeight || 0)}px` : '0px'
             }}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }} ref={containerRef}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '816px', minWidth: '816px', flexShrink: 0 }} ref={containerRef}>
               {/* Pages will be imperatively injected here by useLayoutEffect */}
             </div>
           </div>
