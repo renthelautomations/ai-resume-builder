@@ -40,7 +40,7 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
   useEffect(() => {
     const interval = setInterval(() => {
       setMessageIndex(prev => (prev + 1) % MOTIVATIONAL_MESSAGES.length);
-    }, 5000);
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 
