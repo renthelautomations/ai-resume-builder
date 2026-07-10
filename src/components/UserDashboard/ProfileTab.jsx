@@ -3,7 +3,7 @@ import { supabase } from '../../utils/supabaseClient';
 import { parseProfileText } from '../../utils/parseProfileText';
 import { stringifyProfileText } from '../../utils/stringifyProfileText';
 import StructuredProfileView from './StructuredProfileView';
-import { UserCircle, Upload, ArrowRight, Mail, Phone, Link as LinkIcon, FileText, FileJson, Zap } from 'lucide-react';
+import { UserCircle, Upload, ArrowRight, Mail, Phone, Link as LinkIcon, FileText, FileJson, Zap, Camera } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 
 export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
@@ -201,12 +201,29 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
           
           {/* Left Side: Identity */}
           <div className="business-card-left">
-            <div className="business-card-avatar">
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" />
-              ) : (
-                <UserCircle size={64} color="#6b7280" />
-              )}
+            <div style={{ position: 'relative', display: 'inline-block', marginBottom: '24px' }}>
+              <div className="business-card-avatar" style={{ marginBottom: 0 }}>
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" />
+                ) : (
+                  <UserCircle size={64} color="#6b7280" />
+                )}
+              </div>
+              <button 
+                onClick={handleAvatarClick}
+                disabled={uploading}
+                style={{ 
+                  position: 'absolute', bottom: '5px', right: '5px', 
+                  width: '36px', height: '36px', borderRadius: '50%', 
+                  background: '#3b82f6', border: '3px solid #1e293b', 
+                  color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                  cursor: uploading ? 'default' : 'pointer', padding: 0, boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                  transition: 'all 0.2s ease'
+                }}
+                title="Change Profile Picture"
+              >
+                {uploading ? <div className="spinner" style={{width: '16px', height: '16px', borderTopColor: '#fff'}} /> : <Camera size={16} />}
+              </button>
             </div>
             
             <h1 className="business-card-name">
@@ -216,14 +233,6 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
             <p className="business-card-location">
               {profileData?.personal?.location || 'Add your location below'}
             </p>
-
-            <button 
-              onClick={handleAvatarClick}
-              disabled={uploading}
-              style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: '13px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
-            >
-              <Upload size={14} /> {uploading ? 'Uploading...' : 'Change Profile Picture'}
-            </button>
           </div>
 
           {/* Right Side: Contact Details */}
