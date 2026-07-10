@@ -272,7 +272,7 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
       </div>
 
       {/* Stats Cards Row */}
-      <div className="kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '40px', marginTop: '24px' }}>
+      <div className="kpi-grid user-stats-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '40px', marginTop: '24px' }}>
         
         <div className="kpi-card-inner" style={{
           background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)',

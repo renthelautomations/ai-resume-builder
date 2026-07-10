@@ -868,5 +868,26 @@ button {
   .kpi-card-value {
     font-size: 20px !important;
   }
+
+  .user-stats-row {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+  }
+  
+  .user-stats-row .kpi-card-inner {
+    padding: 12px 6px !important;
+    flex-direction: column !important;
+    text-align: center;
+    gap: 6px !important;
+  }
+
+  .user-stats-row .kpi-card-text {
+    font-size: 9px !important;
+    white-space: normal !important;
+  }
+
+  .user-stats-row .kpi-card-value {
+    font-size: 16px !important;
+  }
 }
 
