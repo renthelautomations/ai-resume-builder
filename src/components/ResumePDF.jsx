@@ -143,7 +143,7 @@ export default function ResumePDF({ resumeData }) {
           </View>
         )}
 
-        {resumeData.projects && resumeData.projects.length > 0 && (
+        {resumeData.projects && resumeData.projects.length > 0 && !resumeData.hide_projects && (
           <View style={{ marginBottom: 12 }}>
             {resumeData.projects.map((p, i) => (
               <View key={i} style={{ marginBottom: 0 }}>
@@ -176,7 +176,7 @@ export default function ResumePDF({ resumeData }) {
           </View>
         )}
 
-        {resumeData.education && resumeData.education.length > 0 && (
+        {resumeData.education && resumeData.education.length > 0 && !resumeData.hide_education && (
           <View style={{ marginBottom: 12 }}>
             {resumeData.education.map((e, i) => (
               <View key={i} style={{ marginBottom: 0 }}>
@@ -208,7 +208,7 @@ export default function ResumePDF({ resumeData }) {
           </View>
         )}
 
-        {resumeData.certifications && resumeData.certifications.length > 0 && (
+        {resumeData.certifications && resumeData.certifications.length > 0 && !resumeData.hide_certifications && (
           <View wrap={false}>
             <SectionHeader title="Certifications" />
             <Text style={styles.skills}>{resumeData.certifications.join("   |   ")}</Text>

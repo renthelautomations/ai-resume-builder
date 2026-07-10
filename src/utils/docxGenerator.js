@@ -77,7 +77,7 @@ function buildDocumentXml(r){
     (job.bullets||[]).forEach(b => body += bulletXml(b));
   });
 
-  if(r.projects && r.projects.length){
+  if(r.projects && r.projects.length && !r.hide_projects){
     body += sectionHeaderXml("Selected Projects");
     r.projects.forEach(p => {
       body += rowXml(p.name, p.dates||"", { boldLeft:true, keepNext:true });
@@ -86,14 +86,16 @@ function buildDocumentXml(r){
     });
   }
 
-  body += sectionHeaderXml("Education");
-  (r.education||[]).forEach(e => {
-    body += rowXml(e.degree, e.location||"", { boldLeft:true, keepNext:true });
-    body += rowXml(e.school, e.dates||"", { italicLeft:true, italicRight:true, keepNext:true });
-    (e.details||[]).forEach(d => body += bulletXml(d));
-  });
+  if(r.education && r.education.length && !r.hide_education){
+    body += sectionHeaderXml("Education");
+    (r.education||[]).forEach(e => {
+      body += rowXml(e.degree, e.location||"", { boldLeft:true, keepNext:true });
+      body += rowXml(e.school, e.dates||"", { italicLeft:true, italicRight:true, keepNext:true });
+      (e.details||[]).forEach(d => body += bulletXml(d));
+    });
+  }
 
-  if(r.certifications && r.certifications.length){
+  if(r.certifications && r.certifications.length && !r.hide_certifications){
     body += sectionHeaderXml("Certifications");
     body += plainXml(r.certifications.join("   |   "));
   }
