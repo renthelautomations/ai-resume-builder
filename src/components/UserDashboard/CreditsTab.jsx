@@ -266,19 +266,19 @@ export default function CreditsTab({ user }) {
           return (
             <div 
               key={`${pack.id}-${index}`} 
-              className={`step-column ${isPopular ? 'popular' : ''}`}
+              className={isMobileView ? `step-column ${isPopular ? 'popular' : ''}` : `pricing-card ${isPopular ? 'popular' : ''}`}
               style={{ 
                 animationDelay: delay,
-                ...(isPopular ? {
+                ...(isMobileView && isPopular ? {
                   background: 'linear-gradient(180deg, rgba(26, 35, 51, 0.9) 0%, rgba(18, 24, 38, 0.9) 100%)',
                   borderColor: 'rgba(59, 130, 246, 0.4)',
                   transform: 'scale(1.03)',
                   zIndex: 2,
                   boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
-                } : {
+                } : isMobileView && !isPopular ? {
                   background: 'var(--panel-bg)',
                   borderColor: 'var(--border)'
-                })
+                } : {})
               }}
             >
               {pack.badge && (
