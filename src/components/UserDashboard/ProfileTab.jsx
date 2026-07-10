@@ -272,35 +272,50 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
       </div>
 
       {/* Stats Cards Row */}
-      <div className="stat-cards-grid">
+      <div className="kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '40px', marginTop: '24px' }}>
         
-        <div className="stat-card">
-          <div className="stat-card-icon" style={{ background: 'rgba(96, 165, 250, 0.1)', color: '#60a5fa' }}>
-            <FileJson size={28} />
+        <div className="kpi-card-inner" style={{
+          background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)',
+          borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '20px',
+          position: 'relative', overflow: 'hidden'
+        }}>
+          <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, #60a5fa22 0%, transparent 70%)', borderRadius: '50%' }} />
+          <div style={{ background: '#60a5fa15', color: '#60a5fa', padding: '12px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #60a5fa30' }}>
+            <FileJson size={24} />
           </div>
-          <div>
-            <div style={{ fontSize: '13px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Profiles</div>
-            <div style={{ fontSize: '28px', fontWeight: '800', color: '#fff', lineHeight: '1' }}>{userStats.profiles}</div>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-card-icon" style={{ background: 'rgba(52, 211, 153, 0.1)', color: '#34d399' }}>
-            <FileText size={28} />
-          </div>
-          <div>
-            <div style={{ fontSize: '13px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Resumes</div>
-            <div style={{ fontSize: '28px', fontWeight: '800', color: '#fff', lineHeight: '1' }}>{userStats.resumes}</div>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div className="kpi-card-text" style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Profiles</div>
+            <div className="kpi-card-value" style={{ fontSize: '24px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{userStats.profiles}</div>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-card-icon" style={{ background: 'rgba(167, 139, 250, 0.1)', color: '#a78bfa' }}>
-            <Zap size={28} />
+        <div className="kpi-card-inner" style={{
+          background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)',
+          borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '20px',
+          position: 'relative', overflow: 'hidden'
+        }}>
+          <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, #34d39922 0%, transparent 70%)', borderRadius: '50%' }} />
+          <div style={{ background: '#34d39915', color: '#34d399', padding: '12px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #34d39930' }}>
+            <FileText size={24} />
           </div>
-          <div>
-            <div style={{ fontSize: '13px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Credits</div>
-            <div style={{ fontSize: '28px', fontWeight: '800', color: '#fff', lineHeight: '1' }}>{userStats.credits}</div>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div className="kpi-card-text" style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Resumes</div>
+            <div className="kpi-card-value" style={{ fontSize: '24px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{userStats.resumes}</div>
+          </div>
+        </div>
+
+        <div className="kpi-card-inner" style={{
+          background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)',
+          borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '20px',
+          position: 'relative', overflow: 'hidden'
+        }}>
+          <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, #a78bfa22 0%, transparent 70%)', borderRadius: '50%' }} />
+          <div style={{ background: '#a78bfa15', color: '#a78bfa', padding: '12px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #a78bfa30' }}>
+            <Zap size={24} />
+          </div>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div className="kpi-card-text" style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Credits</div>
+            <div className="kpi-card-value" style={{ fontSize: '24px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{userStats.credits}</div>
           </div>
         </div>
 
