@@ -1,10 +1,26 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { supabase } from '../../utils/supabaseClient';
 import { parseProfileText } from '../../utils/parseProfileText';
 import { stringifyProfileText } from '../../utils/stringifyProfileText';
 import StructuredProfileView from './StructuredProfileView';
 import { UserCircle, Upload, ArrowRight, Mail, Phone, Link as LinkIcon, FileText, FileJson, Zap, Camera } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
+
+const MOTIVATIONAL_MESSAGES = [
+  "Your dream awaits", "Keep moving forward", "Youve got this", "Great things await", "Believe in yourself",
+  "Stay the course", "Success starts today", "Keep chasing greatness", "Your future shines", "Never stop growing",
+  "Dream without limits", "Keep believing always", "Your moment comes", "Opportunity is coming", "Stay brave always",
+  "Keep reaching higher", "Trust your journey", "Make yourself proud", "Success loves persistence", "Keep showing up",
+  "Better days ahead", "Keep your vision", "Aim even higher", "Shine with confidence", "Your skills matter",
+  "Every step counts", "Keep building momentum", "Stay focused today", "The best awaits", "Youve come far",
+  "Keep chasing purpose", "Courage creates opportunities", "Your breakthrough nears", "Keep improving daily",
+  "Your potential is limitless", "Keep dreaming big", "Progress beats perfection", "Stay hungry always",
+  "Keep learning relentlessly", "Your future starts", "Believe Build Become", "Keep inspiring yourself",
+  "Success finds action", "Confidence changes everything", "Start where you are", "Keep your faith",
+  "Rise above doubt", "The world needs you", "Make today count", "Create your future", "Stay determined always",
+  "Keep unlocking opportunities", "Small steps matter", "Chase meaningful work", "Keep your spark",
+  "Success begins within", "Own your story", "Keep pursuing excellence", "Your career blossoms", "Your next chapter"
+];
 
 export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
   const { addToast } = useToast();
@@ -18,6 +34,13 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [userStats, setUserStats] = useState({ profiles: 0, resumes: 0, credits: 0 });
+
+  const motivationalMessage = useMemo(() => {
+    return MOTIVATIONAL_MESSAGES[Math.floor(Math.random() * MOTIVATIONAL_MESSAGES.length)];
+  }, []);
+
+  const fullName = profileData?.personal?.name || profileName;
+  const firstName = fullName ? fullName.split(' ')[0] : 'User';
 
   // For new users without a profile
   const [rawText, setRawText] = useState('');
@@ -225,9 +248,11 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
                 {uploading ? <div className="spinner" style={{width: '16px', height: '16px', borderTopColor: '#fff'}} /> : <Camera size={16} />}
               </button>
             </div>
-            
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px', fontWeight: '500' }}>
+              {motivationalMessage}
+            </div>
             <h1 className="business-card-name" style={{ marginBottom: 0 }}>
-              {profileData?.personal?.name || profileName}
+              {firstName}
             </h1>
           </div>
 
