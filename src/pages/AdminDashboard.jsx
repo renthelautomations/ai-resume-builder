@@ -351,7 +351,7 @@ export default function AdminDashboard() {
                   <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border)' }}>
                     <th style={{ padding: '16px', color: 'var(--text-muted)' }}>Date Joined</th>
                     <th style={{ padding: '16px', color: 'var(--text-muted)' }}>User</th>
-                    <th style={{ padding: '16px', color: 'var(--text-muted)' }}>Saved Profiles</th>
+                    <th className="hide-on-mobile" style={{ padding: '16px', color: 'var(--text-muted)' }}>Saved Profiles</th>
                     <th style={{ padding: '16px', color: 'var(--text-muted)' }}>Saved Resumes</th>
                     <th style={{ padding: '16px', color: 'var(--text-muted)' }}>Credits Left</th>
                   </tr>
@@ -367,9 +367,9 @@ export default function AdminDashboard() {
                         <td style={{ padding: '16px', color: '#fff' }}>{new Date(u.created_at).toLocaleDateString()}</td>
                         <td style={{ padding: '16px', color: '#fff' }}>
                           <div style={{ fontWeight: '500' }}>{u.full_name || u.email || 'Unknown User'}</div>
-                          <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{u.id}</div>
+                          <div className="hide-on-mobile" style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{u.id}</div>
                         </td>
-                        <td style={{ padding: '16px', color: '#fff', fontWeight: 'bold' }}>{u.total_profiles}</td>
+                        <td className="hide-on-mobile" style={{ padding: '16px', color: '#fff', fontWeight: 'bold' }}>{u.total_profiles}</td>
                         <td style={{ padding: '16px', color: '#fff', fontWeight: 'bold' }}>{u.total_resumes}</td>
                         <td style={{ padding: '16px', color: '#10B981', fontWeight: 'bold' }}>{u.credits}</td>
                       </tr>
