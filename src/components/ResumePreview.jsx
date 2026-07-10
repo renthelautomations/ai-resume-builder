@@ -196,7 +196,7 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
     
     updateScale();
     return () => observer.disconnect();
-  }, [isEditing]);
+  }, [isEditing, resumeData]);
 
   useLayoutEffect(() => {
     if (!resumeData || !containerRef.current || isEditing) return;
