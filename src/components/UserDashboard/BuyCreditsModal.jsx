@@ -15,7 +15,7 @@ export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchas
   const packs = [
     { name: 'Basic', credits: 20, price: 20, desc: 'Perfect for tweaking an existing resume.' },
     { name: 'Pro', credits: 60, price: 50, desc: 'Ideal for crafting multiple tailored resumes.' },
-    { name: 'Ultimate', credits: 120, price: 100, desc: 'For limitless generation and variations.' }
+    { name: 'Ultimate', credits: 130, price: 100, desc: 'For limitless generation and variations.' }
   ];
 
   const handleNext = () => setStep(prev => prev + 1);
