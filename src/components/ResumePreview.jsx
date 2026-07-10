@@ -95,8 +95,32 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
   const [showBackModal, setShowBackModal] = useState(false);
   const containerRef = useRef(null);
   const wrapperRef = useRef(null);
+  const stepperRef = useRef(null);
   const [scale, setScale] = useState(1);
   const { addToast } = useToast();
+
+  useEffect(() => {
+    if (!stepperRef.current) return;
+    
+    // Only run the auto-scroll on mobile views where it acts as a swipeable carousel
+    if (window.innerWidth > 768) return;
+
+    const interval = setInterval(() => {
+      const container = stepperRef.current;
+      if (!container) return;
+      
+      // Check if we are at or very close to the end of the scroll container
+      const isAtEnd = Math.abs(container.scrollWidth - container.scrollLeft - container.clientWidth) < 10;
+      
+      if (isAtEnd) {
+        container.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        container.scrollBy({ left: container.clientWidth * 0.8, behavior: 'smooth' });
+      }
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   useLayoutEffect(() => {
     const updateScale = () => {
@@ -401,7 +425,7 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
           <div id="how-it-works-steps" className="mobile-order-1" style={{ maxWidth: '850px', margin: '0 auto', width: '100%', textAlign: 'center' }}>
             <h2 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '24px', background: 'linear-gradient(90deg, #60A5FA, #A78BFA)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'inline-block' }}>How It Works</h2>
             
-            <div className="stepper-container">
+            <div className="stepper-container" ref={stepperRef}>
               {/* The Connecting Line */}
               <div className="stepper-line" style={{ background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(16, 185, 129, 0.2) 50%, rgba(139, 92, 246, 0.2) 100%)' }} />
 
