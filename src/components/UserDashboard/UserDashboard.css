@@ -441,7 +441,7 @@
 
 @media (max-width: 768px) {
   .responsive-modal-container {
-    height: 85dvh;
+    height: 70dvh;
     max-height: 800px;
   }
   
