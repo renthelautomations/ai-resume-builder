@@ -51,6 +51,7 @@ export const ToastProvider = ({ children }) => {
               padding: '12px 20px',
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '12px',
               color: '#334155',
               fontSize: '14px',
