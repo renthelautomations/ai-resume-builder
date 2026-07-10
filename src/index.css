@@ -557,9 +557,21 @@ button {
 @media (max-width: 768px) {
   /* How It Works Stepper */
   .stepper-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 40px;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 16px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    width: 100vw;
+    margin-left: -20px; /* Counteract padding from parent if needed */
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .stepper-container::-webkit-scrollbar {
+    display: none;
   }
   
   .stepper-line {
@@ -567,7 +579,14 @@ button {
   }
   
   .step-column {
-    max-width: 400px;
+    min-width: 80vw;
+    max-width: 80vw;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+    background: rgba(255,255,255,0.03);
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
   }
   
   .nav-logo {
