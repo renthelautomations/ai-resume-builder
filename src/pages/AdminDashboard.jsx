@@ -517,13 +517,45 @@ export default function AdminDashboard() {
             onClick={() => setActiveTab('subscriptions')}
             className={`dashboard-nav-item ${activeTab === 'subscriptions' ? 'active' : ''}`}
           >
-            <CreditCard size={18} /> Subscriptions
+            <CreditCard size={18} /> 
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+              Subscriptions
+              <span style={{
+                background: pendingSubs.length > 0 ? '#EF4444' : 'rgba(255,255,255,0.1)',
+                color: '#fff',
+                fontSize: '11px',
+                fontWeight: 'bold',
+                padding: '2px 6px',
+                borderRadius: '12px',
+                minWidth: '20px',
+                textAlign: 'center'
+              }}>
+                {pendingSubs.length}
+              </span>
+            </span>
           </button>
           <button 
             onClick={() => setActiveTab('users')}
             className={`dashboard-nav-item ${activeTab === 'users' ? 'active' : ''}`}
           >
-            <Users size={18} /> User Management
+            <Users size={18} /> 
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+              User Management
+              {usersList.length > 0 && (
+                <span style={{
+                  background: 'rgba(255,255,255,0.1)',
+                  color: '#fff',
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                  padding: '2px 6px',
+                  borderRadius: '12px',
+                  minWidth: '20px',
+                  textAlign: 'center'
+                }}>
+                  {usersList.length}
+                </span>
+              )}
+            </span>
           </button>
           <button 
             onClick={() => setActiveTab('database')}
