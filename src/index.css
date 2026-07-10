@@ -812,6 +812,7 @@ button {
 .motivational-container {
   display: inline-grid;
   margin: 0 auto;
+  text-align: left;
 }
 
 .motivational-placeholder {
