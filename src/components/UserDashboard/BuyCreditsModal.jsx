@@ -172,14 +172,14 @@ export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchas
           {step === 2 && (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
               <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 8px 24px 8px' }}>
-                <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+                <div style={{ textAlign: 'center', marginBottom: '16px' }}>
                   <h2 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 4px 0', color: '#fff' }}>Payment Process</h2>
                   <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '13px' }}>
                     Scan the QR code or send to the GCash number.
                   </p>
                 </div>
                 
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
                   <div style={{ background: '#fff', padding: '8px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}>
                     <img src="/gcash-qr.png" alt="GCash QR Code" style={{ width: '160px', height: '160px', objectFit: 'contain', display: 'block' }} />
                   </div>
