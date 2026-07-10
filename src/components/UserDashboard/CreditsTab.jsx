@@ -215,7 +215,7 @@ export default function CreditsTab({ user }) {
             <div className="pricing-header">
               <div>
                 <h4>Ultimate Pack</h4>
-                <div className="pricing-credits">120 Credits</div>
+                <div className="pricing-credits">130 Credits</div>
               </div>
               <div className="pricing-price">₱100</div>
             </div>
@@ -225,7 +225,7 @@ export default function CreditsTab({ user }) {
             </p>
 
             <ul className="pricing-features">
-              <li><div className="feature-check"><Check size={14} strokeWidth={3} /></div><span>120 AI Generations</span></li>
+              <li><div className="feature-check"><Check size={14} strokeWidth={3} /></div><span>130 AI Generations</span></li>
               <li><div className="feature-check"><Check size={14} strokeWidth={3} /></div><span>Best Value</span></li>
               <li><div className="feature-check"><Check size={14} strokeWidth={3} /></div><span>VIP Support</span></li>
             </ul>
@@ -244,14 +244,14 @@ export default function CreditsTab({ user }) {
       {subscriptions.length > 0 && (
         <div className="subscription-history" style={{ marginTop: '40px' }}>
           <h3 style={{ marginBottom: '16px', fontSize: '18px', fontWeight: '700', color: '#fff' }}>Purchase History</h3>
-          <div className="dash-card" style={{ padding: 0, overflow: 'hidden' }}>
-            <table style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
+          <div className="dash-card" style={{ padding: 0, overflowX: 'auto', overflowY: 'hidden' }}>
+            <table style={{ width: '100%', minWidth: '450px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
               <thead>
                 <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border)' }}>
-                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)', width: '25%' }}>Date</th>
-                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)', width: '25%' }}>Credits</th>
-                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)', width: '25%' }}>Price</th>
-                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)', width: '25%' }}>Status</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)' }}>Date</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)' }}>Credits</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)' }}>Price</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-muted)' }}>Status</th>
                 </tr>
               </thead>
               <tbody>
