@@ -440,3 +440,44 @@ BEGIN
     RETURN COALESCE(result, '[]'::json);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- ==========================================
+-- WEB ANALYTICS
+-- ==========================================
+CREATE TABLE IF NOT EXISTS public.page_views (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    path TEXT NOT NULL,
+    session_id TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.page_views ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Anyone can insert page views" ON public.page_views;
+CREATE POLICY "Anyone can insert page views" 
+    ON public.page_views FOR INSERT 
+    WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Anyone can view page views" ON public.page_views;
+CREATE POLICY "Anyone can view page views" 
+    ON public.page_views FOR SELECT 
+    USING (true);
+
+CREATE OR REPLACE FUNCTION get_web_analytics()
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    total_views INT;
+    unique_visitors INT;
+BEGIN
+    SELECT count(*) INTO total_views FROM public.page_views;
+    SELECT count(DISTINCT session_id) INTO unique_visitors FROM public.page_views;
+    
+    RETURN jsonb_build_object(
+        'pageViews', total_views,
+        'visitors', unique_visitors
+    );
+END;
+$$;

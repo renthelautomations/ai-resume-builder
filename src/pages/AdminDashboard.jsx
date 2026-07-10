@@ -44,13 +44,10 @@ export default function AdminDashboard() {
   const fetchWebAnalytics = async () => {
     setWebAnalytics(prev => ({ ...prev, loading: true }));
     try {
-      const res = await fetch('/api/analytics');
-      if (res.ok) {
-        const data = await res.json();
-        // The Vercel endpoint /visits/count returns something like { "pageviews": 100, "visitors": 50 }
-        // We will just try to extract those values. Note: Vercel may return "total" depending on the exact route
+      const { data, error } = await supabase.rpc('get_web_analytics');
+      if (data && !error) {
         setWebAnalytics({
-          pageViews: data.pageviews || data.total || 0,
+          pageViews: data.pageViews || 0,
           visitors: data.visitors || 0,
           loading: false
         });

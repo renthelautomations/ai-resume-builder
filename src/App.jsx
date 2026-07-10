@@ -16,6 +16,34 @@ function LogoutRoute() {
   return null;
 }
 
+// Track Page Views correctly in SPA
+function PageTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const trackPageView = async () => {
+      let sessionId = localStorage.getItem('session_id');
+      if (!sessionId) {
+        sessionId = Math.random().toString(36).substring(2, 15);
+        localStorage.setItem('session_id', sessionId);
+      }
+      
+      try {
+        const { supabase } = await import('./utils/supabaseClient');
+        await supabase.from('page_views').insert([{
+          path: location.pathname,
+          session_id: sessionId
+        }]);
+      } catch (err) {
+        console.error('Failed to track page view:', err);
+      }
+    };
+    trackPageView();
+  }, [location.pathname]);
+
+  return null;
+}
+
 export default function App() {
   useEffect(() => {
     // Supabase OAuth often leaves a trailing '#' in the URL after parsing the session token
@@ -37,6 +65,7 @@ export default function App() {
     <AuthProvider>
       <ToastProvider>
         <BrowserRouter>
+          <PageTracker />
           <Routes>
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/logout" element={<LogoutRoute />} />
