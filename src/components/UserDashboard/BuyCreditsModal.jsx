@@ -188,8 +188,8 @@ export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchas
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                       <Smartphone size={14} /> GCash Number
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                      <div style={{ fontSize: '20px', fontWeight: '800', color: '#60A5FA', letterSpacing: '1px', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>0975 005 7000</div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                      <div style={{ fontSize: '18px', fontWeight: '800', color: '#60A5FA', letterSpacing: '1px', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>0975 005 7000</div>
                       <button 
                         onClick={() => {
                           navigator.clipboard.writeText('09750057000');
@@ -197,6 +197,7 @@ export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchas
                           setTimeout(() => setCopied(false), 2000);
                         }}
                         style={{ 
+                          width: 'auto',
                           background: copied ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.05)', 
                           border: `1px solid ${copied ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.1)'}`, 
                           color: copied ? '#10B981' : 'var(--text-muted)',
@@ -208,7 +209,7 @@ export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchas
                     </div>
                   </div>
                   
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', background: 'rgba(245, 158, 11, 0.1)', padding: '12px', borderRadius: '12px', color: '#F59E0B', fontSize: '12px', lineHeight: '1.4', width: '100%' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', background: 'rgba(245, 158, 11, 0.1)', padding: '12px', borderRadius: '12px', color: '#F59E0B', fontSize: '11.5px', lineHeight: '1.4', width: '100%' }}>
                     <Info size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
                     <div>
                       <strong>Important:</strong> Save your receipt or take a screenshot. You will need your <strong>Mobile Number</strong> and the <strong>Reference Number</strong> for the next step.
