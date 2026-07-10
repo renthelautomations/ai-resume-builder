@@ -1,4 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+// Initialize Redis
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+});
+
+// Create a rate limiter that allows 5 requests per 1 minute per IP
+const ratelimit = new Ratelimit({
+  redis: redis,
+  limiter: Ratelimit.slidingWindow(5, "1 m"),
+  analytics: true,
+});
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -6,6 +21,22 @@ export default async function handler(req, res) {
   }
 
   try {
+    // 0. Check Rate Limit
+    // Extract IP address from headers (Vercel uses x-forwarded-for)
+    const ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket?.remoteAddress || '127.0.0.1';
+    
+    const { success, limit, reset, remaining } = await ratelimit.limit(`ratelimit_${ip}`);
+    
+    // Optional: Add rate limit headers to the response
+    res.setHeader('X-RateLimit-Limit', limit);
+    res.setHeader('X-RateLimit-Remaining', remaining);
+    res.setHeader('X-RateLimit-Reset', reset);
+    
+    if (!success) {
+      console.warn(`Rate limit exceeded for IP: ${ip}`);
+      return res.status(429).json({ error: 'Too many requests. Please wait a minute before trying again.' });
+    }
+
     const { systemPrompt, userMsg } = req.body;
     
     // 1. Verify User Authentication
