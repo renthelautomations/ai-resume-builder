@@ -201,7 +201,7 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
           
           {/* Left Side: Identity */}
           <div className="business-card-left">
-            <div style={{ position: 'relative', display: 'inline-block', marginBottom: '24px' }}>
+            <div style={{ position: 'relative', display: 'inline-block', marginBottom: '16px' }}>
               <div className="business-card-avatar" style={{ marginBottom: 0 }}>
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" />
@@ -226,13 +226,9 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
               </button>
             </div>
             
-            <h1 className="business-card-name">
+            <h1 className="business-card-name" style={{ marginBottom: 0 }}>
               {profileData?.personal?.name || profileName}
             </h1>
-            
-            <p className="business-card-location">
-              {profileData?.personal?.location || 'Add your location below'}
-            </p>
           </div>
 
           {/* Right Side: Contact Details */}
