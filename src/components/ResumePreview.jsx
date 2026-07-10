@@ -93,8 +93,11 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showBackModal, setShowBackModal] = useState(false);
-  const containerRef = useRef(null);
+  const [successPurchaseData, setSuccessPurchaseData] = useState(null);
+
   const wrapperRef = useRef(null);
+  const relativeWrapperRef = useRef(null);
+  const containerRef = useRef(null);
   const stepperRef = useRef(null);
   const [scale, setScale] = useState(1);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 768);
@@ -368,6 +371,10 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
         `);
       }
 
+      // Automatically update the scaling container height after building pages
+      if (relativeWrapperRef.current && pagesContainer.clientHeight) {
+        relativeWrapperRef.current.style.height = `${pagesContainer.clientHeight * scale}px`;
+      }
     } catch (err) {
       console.error("Error building preview DOM:", err);
     }
@@ -783,21 +790,28 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
           jobDescription={jobDescription}
         />
       ) : (
-        <div className="preview-pages-wrapper" ref={wrapperRef} style={{ overflow: 'hidden' }}>
+        <div className="preview-pages-wrapper" ref={wrapperRef} style={{ overflow: 'hidden', width: '100%', display: 'flex', justifyContent: 'center' }}>
           <div 
             style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              width: '816px',
-              minWidth: '816px',
-              flexShrink: 0,
-              transform: `scale(${scale})`,
-              transformOrigin: 'top center',
-              marginBottom: scale < 1 ? `-${(1 - scale) * (containerRef.current?.clientHeight || 0)}px` : '0px'
+              width: `${816 * scale}px`, 
+              height: containerRef.current ? `${containerRef.current.clientHeight * scale}px` : `${1248 * scale}px`,
+              position: 'relative'
             }}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '816px', minWidth: '816px', flexShrink: 0 }} ref={containerRef}>
+            <div 
+              ref={containerRef}
+              style={{ 
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '816px',
+                transform: `scale(${scale})`,
+                transformOrigin: 'top left',
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center'
+              }} 
+            >
               {/* Pages will be imperatively injected here by useLayoutEffect */}
             </div>
           </div>

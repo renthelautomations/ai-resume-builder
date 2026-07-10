@@ -228,6 +228,7 @@ button {
   justify-content: flex-start;
   overflow-y: auto;
   height: 100%;
+  min-width: 0;
 }
 
 /* Make right panel center its contents vertically if placeholder is shown */
@@ -700,6 +701,7 @@ button {
   flex-direction: column;
   align-items: center;
   width: 100%;
+  min-width: 0;
   box-sizing: border-box;
 }
 
