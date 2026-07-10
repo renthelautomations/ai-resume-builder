@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../utils/supabaseClient';
 import { useAuth } from '../../context/AuthContext';
-import { User, CreditCard, Settings as SettingsIcon, LogOut, X, FileText, UserCircle } from 'lucide-react';
+import { User, Zap, LogOut, X, FileText, FolderOpen } from 'lucide-react';
 import ProfileTab from './ProfileTab';
 import CreditsTab from './CreditsTab';
 import SettingsTab from './SettingsTab';
@@ -99,7 +99,7 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
               onClick={() => navigate('/loadprofile')}
               className={`dashboard-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
             >
-              <SettingsIcon size={18} /> Load Profile
+              <FolderOpen size={18} /> Load Profile
             </button>
             <button 
               onClick={() => navigate('/savedresumes')}
@@ -111,7 +111,7 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
               onClick={() => navigate('/credits')}
               className={`dashboard-nav-item ${activeTab === 'credits' ? 'active' : ''}`}
             >
-              <CreditCard size={18} /> Credits
+              <Zap size={18} /> Credits
             </button>
           </div>
           
