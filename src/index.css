@@ -850,4 +850,23 @@ button {
   .hide-on-mobile {
     display: none !important;
   }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  
+  .kpi-card-inner {
+    padding: 16px 12px !important;
+    gap: 12px !important;
+  }
+
+  .kpi-card-text {
+    font-size: 11px !important;
+  }
+
+  .kpi-card-value {
+    font-size: 20px !important;
+  }
 }
+

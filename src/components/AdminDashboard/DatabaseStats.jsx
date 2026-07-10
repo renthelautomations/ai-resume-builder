@@ -91,7 +91,7 @@ export default function DatabaseStats() {
       </div>
 
       {/* KPI Cards Grid */}
-      <div style={{ 
+      <div className="kpi-grid" style={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
         gap: '24px', 
@@ -176,7 +176,7 @@ export default function DatabaseStats() {
 // Sub-component for KPI Card
 function KpiCard({ icon, title, value, color }) {
   return (
-    <div style={{
+    <div className="kpi-card-inner" style={{
       background: 'rgba(255, 255, 255, 0.02)',
       border: '1px solid rgba(255, 255, 255, 0.05)',
       borderRadius: '16px',
@@ -208,11 +208,11 @@ function KpiCard({ icon, title, value, color }) {
       }}>
         {icon}
       </div>
-      <div>
-        <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500', marginBottom: '4px' }}>
+      <div style={{ minWidth: 0, flex: 1 }}>
+        <div className="kpi-card-text" style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {title}
         </div>
-        <div style={{ fontSize: '24px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+        <div className="kpi-card-value" style={{ fontSize: '24px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {value}
         </div>
       </div>

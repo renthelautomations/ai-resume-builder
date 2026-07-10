@@ -165,9 +165,9 @@ export default function AdminDashboard() {
             </div>
 
             {/* Vercel Web Analytics KPI Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+            <div className="kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '40px' }}>
               {/* Page Views Card */}
-              <div style={{
+              <div className="kpi-card-inner" style={{
                 background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)',
                 borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '20px',
                 position: 'relative', overflow: 'hidden'
@@ -176,16 +176,16 @@ export default function AdminDashboard() {
                 <div style={{ background: `#3B82F615`, color: '#3B82F6', padding: '12px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid #3B82F630` }}>
                   <Globe size={24} />
                 </div>
-                <div>
-                  <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500', marginBottom: '4px' }}>Total Page Views</div>
-                  <div style={{ fontSize: '24px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div className="kpi-card-text" style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Total Page Views</div>
+                  <div className="kpi-card-value" style={{ fontSize: '24px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {webAnalytics.loading ? <div className="spinner" style={{width: '20px', height: '20px'}} /> : webAnalytics.pageViews.toLocaleString()}
                   </div>
                 </div>
               </div>
 
               {/* Visitors Card */}
-              <div style={{
+              <div className="kpi-card-inner" style={{
                 background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)',
                 borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '20px',
                 position: 'relative', overflow: 'hidden'
@@ -194,9 +194,9 @@ export default function AdminDashboard() {
                 <div style={{ background: `#10B98115`, color: '#10B981', padding: '12px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid #10B98130` }}>
                   <Users size={24} />
                 </div>
-                <div>
-                  <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500', marginBottom: '4px' }}>Unique Visitors</div>
-                  <div style={{ fontSize: '24px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div className="kpi-card-text" style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Unique Visitors</div>
+                  <div className="kpi-card-value" style={{ fontSize: '24px', fontWeight: '700', color: '#FFFFFF', letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {webAnalytics.loading ? <div className="spinner" style={{width: '20px', height: '20px'}} /> : webAnalytics.visitors.toLocaleString()}
                   </div>
                 </div>
