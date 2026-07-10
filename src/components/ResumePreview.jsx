@@ -29,7 +29,23 @@ class PDFErrorBoundary extends React.Component {
   }
 }
 
-function LoadingView({ loadingStep }) {
+const MOTIVATIONAL_MESSAGES = [
+  "Your dream awaits", "Keep moving forward", "Youve got this", "Great things await", "Believe in yourself",
+  "Stay the course", "Success starts today", "Keep chasing greatness", "Your future shines", "Never stop growing",
+  "Dream without limits", "Keep believing always", "Your moment comes", "Opportunity is coming", "Stay brave always",
+  "Keep reaching higher", "Trust your journey", "Make yourself proud", "Success loves persistence", "Keep showing up",
+  "Better days ahead", "Keep your vision", "Aim even higher", "Shine with confidence", "Your skills matter",
+  "Every step counts", "Keep building momentum", "Stay focused today", "The best awaits", "Youve come far",
+  "Keep chasing purpose", "Courage creates opportunities", "Your breakthrough nears", "Keep improving daily",
+  "Your potential is limitless", "Keep dreaming big", "Progress beats perfection", "Stay hungry always",
+  "Keep learning relentlessly", "Your future starts", "Believe Build Become", "Keep inspiring yourself",
+  "Success finds action", "Confidence changes everything", "Start where you are", "Keep your faith",
+  "Rise above doubt", "The world needs you", "Make today count", "Create your future", "Stay determined always",
+  "Keep unlocking opportunities", "Small steps matter", "Chase meaningful work", "Keep your spark",
+  "Success begins within", "Own your story", "Keep pursuing excellence", "Your career blossoms", "Your next chapter"
+];
+
+function LoadingView({ loadingStep, profileText }) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -52,10 +68,45 @@ function LoadingView({ loadingStep }) {
     return () => clearInterval(timer);
   }, []);
 
+  const [messageIndex, setMessageIndex] = useState(() => Math.floor(Math.random() * MOTIVATIONAL_MESSAGES.length));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMessageIndex(prev => (prev + 1) % MOTIVATIONAL_MESSAGES.length);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const motivationalMessage = MOTIVATIONAL_MESSAGES[messageIndex];
+  
+  let firstName = 'User';
+  try {
+    const profile = JSON.parse(profileText);
+    if (profile?.personal?.name) {
+      firstName = profile.personal.name.split(' ')[0];
+    }
+  } catch (e) {}
+
   return (
     <div className="right centered">
       <div className="mobile-order-4" style={{ width: '100%', margin: 'auto' }}>
         <div id="loadingState" style={{ margin: 'auto', width: '100%', maxWidth: '400px', textAlign: 'center', animation: 'fadeIn 0.5s ease' }}>
+        
+        {/* Animated Motivation Message */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '40px' }}>
+          <div className="motivational-container" style={{ fontSize: '14px', color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '12px', fontWeight: '600' }}>
+            <div className="motivational-placeholder">
+              {motivationalMessage},
+            </div>
+            <div key={messageIndex} className="motivational-typing">
+              {motivationalMessage},
+            </div>
+          </div>
+          <h1 className="business-card-name" style={{ fontSize: '42px', marginBottom: 0, marginTop: 0, lineHeight: 1 }}>
+            {firstName}!
+          </h1>
+        </div>
+
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
           <Settings size={56} strokeWidth={1.5} color="var(--accent)" className="icon-spin" />
         </div>
@@ -552,7 +603,7 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
   }
 
   if (isLoading) {
-    return <LoadingView loadingStep={loadingStep} />;
+    return <LoadingView loadingStep={loadingStep} profileText={profileText} />;
   }
 
   const safeTitle = (resumeData?.target_role || "Resume").replace(/[^a-zA-Z0-9_-]/g, "_");
