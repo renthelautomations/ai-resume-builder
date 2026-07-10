@@ -756,7 +756,9 @@ button {
 
 /* --- ANIMATED SUBTITLE (TYPEWRITER) --- */
 @keyframes revealText {
-  to { left: 100%; }
+  0%, 15% { left: 0; animation-timing-function: steps(23); }
+  35%, 75% { left: 100%; animation-timing-function: steps(23); }
+  95%, 100% { left: 0; }
 }
 
 @keyframes blinkCursor {
@@ -783,8 +785,7 @@ button {
   left: 0;
   background-color: #0f172a; /* Matches panel background */
   border-left: 2px solid var(--text-muted); /* Cursor */
-  /* 23 steps for 'HARVARD RESUME TEMPLATE' */
   animation: 
-    revealText 1s steps(23) 0.8s forwards,
+    revealText 6s infinite,
     blinkCursor 0.7s step-end infinite;
 }
