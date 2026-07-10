@@ -570,6 +570,7 @@ button {
     align-items: stretch;
     gap: 16px;
     overflow-x: auto;
+    padding-top: 24px;
     padding-bottom: 16px;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
