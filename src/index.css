@@ -846,4 +846,8 @@ button {
   .stat-card-icon {
     padding: 12px;
   }
+
+  .hide-on-mobile {
+    display: none !important;
+  }
 }

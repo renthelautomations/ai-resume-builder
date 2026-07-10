@@ -394,10 +394,10 @@ export default function AdminDashboard() {
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
                 <thead>
                   <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border)' }}>
-                    <th style={{ padding: '16px', color: 'var(--text-muted)' }}>Date Request</th>
-                    <th style={{ padding: '16px', color: 'var(--text-muted)' }}>User</th>
+                    <th className="hide-on-mobile" style={{ padding: '16px', color: 'var(--text-muted)' }}>Date Request</th>
+                    <th className="hide-on-mobile" style={{ padding: '16px', color: 'var(--text-muted)' }}>User</th>
                     <th style={{ padding: '16px', color: 'var(--text-muted)' }}>Payment Details</th>
-                    <th style={{ padding: '16px', color: 'var(--text-muted)' }}>Credits</th>
+                    <th className="hide-on-mobile" style={{ padding: '16px', color: 'var(--text-muted)' }}>Credits</th>
                     <th style={{ padding: '16px', color: 'var(--text-muted)' }}>Price (PHP)</th>
                     <th style={{ padding: '16px', color: 'var(--text-muted)' }}>Action</th>
                   </tr>
@@ -410,8 +410,8 @@ export default function AdminDashboard() {
                   ) : (
                     pendingSubs.map(sub => (
                       <tr key={sub.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                        <td style={{ padding: '16px', color: '#fff' }}>{new Date(sub.created_at).toLocaleDateString()}</td>
-                        <td style={{ padding: '16px', color: '#fff' }} title={sub.profiles?.id}>
+                        <td className="hide-on-mobile" style={{ padding: '16px', color: '#fff' }}>{new Date(sub.created_at).toLocaleDateString()}</td>
+                        <td className="hide-on-mobile" style={{ padding: '16px', color: '#fff' }} title={sub.profiles?.id}>
                           {sub.profiles?.id ? `${sub.profiles.id.substring(0,8)}...` : 'Unknown'}
                         </td>
                         <td style={{ padding: '16px', color: '#fff' }}>
@@ -424,7 +424,7 @@ export default function AdminDashboard() {
                             </div>
                           )}
                         </td>
-                        <td style={{ padding: '16px', color: '#fff', fontWeight: 'bold' }}>{sub.credits_amount}</td>
+                        <td className="hide-on-mobile" style={{ padding: '16px', color: '#fff', fontWeight: 'bold' }}>{sub.credits_amount}</td>
                         <td style={{ padding: '16px', color: '#fff' }}>₱{sub.price_php}</td>
                         <td style={{ padding: '16px' }}>
                           <div style={{ display: 'flex', gap: '8px' }}>
