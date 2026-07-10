@@ -373,6 +373,7 @@ export default function ResumeBuilder() {
             }}
           />
           <ResumePreview 
+            user={user}
             resumeData={resumeData}
             setResumeData={setResumeData}
             isLoading={isLoading}

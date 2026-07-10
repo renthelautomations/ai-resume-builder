@@ -45,7 +45,7 @@ const MOTIVATIONAL_MESSAGES = [
   "Success begins within", "Own your story", "Keep pursuing excellence", "Your career blossoms", "Your next chapter"
 ];
 
-function LoadingView({ loadingStep, profileText }) {
+function LoadingView({ loadingStep, profileText, user }) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -84,14 +84,32 @@ function LoadingView({ loadingStep, profileText }) {
     const profile = JSON.parse(profileText);
     if (profile?.personal?.name) {
       firstName = profile.personal.name.split(' ')[0];
+    } else if (user?.user_metadata?.full_name) {
+      firstName = user.user_metadata.full_name.split(' ')[0];
+    } else if (user?.user_metadata?.name) {
+      firstName = user.user_metadata.name.split(' ')[0];
+    } else if (user?.email) {
+      firstName = user.email.split('@')[0];
     }
-  } catch (e) {}
+  } catch (e) {
+    if (user?.user_metadata?.full_name) {
+      firstName = user.user_metadata.full_name.split(' ')[0];
+    } else if (user?.user_metadata?.name) {
+      firstName = user.user_metadata.name.split(' ')[0];
+    } else if (user?.email) {
+      firstName = user.email.split('@')[0];
+    }
+  }
 
   return (
     <div className="right centered">
       <div className="mobile-order-4" style={{ width: '100%', margin: 'auto' }}>
         <div id="loadingState" style={{ margin: 'auto', width: '100%', maxWidth: '400px', textAlign: 'center', animation: 'fadeIn 0.5s ease' }}>
         
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+          <Settings size={56} strokeWidth={1.5} color="var(--accent)" className="icon-spin" />
+        </div>
+
         {/* Animated Motivation Message */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '40px' }}>
           <div className="motivational-container" style={{ fontSize: '14px', color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '12px', fontWeight: '600' }}>
@@ -105,10 +123,6 @@ function LoadingView({ loadingStep, profileText }) {
           <h1 className="business-card-name" style={{ fontSize: '42px', marginBottom: 0, marginTop: 0, lineHeight: 1 }}>
             {firstName}!
           </h1>
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
-          <Settings size={56} strokeWidth={1.5} color="var(--accent)" className="icon-spin" />
         </div>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontWeight: 500, fontSize: '15px', color: 'var(--text-main)' }}>
@@ -137,7 +151,7 @@ function esc(s) {
   return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
-export default function ResumePreview({ resumeData, setResumeData, isLoading, loadingStep, onDownloadDocx, onSaveResume, isSavingResume, profileText, jobDescription, onGenerate, status, credits, onGenerateAnother }) {
+export default function ResumePreview({ user, resumeData, setResumeData, isLoading, loadingStep, onDownloadDocx, onSaveResume, isSavingResume, profileText, jobDescription, onGenerate, status, credits, onGenerateAnother }) {
   const [isEditing, setIsEditing] = useState(false);
   const [draftData, setDraftData] = useState(null);
   const [saveStatus, setSaveStatus] = useState('idle');
@@ -603,7 +617,7 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
   }
 
   if (isLoading) {
-    return <LoadingView loadingStep={loadingStep} profileText={profileText} />;
+    return <LoadingView loadingStep={loadingStep} profileText={profileText} user={user} />;
   }
 
   const safeTitle = (resumeData?.target_role || "Resume").replace(/[^a-zA-Z0-9_-]/g, "_");
