@@ -174,17 +174,17 @@ export default function SettingsTab({ user, onProfileSelect }) {
 
   return (
     <div className="settings-container">
-      <div className="settings-header">
-        <div>
-          <h2 className="settings-title">Load Profile</h2>
-          <p className="settings-subtitle">Manage your profiles and set your active profile.</p>
+      <div style={{ marginBottom: '24px' }}>
+        <div className="settings-header" style={{ marginBottom: '4px' }}>
+          <h2 className="settings-title" style={{ marginBottom: '0' }}>Load Profile</h2>
+          <button 
+            onClick={() => setShowAddModal(true)}
+            className="btn-add-profile"
+          >
+            <Plus size={18} /> Add Profile
+          </button>
         </div>
-        <button 
-          onClick={() => setShowAddModal(true)}
-          className="btn-add-profile"
-        >
-          <Plus size={18} /> Add Profile
-        </button>
+        <p className="settings-subtitle">Manage your profiles and set your active profile.</p>
       </div>
 
       {profiles.length === 0 ? (
