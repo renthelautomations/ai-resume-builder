@@ -390,3 +390,93 @@
     padding: 32px 24px;
   }
 }
+
+/* Responsive Modal Styles */
+.responsive-modal-container {
+  background: #0B0E14;
+  border: 1px solid #1f2937;
+  border-radius: 16px;
+  width: 800px;
+  max-width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.responsive-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.responsive-modal-textarea-container {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.responsive-modal-textarea {
+  min-height: 300px;
+  width: 100%;
+  background: #111827;
+  color: #9ca3af;
+  font-size: 13px;
+  padding: 16px;
+  line-height: 1.6;
+}
+
+.responsive-modal-footer-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  align-items: center;
+  padding: 24px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.responsive-modal-footer-btn {
+  padding: 12px 24px;
+  font-size: 16px;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+@media (max-width: 768px) {
+  .responsive-modal-container {
+    height: 85dvh;
+    max-height: 800px;
+  }
+  
+  .responsive-modal-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 20px 24px;
+  }
+  
+  .responsive-modal-textarea-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 150px;
+  }
+  
+  .responsive-modal-textarea {
+    flex: 1;
+    min-height: unset;
+    resize: none;
+  }
+  
+  .responsive-modal-footer-btns {
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 16px 20px;
+  }
+  
+  .responsive-modal-footer-btn {
+    flex: 1 1 auto;
+    text-align: center;
+    justify-content: center;
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+}

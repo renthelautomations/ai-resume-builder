@@ -246,10 +246,10 @@ export default function SettingsTab({ user, onProfileSelect }) {
         <div 
           className="modal-overlay"
           onClick={(e) => handleOverlayClick(e, () => { setShowAddModal(false); setAddStep(1); })}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}
         >
-          <div className="animate-in zoom-in-95 duration-200" style={{ background: '#0B0E14', border: '1px solid #1f2937', borderRadius: '16px', width: '800px', maxWidth: '100%', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ padding: '24px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', width: '100%' }}>
+          <div className="animate-in zoom-in-95 duration-200 responsive-modal-container">
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', width: '100%', flexShrink: 0 }}>
               <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: 'white', margin: 0, flex: 1, paddingRight: '16px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 Add New Profile
               </h3>
@@ -258,83 +258,86 @@ export default function SettingsTab({ user, onProfileSelect }) {
               </button>
             </div>
             
-            <div style={{ padding: '24px 24px 0 24px' }}>
+            <div style={{ padding: '20px 24px 0 24px', flexShrink: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: addStep === 1 ? '#3b82f6' : '#10b981', transition: 'all 0.3s ease' }}>
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: addStep === 1 ? 'rgba(59, 130, 246, 0.2)' : 'rgba(16, 185, 129, 0.2)', border: `1px solid ${addStep === 1 ? '#3b82f6' : '#10b981'}`, color: addStep === 1 ? '#3b82f6' : '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold', transition: 'all 0.3s ease' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: addStep === 1 ? 'rgba(59, 130, 246, 0.2)' : 'rgba(16, 185, 129, 0.2)', border: `1px solid ${addStep === 1 ? '#3b82f6' : '#10b981'}`, color: addStep === 1 ? '#3b82f6' : '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold', transition: 'all 0.3s ease', flexShrink: 0 }}>
                     {addStep === 2 ? <Check size={16} /> : '1'}
                   </div>
-                  <span style={{ fontWeight: '600', fontSize: '15px' }}>Generate Profile</span>
+                  <span style={{ fontWeight: '600', fontSize: '14px', whiteSpace: 'nowrap' }}>Generate Profile</span>
                 </div>
                 
-                <div style={{ flex: 1, height: '1px', background: addStep === 2 ? '#10b981' : '#374151', margin: '0 16px', transition: 'background 0.3s ease' }} />
+                <div style={{ flex: 1, height: '1px', background: addStep === 2 ? '#10b981' : '#374151', margin: '0 12px', transition: 'background 0.3s ease' }} />
                 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: addStep === 2 ? '#3b82f6' : '#6b7280', transition: 'all 0.3s ease' }}>
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: addStep === 2 ? 'rgba(59, 130, 246, 0.2)' : 'transparent', border: `1px solid ${addStep === 2 ? '#3b82f6' : '#374151'}`, color: addStep === 2 ? '#3b82f6' : '#9ca3af', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold', transition: 'all 0.3s ease' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: addStep === 2 ? 'rgba(59, 130, 246, 0.2)' : 'transparent', border: `1px solid ${addStep === 2 ? '#3b82f6' : '#374151'}`, color: addStep === 2 ? '#3b82f6' : '#9ca3af', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold', transition: 'all 0.3s ease', flexShrink: 0 }}>
                     2
                   </div>
-                  <span style={{ fontWeight: '600', fontSize: '15px' }}>Paste & Save</span>
+                  <span style={{ fontWeight: '600', fontSize: '14px', whiteSpace: 'nowrap' }}>Paste & Save</span>
                 </div>
               </div>
             </div>
             
-            <div className="no-scrollbar" style={{ padding: '24px', overflowY: 'auto' }}>
+            <div className="no-scrollbar responsive-modal-body">
               {addStep === 1 ? (
                 <>
-                  <div style={{ background: 'rgba(59, 130, 246, 0.05)', border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
-                    <p style={{ fontSize: '14px', color: '#d1d5db', margin: 0, lineHeight: '1.7' }}>
+                  <div style={{ background: 'rgba(59, 130, 246, 0.05)', border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: '12px', padding: '16px', marginBottom: '16px', flexShrink: 0 }}>
+                    <p style={{ fontSize: '13px', color: '#d1d5db', margin: 0, lineHeight: '1.6' }}>
                       <strong style={{ color: '#3b82f6' }}>1.</strong> Copy the prompt below.<br/>
-                      <strong style={{ color: '#3b82f6' }}>2.</strong> Go to <a href="https://chatgpt.com" target="_blank" rel="noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline', fontWeight: '500' }}>ChatGPT</a> (opens in a new tab), upload your resume(s), paste the prompt, and click Send.<br/>
+                      <strong style={{ color: '#3b82f6' }}>2.</strong> Go to <a href="https://chatgpt.com" target="_blank" rel="noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline', fontWeight: '500' }}>ChatGPT</a>, upload your resume(s), paste the prompt, and click Send.<br/>
                       <strong style={{ color: '#3b82f6' }}>3.</strong> Copy the generated profile and paste it in the next step.
                     </p>
                   </div>
                   
-                  <div style={{ position: 'relative', marginBottom: '16px' }}>
+                  <div className="responsive-modal-textarea-container">
                     <textarea 
-                      className="dash-textarea no-scrollbar"
+                      className="dash-textarea no-scrollbar responsive-modal-textarea"
                       readOnly
-                      style={{ minHeight: '300px', width: '100%', background: '#111827', color: '#9ca3af', fontSize: '13px', padding: '16px', lineHeight: '1.6' }}
                       value={PROFILE_GENERATION_PROMPT}
                     ></textarea>
                   </div>
                 </>
               ) : (
                 <>
-                  <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
-                    <p style={{ fontSize: '14px', color: '#d1d5db', margin: 0, lineHeight: '1.7' }}>
+                  <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '12px', padding: '16px', marginBottom: '16px', flexShrink: 0 }}>
+                    <p style={{ fontSize: '13px', color: '#d1d5db', margin: 0, lineHeight: '1.6' }}>
                       <strong style={{ color: '#10b981' }}>Great!</strong> Now just paste the final profile text you received from ChatGPT into the box below.
                     </p>
                   </div>
-                  <textarea 
-                    className="dash-textarea no-scrollbar"
-                    style={{ minHeight: '300px', width: '100%', background: '#111827', fontSize: '13px', padding: '16px', lineHeight: '1.6' }}
-                    placeholder="PERSONAL: Name | Email..."
-                    value={newRawText}
-                    onChange={(e) => setNewRawText(e.target.value)}
-                  ></textarea>
+                  
+                  <div className="responsive-modal-textarea-container">
+                    <textarea 
+                      className="dash-textarea no-scrollbar responsive-modal-textarea"
+                      placeholder="PERSONAL: Name | Email..."
+                      value={newRawText}
+                      onChange={(e) => setNewRawText(e.target.value)}
+                    ></textarea>
+                  </div>
                 </>
               )}
             </div>
             
-            <div style={{ padding: '24px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'flex-end', gap: '12px', alignItems: 'center' }}>
+            <div className="responsive-modal-footer-btns">
               {addStep === 1 ? (
                 <>
                   <button 
                     onClick={() => { setShowAddModal(false); setAddStep(1); }}
-                    style={{ padding: '12px 24px', fontSize: '16px', background: 'transparent', color: 'white', borderRadius: '8px', border: '1px solid #374151', cursor: 'pointer', whiteSpace: 'nowrap', width: 'fit-content' }}
+                    className="responsive-modal-footer-btn"
+                    style={{ background: 'transparent', color: 'white', borderRadius: '8px', border: '1px solid #374151', cursor: 'pointer' }}
                   >
                     Cancel
                   </button>
                   <button 
                     onClick={handleCopyPrompt}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', fontSize: '16px', background: 'rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'all 0.2s ease', whiteSpace: 'nowrap' }}
+                    className="responsive-modal-footer-btn"
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'all 0.2s ease' }}
                   >
                     {isCopied ? <><Check size={18} color="#10b981" /> Copied!</> : <><Copy size={18} /> Copy Prompt</>}
                   </button>
                   <button 
                     onClick={() => setAddStep(2)}
-                    className="dash-btn primary"
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 32px', fontSize: '16px', background: '#3b82f6', color: 'white', borderRadius: '8px', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', width: 'fit-content' }}
+                    className="dash-btn primary responsive-modal-footer-btn"
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#3b82f6', color: 'white', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
                   >
                     Next <ArrowRight size={20} />
                   </button>
@@ -343,17 +346,16 @@ export default function SettingsTab({ user, onProfileSelect }) {
                 <>
                   <button 
                     onClick={() => setAddStep(1)}
-                    style={{ padding: '12px 24px', fontSize: '16px', background: 'transparent', color: 'white', borderRadius: '8px', border: '1px solid #374151', cursor: 'pointer', whiteSpace: 'nowrap', width: 'fit-content' }}
+                    className="responsive-modal-footer-btn"
+                    style={{ background: 'transparent', color: 'white', borderRadius: '8px', border: '1px solid #374151', cursor: 'pointer' }}
                   >
                     Back
                   </button>
                   <button 
-                    onClick={() => {
-                      handleAddNewProfile();
-                    }}
+                    onClick={handleAddNewProfile}
                     disabled={saving || !newRawText.trim()}
-                    className="dash-btn primary"
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 32px', fontSize: '16px', background: '#10b981', color: 'white', borderRadius: '8px', border: 'none', cursor: 'pointer', opacity: saving || !newRawText.trim() ? 0.7 : 1, whiteSpace: 'nowrap', width: 'fit-content' }}
+                    className="dash-btn primary responsive-modal-footer-btn"
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', background: saving || !newRawText.trim() ? '#374151' : '#10b981', color: saving || !newRawText.trim() ? '#9ca3af' : 'white', borderRadius: '8px', border: 'none', cursor: saving || !newRawText.trim() ? 'not-allowed' : 'pointer' }}
                   >
                     {saving ? 'Saving...' : 'Save Profile'} <CheckCircle2 size={20} />
                   </button>
