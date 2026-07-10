@@ -21,7 +21,7 @@ export default function UserResumes({ user, onSelectResume }) {
     setLoading(true);
     const { data, error } = await supabase
       .from('resumes')
-      .select('id, target_role, updated_at, job_description, full_name, contact_line, summary, skills, experience, projects, education, certifications')
+      .select('id, target_role, updated_at, job_description, full_name, contact_line, summary, skills, experience, projects, education, certifications, hide_projects, hide_education, hide_certifications')
       .eq('user_id', user.id)
       .order('updated_at', { ascending: false });
     

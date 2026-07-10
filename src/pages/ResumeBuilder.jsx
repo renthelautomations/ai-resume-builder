@@ -231,7 +231,10 @@ export default function ResumeBuilder() {
         experience: resumeData.experience,
         projects: resumeData.projects,
         education: resumeData.education,
-        certifications: resumeData.certifications
+        certifications: resumeData.certifications,
+        hide_projects: resumeData.hide_projects || false,
+        hide_education: resumeData.hide_education || false,
+        hide_certifications: resumeData.hide_certifications || false
       };
 
       if (currentResumeId) {
@@ -338,7 +341,10 @@ export default function ResumeBuilder() {
               experience: resume.experience,
               projects: resume.projects,
               education: resume.education,
-              certifications: resume.certifications
+              certifications: resume.certifications,
+              hide_projects: resume.hide_projects || false,
+              hide_education: resume.hide_education || false,
+              hide_certifications: resume.hide_certifications || false
             });
             setJobDescription(resume.job_description || '');
             setCurrentResumeId(resume.id);

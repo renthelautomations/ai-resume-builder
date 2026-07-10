@@ -91,6 +91,12 @@ CREATE TABLE IF NOT EXISTS public.resumes (
 -- Enable Row Level Security
 ALTER TABLE public.resumes ENABLE ROW LEVEL SECURITY;
 
+-- Safely add new columns if table already existed
+ALTER TABLE public.resumes ADD COLUMN IF NOT EXISTS hide_experience BOOLEAN DEFAULT false;
+ALTER TABLE public.resumes ADD COLUMN IF NOT EXISTS hide_projects BOOLEAN DEFAULT false;
+ALTER TABLE public.resumes ADD COLUMN IF NOT EXISTS hide_education BOOLEAN DEFAULT false;
+ALTER TABLE public.resumes ADD COLUMN IF NOT EXISTS hide_certifications BOOLEAN DEFAULT false;
+
 -- Resumes Policies: Users can only CRUD their own resumes
 DROP POLICY IF EXISTS "Users can view own resumes" ON public.resumes;
 CREATE POLICY "Users can view own resumes" 

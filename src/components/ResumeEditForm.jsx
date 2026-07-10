@@ -1,13 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import ConfirmationModal from './ConfirmationModal';
 
 export default function ResumeEditForm({ resumeData, setResumeData, profileText, jobDescription }) {
   const { addToast } = useToast();
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
   if (!resumeData) return null;
 
   const handleChange = (field, value) => {
     setResumeData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const toggleHideSection = (section) => {
+    const field = `hide_${section}`;
+    setResumeData(prev => ({ ...prev, [field]: !prev[field] }));
+  };
+
+  const confirmDeleteEntry = () => {
+    if (!deleteTarget) return;
+    const { section, index } = deleteTarget;
+    setResumeData(prev => {
+      const newArray = [...(prev[section] || [])];
+      newArray.splice(index, 1);
+      return { ...prev, [section]: newArray };
+    });
+    
+    // Format section name for toast (e.g., "experience" -> "Experience")
+    const sectionName = section === 'certifications' ? 'Certification' : 
+                        section === 'experience' ? 'Experience' : 
+                        section === 'projects' ? 'Project' : 
+                        section === 'education' ? 'Education' : section;
+                        
+    addToast(`${sectionName} entry deleted`, 'success');
+    setDeleteTarget(null);
   };
 
   const handleArrayChange = (arrayField, index, field, value) => {
@@ -266,9 +293,14 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
                     </button>
                   </div>
                 ))}
-                <button onClick={() => addBullet('experience', idx)} style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', background: 'transparent', color: '#3B82F6', border: 'none', cursor: 'pointer', padding: '4px 0' }}>
-                  <Plus size={14} /> Add Bullet
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+                  <button onClick={() => addBullet('experience', idx)} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', background: 'transparent', color: '#3B82F6', border: 'none', cursor: 'pointer', padding: '4px 0' }}>
+                    <Plus size={14} /> Add Bullet
+                  </button>
+                  <button onClick={() => setDeleteTarget({ section: 'experience', index: idx })} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', background: 'transparent', color: '#EF4444', border: 'none', cursor: 'pointer', padding: '4px 0' }}>
+                    <Trash2 size={14} /> Delete Entry
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -284,7 +316,12 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
       {/* Projects */}
       {resumeData.projects && resumeData.projects.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: '16px 0 0 0', color: '#334155', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>Projects</h3>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #E2E8F0', paddingTop: '16px', marginTop: '16px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#334155' }}>Projects</h3>
+            <button onClick={() => toggleHideSection('projects')} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'transparent', border: 'none', color: resumeData.hide_projects ? '#94A3B8' : '#3B82F6', cursor: 'pointer', fontSize: '13px', fontWeight: '500' }}>
+              {resumeData.hide_projects ? <><EyeOff size={16} /> Hidden</> : <><Eye size={16} /> Visible</>}
+            </button>
+          </div>
           {resumeData.projects.map((proj, idx) => (
             <div key={`proj-${idx}`} style={{ background: '#F8FAFC', padding: '16px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
@@ -317,9 +354,14 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
                     </button>
                   </div>
                 ))}
-                <button onClick={() => addBullet('projects', idx)} style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', background: 'transparent', color: '#3B82F6', border: 'none', cursor: 'pointer', padding: '4px 0' }}>
-                  <Plus size={14} /> Add Bullet
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+                  <button onClick={() => addBullet('projects', idx)} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', background: 'transparent', color: '#3B82F6', border: 'none', cursor: 'pointer', padding: '4px 0' }}>
+                    <Plus size={14} /> Add Bullet
+                  </button>
+                  <button onClick={() => setDeleteTarget({ section: 'projects', index: idx })} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', background: 'transparent', color: '#EF4444', border: 'none', cursor: 'pointer', padding: '4px 0' }}>
+                    <Trash2 size={14} /> Delete Entry
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -335,7 +377,12 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
       {/* Education */}
       {resumeData.education && resumeData.education.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: '16px 0 0 0', color: '#334155', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>Education</h3>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #E2E8F0', paddingTop: '16px', marginTop: '16px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#334155' }}>Education</h3>
+            <button onClick={() => toggleHideSection('education')} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'transparent', border: 'none', color: resumeData.hide_education ? '#94A3B8' : '#3B82F6', cursor: 'pointer', fontSize: '13px', fontWeight: '500' }}>
+              {resumeData.hide_education ? <><EyeOff size={16} /> Hidden</> : <><Eye size={16} /> Visible</>}
+            </button>
+          </div>
           {resumeData.education.map((edu, idx) => (
             <div key={`edu-${idx}`} style={{ background: '#F8FAFC', padding: '16px', borderRadius: '8px', border: '1px solid #E2E8F0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <input 
@@ -370,9 +417,14 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
                     </button>
                   </div>
                 ))}
-                <button onClick={() => addBullet('education', idx, 'details')} style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', background: 'transparent', color: '#3B82F6', border: 'none', cursor: 'pointer', padding: '4px 0' }}>
-                  <Plus size={14} /> Add Detail
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+                  <button onClick={() => addBullet('education', idx, 'details')} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', background: 'transparent', color: '#3B82F6', border: 'none', cursor: 'pointer', padding: '4px 0' }}>
+                    <Plus size={14} /> Add Detail
+                  </button>
+                  <button onClick={() => setDeleteTarget({ section: 'education', index: idx })} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', background: 'transparent', color: '#EF4444', border: 'none', cursor: 'pointer', padding: '4px 0' }}>
+                    <Trash2 size={14} /> Delete Entry
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -387,7 +439,12 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
 
       {/* Certifications */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingBottom: '32px' }}>
-        <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: '16px 0 0 0', color: '#334155', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>Certifications</h3>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #E2E8F0', paddingTop: '16px', marginTop: '16px' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: '#334155' }}>Certifications</h3>
+          <button onClick={() => toggleHideSection('certifications')} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'transparent', border: 'none', color: resumeData.hide_certifications ? '#94A3B8' : '#3B82F6', cursor: 'pointer', fontSize: '13px', fontWeight: '500' }}>
+            {resumeData.hide_certifications ? <><EyeOff size={16} /> Hidden</> : <><Eye size={16} /> Visible</>}
+          </button>
+        </div>
         <p style={{ fontSize: '12px', color: '#64748B', margin: 0 }}>Separate with commas or pipes (|)</p>
         <textarea 
           value={certsText} 
@@ -397,6 +454,16 @@ export default function ResumeEditForm({ resumeData, setResumeData, profileText,
           style={{ width: '100%', padding: '12px', border: '1px solid #CBD5E1', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical' }}
         />
       </div>
+
+      <ConfirmationModal
+        isOpen={!!deleteTarget}
+        title="Delete Entry"
+        message="Are you sure you want to delete this entry? This action cannot be undone."
+        confirmText="Delete"
+        onConfirm={confirmDeleteEntry}
+        onCancel={() => setDeleteTarget(null)}
+        type="warning"
+      />
 
     </div>
   );

@@ -318,7 +318,7 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
         });
       }
 
-      if (r.projects && r.projects.length) {
+      if (r.projects && r.projects.length && !r.hide_projects) {
         const first = r.projects[0];
         appendBlock(`
           <div>
@@ -342,7 +342,7 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
         });
       }
 
-      if (r.education && r.education.length) {
+      if (r.education && r.education.length && !r.hide_education) {
         const first = r.education[0];
         appendBlock(`
           <div>
@@ -366,7 +366,7 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
         });
       }
 
-      if (r.certifications && r.certifications.length) {
+      if (r.certifications && r.certifications.length && !r.hide_certifications) {
         appendBlock(`
           <div>
             <div class="r-section">Certifications</div>
