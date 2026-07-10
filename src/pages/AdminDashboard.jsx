@@ -517,19 +517,15 @@ export default function AdminDashboard() {
             onClick={() => setActiveTab('subscriptions')}
             className={`dashboard-nav-item ${activeTab === 'subscriptions' ? 'active' : ''}`}
           >
-            <CreditCard size={18} /> 
+            <div className="nav-icon-container">
+              <CreditCard size={18} />
+              <span className="admin-nav-badge mobile-badge" style={{ background: pendingSubs.length > 0 ? '#EF4444' : 'rgba(255,255,255,0.1)' }}>
+                {pendingSubs.length}
+              </span>
+            </div>
             <span style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
               Subscriptions
-              <span style={{
-                background: pendingSubs.length > 0 ? '#EF4444' : 'rgba(255,255,255,0.1)',
-                color: '#fff',
-                fontSize: '11px',
-                fontWeight: 'bold',
-                padding: '2px 6px',
-                borderRadius: '12px',
-                minWidth: '20px',
-                textAlign: 'center'
-              }}>
+              <span className="admin-nav-badge desktop-badge" style={{ background: pendingSubs.length > 0 ? '#EF4444' : 'rgba(255,255,255,0.1)' }}>
                 {pendingSubs.length}
               </span>
             </span>
@@ -538,20 +534,18 @@ export default function AdminDashboard() {
             onClick={() => setActiveTab('users')}
             className={`dashboard-nav-item ${activeTab === 'users' ? 'active' : ''}`}
           >
-            <Users size={18} /> 
+            <div className="nav-icon-container">
+              <Users size={18} />
+              {usersList.length > 0 && (
+                <span className="admin-nav-badge mobile-badge" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                  {usersList.length}
+                </span>
+              )}
+            </div>
             <span style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
               User Management
               {usersList.length > 0 && (
-                <span style={{
-                  background: 'rgba(255,255,255,0.1)',
-                  color: '#fff',
-                  fontSize: '11px',
-                  fontWeight: 'bold',
-                  padding: '2px 6px',
-                  borderRadius: '12px',
-                  minWidth: '20px',
-                  textAlign: 'center'
-                }}>
+                <span className="admin-nav-badge desktop-badge" style={{ background: 'rgba(255,255,255,0.1)' }}>
                   {usersList.length}
                 </span>
               )}
