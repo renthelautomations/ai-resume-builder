@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     color: '#000000',
     fontSize: 10.5,
-    lineHeight: 1.24,
+    lineHeight: 1.23,
   },
   name: {
     fontFamily: 'Times-Bold',
