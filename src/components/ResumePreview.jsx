@@ -94,7 +94,30 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showBackModal, setShowBackModal] = useState(false);
   const containerRef = useRef(null);
+  const wrapperRef = useRef(null);
+  const [scale, setScale] = useState(1);
   const { addToast } = useToast();
+
+  useLayoutEffect(() => {
+    const updateScale = () => {
+      if (wrapperRef.current) {
+        const targetWidth = 816; // 8.5in at 96 DPI
+        const availableWidth = wrapperRef.current.clientWidth;
+        if (availableWidth > 0 && availableWidth < targetWidth) {
+          setScale(availableWidth / targetWidth);
+        } else {
+          setScale(1);
+        }
+      }
+    };
+    
+    const observer = new ResizeObserver(updateScale);
+    if (wrapperRef.current) observer.observe(wrapperRef.current);
+    if (containerRef.current) observer.observe(containerRef.current);
+    
+    updateScale();
+    return () => observer.disconnect();
+  }, [isEditing]);
 
   useLayoutEffect(() => {
     if (!resumeData || !containerRef.current || isEditing) return;
@@ -662,9 +685,21 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
           jobDescription={jobDescription}
         />
       ) : (
-        <div className="preview-pages-wrapper">
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }} ref={containerRef}>
-            {/* Pages will be imperatively injected here by useLayoutEffect */}
+        <div className="preview-pages-wrapper" ref={wrapperRef} style={{ overflow: 'hidden' }}>
+          <div 
+            style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              width: '816px',
+              transform: `scale(${scale})`,
+              transformOrigin: 'top center',
+              marginBottom: scale < 1 ? `-${(1 - scale) * (containerRef.current?.clientHeight || 0)}px` : '0px'
+            }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }} ref={containerRef}>
+              {/* Pages will be imperatively injected here by useLayoutEffect */}
+            </div>
           </div>
         </div>
       )}

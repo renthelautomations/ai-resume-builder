@@ -336,9 +336,8 @@ button {
 }
 
 .page {
-  width: 8.5in;
-  max-width: 100%;
-  min-height: 13in;
+  width: 816px;
+  min-height: 1248px;
   height: auto;
   box-sizing: border-box;
   background: var(--paper);
