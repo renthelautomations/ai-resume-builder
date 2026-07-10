@@ -416,7 +416,10 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
             <h1 className="animated-headline">
               Generate a <br className="mobile-break" />Tailored Resume
             </h1>
-            <div className="animated-subtitle">Harvard Resume Template</div>
+            <div className="subtitle-wrapper">
+              <div className="subtitle-placeholder">Harvard Resume Template</div>
+              <div className="animated-subtitle">Harvard Resume Template</div>
+            </div>
           </div>
 
           <div className="mobile-order-3" style={{ width: '100%', maxWidth: '400px', margin: '0 auto 24px auto' }}>
