@@ -576,11 +576,11 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
       </div>
 
       <div className="mobile-order-4" style={{ width: '100%', maxWidth: '8.5in', padding: '0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <div id="preview-actions" style={{ width: '100%', maxWidth: '8.5in', padding: '16px 0 0 0', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px', animation: 'fadeIn 0.5s ease' }}>
-        <span style={{ fontSize: '13px', color: 'var(--text-muted)', opacity: 0.8, flexShrink: 1 }}>
+      <div id="preview-actions" style={{ width: '100%', maxWidth: '8.5in', padding: '16px 0 0 0', marginBottom: '24px', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px', animation: 'fadeIn 0.5s ease' }}>
+        <span style={{ fontSize: '13px', color: 'var(--text-muted)', opacity: 0.8, flexShrink: 1, minWidth: '200px' }}>
           💡 Tip: Click Edit to tweak text before downloading.
         </span>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexShrink: 0 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', justifyContent: 'flex-start' }}>
           {isEditing ? (
             <>
               <button 
