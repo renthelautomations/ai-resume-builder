@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     color: '#000000',
     fontSize: 10.5,
-    lineHeight: 1.4,
+    lineHeight: 1.25,
   },
   name: {
     fontFamily: 'Times-Bold',
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 1.5,
+    marginBottom: 1,
   },
   boldText: {
     fontFamily: 'Times-Bold',
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   },
   bulletRow: {
     flexDirection: 'row',
-    marginBottom: 2.5,
+    marginBottom: 2,
   },
   bulletPoint: {
     width: 14,
@@ -94,7 +94,7 @@ export default function ResumePDF({ resumeData }) {
         )}
 
         {resumeData.summary && (
-          <View style={{ marginBottom: 14 }}>
+          <View style={{ marginBottom: 12 }}>
             <View wrap={false}>
               <SectionHeader title="Professional Summary" />
               <Text style={styles.summary}>{resumeData.summary}</Text>
@@ -102,8 +102,8 @@ export default function ResumePDF({ resumeData }) {
           </View>
         )}
 
-        {resumeData.skills && resumeData.skills.length > 0 && !resumeData.hide_skills && (
-          <View style={{ marginBottom: 14 }}>
+        {resumeData.skills && resumeData.skills.length > 0 && (
+          <View style={{ marginBottom: 12 }}>
             <View wrap={false}>
               <SectionHeader title="Core Skills" />
               <Text style={styles.skills}>{resumeData.skills.join("   |   ")}</Text>
@@ -112,7 +112,7 @@ export default function ResumePDF({ resumeData }) {
         )}
 
         {resumeData.experience && resumeData.experience.length > 0 && (
-          <View style={{ marginBottom: 14 }}>
+          <View style={{ marginBottom: 12 }}>
             {resumeData.experience.map((job, i) => (
               <View key={i} style={{ marginBottom: 0 }}>
                 <View wrap={false}>
@@ -127,7 +127,7 @@ export default function ResumePDF({ resumeData }) {
                   </View>
                 </View>
                 {job.bullets && job.bullets.map((b, j) => (
-                  <View key={j} style={styles.bulletRow} wrap={false}>
+                  <View key={j} style={styles.bulletRow}>
                     <Text style={styles.bulletPoint}>•</Text>
                     <Text style={styles.bulletText}>{b}</Text>
                   </View>
@@ -138,7 +138,7 @@ export default function ResumePDF({ resumeData }) {
         )}
 
         {resumeData.projects && resumeData.projects.length > 0 && !resumeData.hide_projects && (
-          <View style={{ marginBottom: 14 }}>
+          <View style={{ marginBottom: 12 }}>
             {resumeData.projects.map((p, i) => (
               <View key={i} style={{ marginBottom: 0 }}>
                 <View wrap={false}>
@@ -154,7 +154,7 @@ export default function ResumePDF({ resumeData }) {
                   )}
                 </View>
                 {p.bullets && p.bullets.map((b, j) => (
-                  <View key={j} style={styles.bulletRow} wrap={false}>
+                  <View key={j} style={styles.bulletRow}>
                     <Text style={styles.bulletPoint}>•</Text>
                     <Text style={styles.bulletText}>{b}</Text>
                   </View>
@@ -165,7 +165,7 @@ export default function ResumePDF({ resumeData }) {
         )}
 
         {resumeData.education && resumeData.education.length > 0 && !resumeData.hide_education && (
-          <View style={{ marginBottom: 14 }}>
+          <View style={{ marginBottom: 12 }}>
             {resumeData.education.map((e, i) => (
               <View key={i} style={{ marginBottom: 0 }}>
                 <View wrap={false}>
@@ -180,7 +180,7 @@ export default function ResumePDF({ resumeData }) {
                   </View>
                 </View>
                 {e.details && e.details.map((d, j) => (
-                  <View key={j} style={styles.bulletRow} wrap={false}>
+                  <View key={j} style={styles.bulletRow}>
                     <Text style={styles.bulletPoint}>•</Text>
                     <Text style={styles.bulletText}>{d}</Text>
                   </View>
