@@ -305,7 +305,13 @@ export default function CreditsTab({ user }) {
                       <div className="feature-check" style={{ 
                         background: isPopular ? 'rgba(168, 85, 247, 0.2)' : 'rgba(59, 130, 246, 0.2)', 
                         color: isPopular ? '#C084FC' : '#60A5FA', 
-                        borderRadius: '50%', padding: '4px', flexShrink: 0 
+                        borderRadius: '50%', 
+                        width: '24px',
+                        height: '24px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0 
                       }}>
                         <Check size={14} strokeWidth={3} />
                       </div>
