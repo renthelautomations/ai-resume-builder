@@ -97,30 +97,75 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
   const wrapperRef = useRef(null);
   const stepperRef = useRef(null);
   const [scale, setScale] = useState(1);
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 768);
   const { addToast } = useToast();
 
   useEffect(() => {
-    if (!stepperRef.current) return;
+    const handleResize = () => setIsMobileView(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (!stepperRef.current || !isMobileView) return;
+
+    const container = stepperRef.current;
     
-    // Only run the auto-scroll on mobile views where it acts as a swipeable carousel
-    if (window.innerWidth > 768) return;
+    // Start exactly in the middle of our 60 cards
+    if (container.children.length > 30) {
+      const startCard = container.children[30];
+      if (startCard) {
+        startCard.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
+      }
+    }
+
+    let isTouching = false;
+    container.addEventListener('touchstart', () => { isTouching = true; }, { passive: true });
+    container.addEventListener('touchend', () => { isTouching = false; }, { passive: true });
 
     const interval = setInterval(() => {
-      const container = stepperRef.current;
-      if (!container) return;
+      if (!stepperRef.current || isTouching) return;
       
-      // Check if we are at or very close to the end of the scroll container
-      const isAtEnd = Math.abs(container.scrollWidth - container.scrollLeft - container.clientWidth) < 10;
-      
-      if (isAtEnd) {
-        container.scrollTo({ left: 0, behavior: 'smooth' });
+      const cards = Array.from(container.children).filter(c => c.classList.contains('step-column'));
+      if (cards.length === 0) return;
+
+      // Find the currently visible card
+      const containerCenter = container.getBoundingClientRect().left + (container.clientWidth / 2);
+      let closestCard = cards[0];
+      let minDistance = Infinity;
+      let currentIndex = 0;
+
+      cards.forEach((card, index) => {
+        const cardCenter = card.getBoundingClientRect().left + (card.clientWidth / 2);
+        const distance = Math.abs(containerCenter - cardCenter);
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestCard = card;
+          currentIndex = index;
+        }
+      });
+
+      // If we are getting too close to the edges, silently reset to the middle
+      if (currentIndex > 50 || currentIndex < 10) {
+        const equivalentIndex = 30 + (currentIndex % 3);
+        cards[equivalentIndex].scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
+        
+        // Then smoothly scroll to the next one
+        setTimeout(() => {
+          if (cards[equivalentIndex + 1]) {
+            cards[equivalentIndex + 1].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          }
+        }, 50);
       } else {
-        container.scrollBy({ left: container.clientWidth * 0.8, behavior: 'smooth' });
+        // Just scroll to the next one
+        if (cards[currentIndex + 1]) {
+          cards[currentIndex + 1].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
       }
     }, 5000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [isMobileView]);
 
   useLayoutEffect(() => {
     const updateScale = () => {
@@ -426,41 +471,62 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
             <h2 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '24px', background: 'linear-gradient(90deg, #60A5FA, #A78BFA)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'inline-block' }}>How It Works</h2>
             
             <div className="stepper-container" ref={stepperRef}>
-              {/* The Connecting Line */}
-              <div className="stepper-line" style={{ background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(16, 185, 129, 0.2) 50%, rgba(139, 92, 246, 0.2) 100%)' }} />
+              {/* The Connecting Line (Only visible on desktop) */}
+              {!isMobileView && (
+                <div className="stepper-line" style={{ background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(16, 185, 129, 0.2) 50%, rgba(139, 92, 246, 0.2) 100%)' }} />
+              )}
 
-              {/* Step 1 */}
-              <div className="step-column" style={{ animationDelay: '0.1s' }}>
-                <div className="step-icon-circle" style={{ border: '2px solid rgba(59, 130, 246, 0.4)', color: '#3B82F6', boxShadow: '0 0 20px rgba(59, 130, 246, 0.15)' }}>
-                  <FileText size={20} />
-                </div>
-                <div className="step-text-col">
-                  <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: '#fff', letterSpacing: '-0.01em' }}>1. Load & Paste</h3>
-                  <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>Select one of your saved profiles, then paste the job description into the right panel. The AI will compare both to understand what the employer is looking for.</p>
-                </div>
-              </div>
-              
-              {/* Step 2 */}
-              <div className="step-column" style={{ animationDelay: '0.2s' }}>
-                <div className="step-icon-circle" style={{ border: '2px solid rgba(16, 185, 129, 0.4)', color: '#10B981', boxShadow: '0 0 20px rgba(16, 185, 129, 0.15)' }}>
-                  <Wand2 size={20} />
-                </div>
-                <div className="step-text-col">
-                  <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: '#fff', letterSpacing: '-0.01em' }}>2. Generate Resume</h3>
-                  <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>Click <strong>Generate Resume</strong> and wait a few moments while the AI creates your Harvard-style, ATS-friendly resume. You can review and edit it.</p>
-                </div>
-              </div>
+              {/* Render Steps */}
+              {(() => {
+                const baseSteps = [
+                  {
+                    id: 'step1',
+                    icon: <FileText size={20} />,
+                    color: '#3B82F6',
+                    title: '1. Load & Paste',
+                    desc: 'Select one of your saved profiles, then paste the job description into the right panel. The AI will compare both to understand what the employer is looking for.'
+                  },
+                  {
+                    id: 'step2',
+                    icon: <Wand2 size={20} />,
+                    color: '#10B981',
+                    title: '2. Generate Resume',
+                    desc: 'Click Generate Resume and wait a few moments while the AI creates your Harvard-style, ATS-friendly resume. You can review and edit it.'
+                  },
+                  {
+                    id: 'step3',
+                    icon: <Download size={20} />,
+                    color: '#8B5CF6',
+                    title: '3. Download',
+                    desc: 'When you\'re satisfied with the result, click Download DOCX or Download PDF to save your completed resume.'
+                  }
+                ];
 
-              {/* Step 3 */}
-              <div className="step-column" style={{ animationDelay: '0.3s' }}>
-                <div className="step-icon-circle" style={{ border: '2px solid rgba(139, 92, 246, 0.4)', color: '#8B5CF6', boxShadow: '0 0 20px rgba(139, 92, 246, 0.15)' }}>
-                  <Download size={20} />
-                </div>
-                <div className="step-text-col">
-                  <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: '#fff', letterSpacing: '-0.01em' }}>3. Download</h3>
-                  <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>When you're satisfied with the result, click <strong>Download DOCX</strong> or <strong>Download PDF</strong> to save your completed resume.</p>
-                </div>
-              </div>
+                const renderSteps = isMobileView ? Array(20).fill(baseSteps).flat() : baseSteps;
+
+                return renderSteps.map((step, index) => {
+                  const delay = isMobileView ? '0s' : `${(index + 1) * 0.1}s`;
+                  return (
+                    <div key={`${step.id}-${index}`} className="step-column" style={{ animationDelay: delay }}>
+                      <div className="step-icon-circle" style={{ border: `2px solid ${step.color}66`, color: step.color, boxShadow: `0 0 20px ${step.color}26` }}>
+                        {step.icon}
+                      </div>
+                      <div className="step-text-col">
+                        <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: '#fff', letterSpacing: '-0.01em' }}>{step.title}</h3>
+                        <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>
+                          {step.id === 'step2' ? (
+                            <>Click <strong>Generate Resume</strong> and wait a few moments while the AI creates your Harvard-style, ATS-friendly resume. You can review and edit it.</>
+                          ) : step.id === 'step3' ? (
+                            <>When you're satisfied with the result, click <strong>Download DOCX</strong> or <strong>Download PDF</strong> to save your completed resume.</>
+                          ) : (
+                            step.desc
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
             </div>
           </div>
         </div>
