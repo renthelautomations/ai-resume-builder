@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import '../../modal.css';
-import { X, ChevronRight, CheckCircle, Info, CreditCard, Smartphone, Check, Upload } from 'lucide-react';
+import { X, ChevronRight, CheckCircle, Info, CreditCard, Smartphone, Check, Upload, Copy } from 'lucide-react';
 
 export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchase, isSubmitting }) {
   const [step, setStep] = useState(1);
+  const [copied, setCopied] = useState(false);
   const [formData, setFormData] = useState({
     pack: selectedPack?.name || 'Basic',
     fullName: '',
@@ -106,7 +107,7 @@ export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchas
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           {step === 1 && (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-              <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 8px 24px 8px' }}>
+              <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 8px' }}>
                 <div style={{ textAlign: 'center', marginBottom: '24px' }}>
                   <h2 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 8px 0', color: '#fff' }}>Choose Your Pack</h2>
                   <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '14px' }}>Select the credit package that fits your needs.</p>
@@ -171,26 +172,43 @@ export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchas
           {step === 2 && (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
               <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 8px 24px 8px' }}>
-                <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                  <h2 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 6px 0', color: '#fff' }}>Payment Process</h2>
+                <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+                  <h2 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 4px 0', color: '#fff' }}>Payment Process</h2>
                   <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '13px' }}>
-                    Scan the QR code or send to the GCash number below.
+                    Scan the QR code or send to the GCash number.
                   </p>
                 </div>
                 
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ background: '#fff', padding: '14px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}>
-                    <img src="/gcash-qr.png" alt="GCash QR Code" style={{ width: '170px', height: '170px', objectFit: 'contain', display: 'block' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ background: '#fff', padding: '8px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}>
+                    <img src="/gcash-qr.png" alt="GCash QR Code" style={{ width: '130px', height: '130px', objectFit: 'contain', display: 'block' }} />
                   </div>
                   
-                  <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '12px', borderRadius: '16px', width: '100%', textAlign: 'center' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '16px', width: '100%', textAlign: 'center' }}>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                       <Smartphone size={14} /> GCash Number
                     </div>
-                    <div style={{ fontSize: '24px', fontWeight: '800', color: '#60A5FA', letterSpacing: '2px', fontFamily: 'monospace' }}>0975 005 7000</div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                      <div style={{ fontSize: '20px', fontWeight: '800', color: '#60A5FA', letterSpacing: '1px', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>0975 005 7000</div>
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText('09750057000');
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 2000);
+                        }}
+                        style={{ 
+                          background: copied ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.05)', 
+                          border: `1px solid ${copied ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.1)'}`, 
+                          color: copied ? '#10B981' : 'var(--text-muted)',
+                          padding: '6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', flexShrink: 0
+                        }}
+                      >
+                        {copied ? <Check size={16} /> : <Copy size={16} />}
+                      </button>
+                    </div>
                   </div>
                   
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: 'rgba(245, 158, 11, 0.1)', padding: '12px', borderRadius: '12px', color: '#F59E0B', fontSize: '12.5px', lineHeight: '1.5', width: '100%' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', background: 'rgba(245, 158, 11, 0.1)', padding: '12px', borderRadius: '12px', color: '#F59E0B', fontSize: '12px', lineHeight: '1.4', width: '100%' }}>
                     <Info size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
                     <div>
                       <strong>Important:</strong> Save your receipt or take a screenshot. You will need your <strong>Mobile Number</strong> and the <strong>Reference Number</strong> for the next step.
@@ -208,7 +226,7 @@ export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchas
 
           {step === 3 && (
             <form onSubmit={handleSubmit} style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-              <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 8px 24px 8px' }}>
+              <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 8px' }}>
                 <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                   <h2 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 8px 0', color: '#fff' }}>Payment Details</h2>
                   <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '14px' }}>
