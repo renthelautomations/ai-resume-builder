@@ -754,30 +754,37 @@ button {
     headlineShimmer 6s linear infinite;
 }
 
-/* --- ANIMATED SUBTITLE --- */
-@keyframes subtitleReveal {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-    letter-spacing: 0em;
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    letter-spacing: 0.05em;
-  }
+/* --- ANIMATED SUBTITLE (TYPEWRITER) --- */
+@keyframes revealText {
+  to { left: 100%; }
+}
+
+@keyframes blinkCursor {
+  from, to { border-left-color: transparent; }
+  50% { border-left-color: var(--text-muted); }
 }
 
 .animated-subtitle {
+  position: relative;
+  display: inline-block;
   font-size: 18px;
   color: var(--text-muted);
   margin-bottom: 0;
   text-transform: uppercase;
-  
-  /* Initial state before animation starts */
-  opacity: 0;
-  
-  /* Animation */
-  animation: subtitleReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.2s; /* Wait for main headline */
+  letter-spacing: 0.05em;
+}
+
+.animated-subtitle::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #0f172a; /* Matches panel background */
+  border-left: 2px solid var(--text-muted); /* Cursor */
+  /* 23 steps for 'HARVARD RESUME TEMPLATE' */
+  animation: 
+    revealText 1s steps(23) 0.8s forwards,
+    blinkCursor 0.7s step-end infinite;
 }
