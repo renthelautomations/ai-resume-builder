@@ -106,7 +106,7 @@ export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchas
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           {step === 1 && (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-              <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 8px' }}>
+              <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 8px 24px 8px' }}>
                 <div style={{ textAlign: 'center', marginBottom: '24px' }}>
                   <h2 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 8px 0', color: '#fff' }}>Choose Your Pack</h2>
                   <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '14px' }}>Select the credit package that fits your needs.</p>
@@ -170,7 +170,7 @@ export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchas
 
           {step === 2 && (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-              <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 8px' }}>
+              <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 8px 24px 8px' }}>
                 <div style={{ textAlign: 'center', marginBottom: '16px' }}>
                   <h2 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 6px 0', color: '#fff' }}>Payment Process</h2>
                   <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '13px' }}>
@@ -208,7 +208,7 @@ export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchas
 
           {step === 3 && (
             <form onSubmit={handleSubmit} style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-              <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 8px' }}>
+              <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 8px 24px 8px' }}>
                 <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                   <h2 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 8px 0', color: '#fff' }}>Payment Details</h2>
                   <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '14px' }}>
