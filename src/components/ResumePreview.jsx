@@ -177,7 +177,11 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
     const updateScale = () => {
       if (wrapperRef.current) {
         const targetWidth = 816; // 8.5in at 96 DPI
-        const availableWidth = wrapperRef.current.clientWidth;
+        const computedStyle = window.getComputedStyle(wrapperRef.current);
+        const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
+        const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
+        const availableWidth = wrapperRef.current.clientWidth - paddingLeft - paddingRight;
+        
         if (availableWidth > 0 && availableWidth < targetWidth) {
           setScale(availableWidth / targetWidth);
         } else {
