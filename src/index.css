@@ -569,6 +569,8 @@ button {
     margin-right: calc(-50vw + 50%);
     padding-left: 10vw; /* To give the first and last cards some breathing room */
     padding-right: 10vw;
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
   }
   
   .stepper-container::-webkit-scrollbar {
