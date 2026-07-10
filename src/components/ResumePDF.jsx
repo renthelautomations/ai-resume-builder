@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     padding: '0.75in',
     backgroundColor: '#ffffff',
     color: '#000000',
-    fontSize: 11,
+    fontSize: 10.5,
     lineHeight: 1.25,
   },
   name: {
@@ -41,11 +41,11 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontFamily: 'Times-Bold',
-    fontSize: 11,
+    fontSize: 10.5,
   },
   italicText: {
     fontFamily: 'Times-Italic',
-    fontSize: 11,
+    fontSize: 10.5,
   },
   bulletRow: {
     flexDirection: 'row',
@@ -54,18 +54,18 @@ const styles = StyleSheet.create({
   bulletPoint: {
     width: 14,
     marginLeft: 4,
-    fontSize: 11,
+    fontSize: 10,
   },
   bulletText: {
     flex: 1,
-    fontSize: 11,
+    fontSize: 10,
   },
   summary: {
-    fontSize: 11,
+    fontSize: 10.5,
     marginBottom: 0,
   },
   skills: {
-    fontSize: 11,
+    fontSize: 10.5,
     marginBottom: 0,
   }
 });
