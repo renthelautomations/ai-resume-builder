@@ -230,8 +230,8 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
         <div className="business-card">
           
           {/* Left Side: Identity */}
-          <div className="business-card-left">
-            <div style={{ position: 'relative', display: 'inline-block', marginBottom: '16px' }}>
+          <div className="business-card-left" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ position: 'relative', display: 'inline-block', marginBottom: '24px' }}>
               <div className="business-card-avatar" style={{ marginBottom: 0 }}>
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" />
@@ -255,7 +255,7 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
                 {uploading ? <div className="spinner" style={{width: '16px', height: '16px', borderTopColor: '#fff'}} /> : <Camera size={16} />}
               </button>
             </div>
-            <div className="motivational-container" style={{ fontSize: '14px', color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '2px', fontWeight: '700' }}>
+            <div className="motivational-container" style={{ fontSize: '12px', color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '8px', fontWeight: '600' }}>
               <div className="motivational-placeholder">
                 {motivationalMessage},
               </div>
@@ -263,7 +263,7 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
                 {motivationalMessage},
               </div>
             </div>
-            <h1 className="business-card-name" style={{ marginBottom: 0, marginTop: 0 }}>
+            <h1 className="business-card-name" style={{ fontSize: '32px', marginBottom: 0, marginTop: 0, lineHeight: 1 }}>
               {firstName}!
             </h1>
           </div>
