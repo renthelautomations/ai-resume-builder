@@ -388,11 +388,6 @@
 }
 
 @media (max-width: 768px) {
-  .credits-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
   .pricing-grid {
     grid-template-columns: 1fr;
     gap: 32px;

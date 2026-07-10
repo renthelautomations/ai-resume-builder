@@ -103,17 +103,17 @@ export default function CreditsTab({ user }) {
 
   return (
     <div className="credits-container">
-      <div className="credits-header">
-        <div>
-          <h2 className="credits-title">Your Credits</h2>
-          <p className="credits-subtitle">Manage your balance and fuel your AI-powered career growth.</p>
+      <div style={{ marginBottom: '24px' }}>
+        <div className="credits-header" style={{ marginBottom: '4px' }}>
+          <h2 className="credits-title" style={{ marginBottom: '0' }}>Your Credits</h2>
+          <button 
+            className="credits-buy-btn"
+            onClick={() => handleRequestPurchase('Basic')}
+          >
+            <CreditCard size={18} /> Buy Credits
+          </button>
         </div>
-        <button 
-          className="credits-buy-btn"
-          onClick={() => handleRequestPurchase('Basic')}
-        >
-          <CreditCard size={18} /> Buy Credits
-        </button>
+        <p className="credits-subtitle">Manage your balance and fuel your AI-powered career growth.</p>
       </div>
 
       <div className="balance-card">
