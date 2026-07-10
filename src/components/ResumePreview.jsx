@@ -512,24 +512,25 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
 
   return (
     <div className="right">
-      <div className="mobile-order-3" style={{ width: '100%', maxWidth: '8.5in', margin: '0 auto 16px auto' }}>
-        <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
+      <div className="mobile-order-6" style={{ width: '100%', maxWidth: '8.5in', margin: '0 auto 16px auto', boxSizing: 'border-box' }}>
+        <div style={{ display: 'flex', gap: '12px', width: '100%' }}>
           <button 
             className="primary-btn" 
             onClick={handleGenerateClick} 
             disabled={isLoading}
             style={{ 
               flex: 1, 
-              padding: '16px', 
-              fontSize: '18px', 
+              padding: '12px', 
+              fontSize: '14px', 
               fontWeight: '700',
+              whiteSpace: 'nowrap',
               background: buttonError ? '#EF4444' : buttonSuccess ? '#10B981' : '', 
               animation: buttonError ? 'errorGlowLoop 2s infinite ease-in-out' : buttonSuccess ? 'successGlowLoop 2s infinite ease-in-out' : 'buttonGlowLoop 2s infinite ease-in-out',
               transition: 'all 0.3s ease'
             }}
           >
             {isLoading && <span className="spinner"></span>}
-            <span>{buttonError ? buttonError : buttonSuccess ? buttonSuccess : (isLoading ? 'Generating...' : 'Re-generate Resume (1 Credit)')}</span>
+            <span>{buttonError ? buttonError : buttonSuccess ? buttonSuccess : (isLoading ? 'Generating...' : 'Re-generate')}</span>
           </button>
 
           <button 
@@ -537,9 +538,10 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
             disabled={isLoading}
             style={{ 
               flex: 1, 
-              padding: '16px', 
-              fontSize: '18px', 
+              padding: '12px', 
+              fontSize: '14px', 
               fontWeight: '700',
+              whiteSpace: 'nowrap',
               background: 'rgba(255,255,255,0.05)',
               color: '#fff',
               border: '1px solid rgba(255,255,255,0.1)',

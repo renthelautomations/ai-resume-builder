@@ -539,11 +539,14 @@ button {
     display: contents;
   }
 
+  #how-it-works-headers { margin-top: 48px !important; }
   .mobile-order-1 { order: 1; }
   .mobile-order-2 { order: 2; padding: 24px 20px; }
-  .mobile-order-3 { order: 3; padding: 16px 20px 32px 20px; border-bottom: 1px solid; border-image: linear-gradient(to right, transparent, var(--border) 15%, var(--border) 85%, transparent) 1; }
+  .mobile-order-3 { order: 3; padding: 16px 20px; }
   .mobile-order-4 { order: 4; padding: 16px 20px; }
   .mobile-order-5 { order: 5; padding: 24px 20px; }
+  .mobile-order-6 { order: 6; padding: 24px 20px; }
+  .mobile-order-7 { order: 7; padding: 24px 20px 48px 20px; }
   
   /* Navbar */
   .top-nav {
