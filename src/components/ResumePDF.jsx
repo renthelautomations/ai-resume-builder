@@ -125,15 +125,9 @@ export default function ResumePDF({ resumeData }) {
                     <Text style={styles.italicText}>{job.title}</Text>
                     <Text style={styles.italicText}>{job.dates}</Text>
                   </View>
-                  {job.bullets && job.bullets.length > 0 && (
-                    <View style={styles.bulletRow}>
-                      <Text style={styles.bulletPoint}>•</Text>
-                      <Text style={styles.bulletText}>{job.bullets[0]}</Text>
-                    </View>
-                  )}
                 </View>
-                {job.bullets && job.bullets.slice(1).map((b, j) => (
-                  <View key={j + 1} style={styles.bulletRow}>
+                {job.bullets && job.bullets.map((b, j) => (
+                  <View key={j} style={styles.bulletRow} wrap={false}>
                     <Text style={styles.bulletPoint}>•</Text>
                     <Text style={styles.bulletText}>{b}</Text>
                   </View>
@@ -158,15 +152,9 @@ export default function ResumePDF({ resumeData }) {
                       <Text style={styles.italicText}>Tech Stack: {p.stack}</Text>
                     </View>
                   )}
-                  {p.bullets && p.bullets.length > 0 && (
-                    <View style={styles.bulletRow}>
-                      <Text style={styles.bulletPoint}>•</Text>
-                      <Text style={styles.bulletText}>{p.bullets[0]}</Text>
-                    </View>
-                  )}
                 </View>
-                {p.bullets && p.bullets.slice(1).map((b, j) => (
-                  <View key={j + 1} style={styles.bulletRow}>
+                {p.bullets && p.bullets.map((b, j) => (
+                  <View key={j} style={styles.bulletRow} wrap={false}>
                     <Text style={styles.bulletPoint}>•</Text>
                     <Text style={styles.bulletText}>{b}</Text>
                   </View>
@@ -190,15 +178,9 @@ export default function ResumePDF({ resumeData }) {
                     <Text style={styles.italicText}>{e.school}</Text>
                     <Text style={styles.italicText}>{e.dates}</Text>
                   </View>
-                  {e.details && e.details.length > 0 && (
-                    <View style={styles.bulletRow}>
-                      <Text style={styles.bulletPoint}>•</Text>
-                      <Text style={styles.bulletText}>{e.details[0]}</Text>
-                    </View>
-                  )}
                 </View>
-                {e.details && e.details.slice(1).map((d, j) => (
-                  <View key={j + 1} style={styles.bulletRow}>
+                {e.details && e.details.map((d, j) => (
+                  <View key={j} style={styles.bulletRow} wrap={false}>
                     <Text style={styles.bulletPoint}>•</Text>
                     <Text style={styles.bulletText}>{d}</Text>
                   </View>
