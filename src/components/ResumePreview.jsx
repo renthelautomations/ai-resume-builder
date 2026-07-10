@@ -115,13 +115,20 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
     if (container.children.length > 30) {
       const startCard = container.children[30];
       if (startCard) {
-        startCard.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
+        const targetLeft = startCard.offsetLeft - (container.clientWidth / 2) + (startCard.clientWidth / 2);
+        container.scrollTo({ left: targetLeft, behavior: 'auto' });
       }
     }
 
     let isTouching = false;
     container.addEventListener('touchstart', () => { isTouching = true; }, { passive: true });
     container.addEventListener('touchend', () => { isTouching = false; }, { passive: true });
+
+    const scrollToCard = (card, behavior = 'smooth') => {
+      if (!card) return;
+      const targetLeft = card.offsetLeft - (container.clientWidth / 2) + (card.clientWidth / 2);
+      container.scrollTo({ left: targetLeft, behavior });
+    };
 
     const interval = setInterval(() => {
       if (!stepperRef.current || isTouching) return;
@@ -148,19 +155,15 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
       // If we are getting too close to the edges, silently reset to the middle
       if (currentIndex > 50 || currentIndex < 10) {
         const equivalentIndex = 30 + (currentIndex % 3);
-        cards[equivalentIndex].scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
+        scrollToCard(cards[equivalentIndex], 'auto');
         
         // Then smoothly scroll to the next one
         setTimeout(() => {
-          if (cards[equivalentIndex + 1]) {
-            cards[equivalentIndex + 1].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-          }
+          scrollToCard(cards[equivalentIndex + 1], 'smooth');
         }, 50);
       } else {
         // Just scroll to the next one
-        if (cards[currentIndex + 1]) {
-          cards[currentIndex + 1].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-        }
+        scrollToCard(cards[currentIndex + 1], 'smooth');
       }
     }, 5000);
     
