@@ -689,7 +689,7 @@ export default function ResumePreview({ resumeData, setResumeData, isLoading, lo
         <div className="preview-actions-inner">
           <div className="preview-actions-left">
             <span style={{ fontSize: '13px', color: 'var(--text-muted)', opacity: 0.8, textAlign: 'left' }}>
-              💡 Tip: Click Edit to tweak text before downloading.
+              💡 Tip: Click Edit to tweak content before downloading.
             </span>
             {!isEditing && (
               <button 
