@@ -953,3 +953,10 @@ button {
     width: auto;
   }
 }
+
+@media (max-width: 768px) {
+  .loading-ui-mobile-spacing {
+    padding-top: 80px !important;
+    padding-bottom: 80px !important;
+  }
+}

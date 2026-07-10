@@ -103,7 +103,7 @@ function LoadingView({ loadingStep, profileText, user }) {
 
   return (
     <div className="right centered">
-      <div className="mobile-order-4" style={{ width: '100%', margin: 'auto' }}>
+      <div className="mobile-order-4 loading-ui-mobile-spacing" style={{ width: '100%', margin: 'auto' }}>
         <div id="loadingState" style={{ margin: 'auto', width: '100%', maxWidth: '400px', textAlign: 'center', animation: 'fadeIn 0.5s ease' }}>
         
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
