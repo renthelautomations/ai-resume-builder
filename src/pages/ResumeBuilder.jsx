@@ -293,8 +293,10 @@ export default function ResumeBuilder() {
         <div 
           className="nav-logo cursor-pointer" 
           onClick={() => navigate('/')}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
         >
-          <span className="font-bold tracking-tight">AI Resume Builder</span>
+          <img src="/favicon.png" alt="Icon" style={{ width: '32px', height: '32px' }} />
+          <span className="font-bold tracking-tight nav-brand-text">AI Resume Builder</span>
         </div>
         <div className="nav-actions">
           {user ? (

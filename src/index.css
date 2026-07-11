@@ -959,4 +959,8 @@ button {
     padding-top: 80px !important;
     padding-bottom: 80px !important;
   }
+  
+  .nav-brand-text {
+    display: none !important;
+  }
 }
