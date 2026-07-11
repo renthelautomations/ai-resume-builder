@@ -169,8 +169,8 @@ export default function AdminDashboard() {
         return (
           <>
             <div className="admin-header-container" style={{ marginBottom: '32px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'nowrap' }}>
-                <h1 className="admin-header-title" style={{ margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Platform Overview</h1>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'nowrap', width: '100%' }}>
+                <h1 className="admin-header-title" style={{ margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }}>Platform Overview</h1>
                 <button 
                   className="mobile-home-btn"
                   onClick={() => navigate('/')}
