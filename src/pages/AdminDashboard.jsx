@@ -169,17 +169,15 @@ export default function AdminDashboard() {
         return (
           <>
             <div className="admin-header-container" style={{ marginBottom: '32px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'nowrap', width: '100%' }}>
-                <h1 className="admin-header-title" style={{ margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }}>Platform Overview</h1>
-                <button 
-                  className="mobile-home-btn"
-                  onClick={() => navigate('/')}
-                  title="Go to Main Page"
-                  onMouseOver={(e) => e.currentTarget.style.color = '#60A5FA'}
-                  onMouseOut={(e) => e.currentTarget.style.color = '#9ca3af'}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h1 className="admin-header-title" style={{ margin: 0 }}>Platform Overview</h1>
+                <div 
+                  onClick={() => navigate('/')} 
+                  style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}
+                  title="Return to Home"
                 >
-                  <Home size={24} />
-                </button>
+                  <Home size={20} color="#9ca3af" />
+                </div>
               </div>
               <p className="admin-header-desc" style={{ marginTop: '8px' }}>Manage your AI Resume Builder configurations and users.</p>
             </div>
