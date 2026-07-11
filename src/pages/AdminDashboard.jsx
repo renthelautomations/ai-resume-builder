@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
 import { useToast } from '../context/ToastContext';
-import { Settings, Users, Database, LogOut, LayoutDashboard, Eye, EyeOff, CreditCard, CheckCircle, XCircle, Activity, Globe, TrendingUp, AlertCircle, Award, Clock, FileText } from 'lucide-react';
+import { Settings, Users, Database, LogOut, LayoutDashboard, Eye, EyeOff, CreditCard, CheckCircle, XCircle, Activity, Globe, TrendingUp, AlertCircle, Award, Clock, FileText, Home } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import '../components/UserDashboard/UserDashboard.css'; // Reuse dashboard styles
 import './AdminDashboard.css'; // Admin specific styles
@@ -169,8 +169,19 @@ export default function AdminDashboard() {
         return (
           <>
             <div className="admin-header-container" style={{ marginBottom: '32px' }}>
-              <h1 className="admin-header-title">Platform Overview</h1>
-              <p className="admin-header-desc">Manage your AI Resume Builder configurations and users.</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h1 className="admin-header-title" style={{ margin: 0 }}>Platform Overview</h1>
+                <button 
+                  onClick={() => navigate('/')}
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#9ca3af', display: 'flex', alignItems: 'center', transition: 'color 0.2s ease' }}
+                  title="Go to Main Page"
+                  onMouseOver={(e) => e.currentTarget.style.color = '#60A5FA'}
+                  onMouseOut={(e) => e.currentTarget.style.color = '#9ca3af'}
+                >
+                  <Home size={24} />
+                </button>
+              </div>
+              <p className="admin-header-desc" style={{ marginTop: '8px' }}>Manage your AI Resume Builder configurations and users.</p>
             </div>
 
             {/* Vercel Web Analytics KPI Cards */}
