@@ -15,7 +15,14 @@ import PurchaseSuccessModal from '../components/PurchaseSuccessModal';
 
 const isInAppBrowser = () => {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
-  return (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1) || (ua.indexOf("Threads") > -1);
+  return (ua.indexOf("FBAN") > -1) || 
+         (ua.indexOf("FBAV") > -1) || 
+         (ua.indexOf("Instagram") > -1) || 
+         (ua.indexOf("Threads") > -1) || 
+         (ua.indexOf("Barcelona") > -1) || 
+         (ua.indexOf("Twitter") > -1) || 
+         (ua.indexOf("Line") > -1) || 
+         (ua.indexOf("MicroMessenger") > -1);
 };
 
 export default function ResumeBuilder() {
