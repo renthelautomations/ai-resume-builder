@@ -413,7 +413,7 @@ export default function ResumeBuilder() {
             {isInAppBrowser() ? (
               <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#FCA5A5', padding: '16px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
                 <p style={{ margin: '0 0 8px 0', fontWeight: 'bold' }}>Google Sign-In is blocked here.</p>
-                <p style={{ margin: 0, lineHeight: 1.5 }}>To continue, tap the <strong>•••</strong> menu at the top right and select <strong>"Open in System Browser"</strong> (or Chrome/Safari).</p>
+                <p style={{ margin: 0, lineHeight: 1.5 }}>To continue, tap the <strong>•••</strong> menu icon (at the top or bottom of your screen) and select <strong>"Open in browser"</strong>.</p>
               </div>
             ) : (
               <p>Sign in to generate and securely save your ATS-optimized resumes.</p>
