@@ -169,11 +169,11 @@ export default function AdminDashboard() {
         return (
           <>
             <div className="admin-header-container" style={{ marginBottom: '32px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h1 className="admin-header-title" style={{ margin: 0 }}>Platform Overview</h1>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'nowrap' }}>
+                <h1 className="admin-header-title" style={{ margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Platform Overview</h1>
                 <button 
+                  className="mobile-home-btn"
                   onClick={() => navigate('/')}
-                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#9ca3af', display: 'flex', alignItems: 'center', transition: 'color 0.2s ease' }}
                   title="Go to Main Page"
                   onMouseOver={(e) => e.currentTarget.style.color = '#60A5FA'}
                   onMouseOut={(e) => e.currentTarget.style.color = '#9ca3af'}
