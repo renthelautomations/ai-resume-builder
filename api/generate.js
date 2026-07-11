@@ -60,10 +60,12 @@ export default async function handler(req, res) {
       global: { headers: { Authorization: `Bearer ${token}` } }
     });
 
+    console.log("Token received. Length:", token?.length, "Starts with:", token ? token.substring(0, 5) : 'N/A');
+
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     if (authError || !user) {
       console.error('Auth Error in generate.js:', authError);
-      return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+      return res.status(401).json({ error: `Unauthorized: Invalid token. Details: ${authError?.message || 'No user found'}` });
     }
 
     // 2. Check Credits

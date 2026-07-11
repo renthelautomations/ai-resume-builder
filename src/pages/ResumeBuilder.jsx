@@ -13,6 +13,11 @@ import UserDashboard from '../components/UserDashboard/UserDashboard';
 import InsufficientCreditsModal from '../components/InsufficientCreditsModal';
 import PurchaseSuccessModal from '../components/PurchaseSuccessModal';
 
+const isInAppBrowser = () => {
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  return (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1) || (ua.indexOf("Threads") > -1);
+};
+
 export default function ResumeBuilder() {
   const { addToast } = useToast();
   const { user, isAdmin, signOut, signInWithGoogle } = useAuth();
@@ -398,11 +403,20 @@ export default function ResumeBuilder() {
         <div className="modal-overlay" onClick={() => setShowLoginModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h2>Almost there!</h2>
-            <p>Sign in to generate and securely save your ATS-optimized resumes.</p>
+            {isInAppBrowser() ? (
+              <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#FCA5A5', padding: '16px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                <p style={{ margin: '0 0 8px 0', fontWeight: 'bold' }}>Google Sign-In is blocked here.</p>
+                <p style={{ margin: 0, lineHeight: 1.5 }}>To continue, tap the <strong>•••</strong> menu at the top right and select <strong>"Open in System Browser"</strong> (or Chrome/Safari).</p>
+              </div>
+            ) : (
+              <p>Sign in to generate and securely save your ATS-optimized resumes.</p>
+            )}
             
             <button
               onClick={handleGoogleLogin}
               className="google-btn"
+              disabled={isInAppBrowser()}
+              style={isInAppBrowser() ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
             >
               <svg viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

@@ -14,6 +14,7 @@
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",
     "@vercel/analytics": "^2.0.1",
+    "boneyard-js": "^1.9.0",
     "docx": "^9.7.1",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
