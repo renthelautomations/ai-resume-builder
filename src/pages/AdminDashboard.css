@@ -217,20 +217,3 @@
     grid-template-columns: 1fr;
   }
 }
-
-.mobile-home-btn {
-  display: none !important;
-}
-
-@media (max-width: 768px) {
-  .mobile-home-btn {
-    display: flex !important;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #9ca3af;
-    align-items: center;
-    transition: color 0.2s ease;
-    padding: 0;
-  }
-}
