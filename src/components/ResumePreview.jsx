@@ -22,7 +22,7 @@ class PDFErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <button disabled style={{ width: 'auto', background: '#334155', color: '#EF4444', fontSize: '14px', padding: '10px 16px', borderRadius: '8px', border: '1px solid #EF4444' }}>
-          PDF Error
+          PDF preview unavailable
         </button>
       );
     }
@@ -470,17 +470,17 @@ export default function ResumePreview({ user, resumeData, setResumeData, isLoadi
     const hasJD = Boolean(jobDescription && jobDescription.trim());
     
     if (!hasProfile && !hasJD) {
-      setButtonError("Missing: Profile & Job Description");
+      setButtonError('Load a profile and add a job description');
       setTimeout(() => setButtonError(''), 3000);
       return;
     }
     if (!hasProfile) {
-      setButtonError("Missing: Profile");
+      setButtonError('Load a profile to continue');
       setTimeout(() => setButtonError(''), 3000);
       return;
     }
     if (!hasJD) {
-      setButtonError("Missing: Job Description");
+      setButtonError('Add a job description to continue');
       setTimeout(() => setButtonError(''), 3000);
       return;
     }
@@ -637,7 +637,7 @@ export default function ResumePreview({ user, resumeData, setResumeData, isLoadi
       addToast('PDF downloaded successfully!', 'success');
     } catch (err) {
       console.error("Failed to generate PDF:", err);
-      addToast("Failed to generate PDF. Please try again.", 'error');
+      addToast("We couldn't create the PDF. Please try again.", 'error');
     } finally {
       setIsGeneratingPdf(false);
     }

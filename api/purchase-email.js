@@ -141,22 +141,22 @@ function getPlainText({ audience, subscription, userEmail, submittedAt }) {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'This request method is not supported.' });
   }
 
   if (!process.env.RESEND_API_KEY) {
-    return res.status(503).json({ error: 'Email service is not configured' });
+    return res.status(503).json({ error: 'Purchase email service is temporarily unavailable. Please try again later.' });
   }
 
   const token = getBearerToken(req);
   const { subscriptionId } = req.body || {};
   if (!token || !subscriptionId || !/^[0-9a-f-]{36}$/i.test(subscriptionId)) {
-    return res.status(400).json({ error: 'Missing or invalid request' });
+    return res.status(400).json({ error: "We couldn't process this purchase notification." });
   }
 
   if (!process.env.VITE_SUPABASE_URL || !process.env.VITE_SUPABASE_ANON_KEY) {
     console.error('Purchase email configuration is missing Supabase keys');
-    return res.status(500).json({ error: 'Server misconfiguration' });
+    return res.status(500).json({ error: 'Purchase notification service is temporarily unavailable.' });
   }
 
   try {
@@ -166,7 +166,7 @@ export default async function handler(req, res) {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
     if (authError || !user?.email) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).json({ error: 'Your session expired. Please sign in again.' });
     }
 
     const { data: subscription, error: subscriptionError } = await supabase
@@ -177,11 +177,11 @@ export default async function handler(req, res) {
       .single();
 
     if (subscriptionError || !subscription) {
-      return res.status(404).json({ error: 'Purchase request not found' });
+      return res.status(404).json({ error: 'Purchase request not found. Refresh and try again.' });
     }
 
     if (subscription.status !== 'pending') {
-      return res.status(409).json({ error: 'Purchase request is no longer pending' });
+      return res.status(409).json({ error: 'This purchase request has already been reviewed.' });
     }
 
     const adminEmail = process.env.PURCHASE_ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL;
@@ -222,7 +222,7 @@ export default async function handler(req, res) {
     const failed = results.find(({ response }) => !response.ok);
     if (failed) {
       console.error('Resend purchase email failed:', failed.response.status, failed.data?.message || failed.data?.error);
-      return res.status(502).json({ error: 'Email service failed to send notification' });
+      return res.status(502).json({ error: "We couldn't send purchase notifications. Please try again later." });
     }
 
     let telegramSent = false;
@@ -244,6 +244,6 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('Purchase email route failed:', error.message);
-    return res.status(500).json({ error: 'Could not send purchase notification' });
+    return res.status(500).json({ error: "We couldn't send purchase notifications. Please try again later." });
   }
 }

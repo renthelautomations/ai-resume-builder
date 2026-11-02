@@ -5,6 +5,29 @@ import { Redis } from '@upstash/redis';
 let redis;
 let ratelimit;
 
+function getGenerationFailure(error) {
+  const message = String(error?.message || error || '').toLowerCase();
+
+  if (error?.providerStatus === 429 || /max_tokens|quota|rate limit|too many requests|usage limit|insufficient balance|requires more credits|can only afford|spend limit|provider.*limit/.test(message)) {
+    return {
+      status: 503,
+      message: 'Resume generation is temporarily unavailable because the AI service reached its usage limit. Please try again later.'
+    };
+  }
+
+  if (/json|parse|invalid response|incomplete ai response/.test(message)) {
+    return {
+      status: 502,
+      message: "We received an incomplete AI response. Please try again."
+    };
+  }
+
+  return {
+    status: 500,
+    message: "We couldn't generate your resume right now. Please try again."
+  };
+}
+
 export default async function handler(req, res) {
   if (!redis) {
     redis = new Redis({
@@ -19,7 +42,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).send('Method Not Allowed');
+    return res.status(405).json({ error: 'This request method is not supported.' });
   }
 
   try {
@@ -36,7 +59,7 @@ export default async function handler(req, res) {
     
     if (!success) {
       console.warn(`Rate limit exceeded for IP: ${ip}`);
-      return res.status(429).json({ error: 'Too many requests. Please wait a minute before trying again.' });
+      return res.status(429).json({ error: 'Too many resume requests. Please wait a minute and try again.' });
     }
 
     const { systemPrompt, userMsg } = req.body;
@@ -44,7 +67,7 @@ export default async function handler(req, res) {
     // 1. Verify User Authentication
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' });
+      return res.status(401).json({ error: 'Please sign in to generate a resume.' });
     }
     const token = authHeader.split(' ')[1];
 
@@ -60,12 +83,13 @@ export default async function handler(req, res) {
       global: { headers: { Authorization: `Bearer ${token}` } }
     });
 
-    console.log("Token received. Length:", token?.length, "Starts with:", token ? token.substring(0, 5) : 'N/A');
-
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     if (authError || !user) {
-      console.error('Auth Error in generate.js:', authError);
-      return res.status(401).json({ error: `Unauthorized: Invalid token. Details: ${authError?.message || 'No user found'}` });
+      console.error('Resume generation authentication failed:', {
+        code: authError?.code,
+        status: authError?.status
+      });
+      return res.status(401).json({ error: 'Your session expired. Please sign in again.' });
     }
 
     // 2. Check Credits
@@ -75,8 +99,16 @@ export default async function handler(req, res) {
       .eq('id', user.id)
       .single();
 
-    if (profileErr || !profile || profile.credits <= 0) {
-      return res.status(403).json({ error: 'Insufficient credits. Please purchase more.' });
+    if (profileErr) {
+      console.error('Resume credit lookup failed:', {
+        code: profileErr.code,
+        status: profileErr.status
+      });
+      return res.status(503).json({ error: "We couldn't verify your credits right now. Please try again." });
+    }
+
+    if (!profile || profile.credits <= 0) {
+      return res.status(403).json({ error: "You don't have enough credits to generate a resume. Add credits and try again." });
     }
 
     // 3. Call OpenRouter API
@@ -100,7 +132,12 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     if (!response.ok || data.error) {
-      throw new Error((data.error && data.error.message) || "OpenRouter API Error");
+      const providerMessage = typeof data?.error === 'string'
+        ? data.error
+        : data?.error?.message || data?.error?.code || `Provider returned HTTP ${response.status}`;
+      const providerError = new Error(providerMessage);
+      providerError.providerStatus = response.status;
+      throw providerError;
     }
 
     // 4. Deduct 1 Credit
@@ -113,7 +150,12 @@ export default async function handler(req, res) {
 
     res.status(200).json(data);
   } catch (err) {
-    console.error("Error generating resume:", err);
-    res.status(500).json({ error: err.message });
+    const failure = getGenerationFailure(err);
+    console.error('Resume generation failed:', {
+      providerStatus: err?.providerStatus,
+      errorName: err?.name,
+      responseStatus: failure.status
+    });
+    res.status(failure.status).json({ error: failure.message });
   }
 };

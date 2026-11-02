@@ -228,7 +228,7 @@ export default function AdminDashboard() {
       await fetchSubscriptions(subscriptionFilter);
     } catch (err) {
       console.error(err);
-      addToast('Could not approve subscription', 'error');
+      addToast("We couldn't approve that purchase. Please try again.", 'error');
     } finally {
       setActionLoadingId(null);
     }
@@ -245,7 +245,7 @@ export default function AdminDashboard() {
       await fetchSubscriptions(subscriptionFilter);
     } catch (err) {
       console.error(err);
-      addToast('Could not reject subscription', 'error');
+      addToast("We couldn't reject that purchase. Please try again.", 'error');
     } finally {
       setActionLoadingId(null);
     }

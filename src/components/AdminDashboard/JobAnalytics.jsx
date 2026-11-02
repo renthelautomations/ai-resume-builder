@@ -33,7 +33,7 @@ export default function JobAnalytics() {
       console.error('Failed to load job analytics:', statsError);
       setStats(null);
       setError("Job insights are temporarily unavailable. Please try again shortly.");
-      addToast('Could not load job analytics.', 'error');
+      addToast("We couldn't load job analytics. Please try again.", 'error');
     } else {
       setStats(data || null);
       setLastRefreshedAt(new Date());

@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'This request method is not supported.' });
   }
 
   try {
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
     if (!token) {
       console.error('Missing VERCEL_ACCESS_TOKEN');
-      return res.status(500).json({ error: 'Server misconfiguration' });
+      return res.status(500).json({ error: 'Analytics service is temporarily unavailable.' });
     }
 
     const url = `https://api.vercel.com/v1/query/web-analytics/visits/count?projectId=${projectId}&teamId=${teamId}&from=${from}&to=${to}`;
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
       if (vercelRes.status === 404) {
         return res.status(200).json({ pageViews: 0, visitors: 0 });
       }
-      return res.status(vercelRes.status).json({ error: 'Failed to fetch analytics from Vercel' });
+      return res.status(vercelRes.status).json({ error: "We couldn't load analytics right now. Please try again later." });
     }
 
     const data = await vercelRes.json();
@@ -45,6 +45,6 @@ export default async function handler(req, res) {
     res.status(200).json(data);
   } catch (error) {
     console.error('API Route Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "We couldn't load analytics right now. Please try again later." });
   }
 }

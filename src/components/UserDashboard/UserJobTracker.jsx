@@ -85,7 +85,7 @@ export default function UserJobTracker({ user }) {
 
     if (updateError) {
       console.error('Failed to update job tracker:', updateError);
-      addToast('Could not update tracked job.', 'error');
+      addToast("We couldn't update that tracked job. Please try again.", 'error');
     } else if (data) {
       setApplications(previous => previous.map(item => item.id === data.id ? data : item));
     }
@@ -117,7 +117,7 @@ export default function UserJobTracker({ user }) {
 
     if (deleteError) {
       console.error('Failed to remove tracked job:', deleteError);
-      addToast('Could not remove tracked job.', 'error');
+      addToast("We couldn't remove that tracked job. Please try again.", 'error');
     } else {
       setApplications(previous => previous.filter(item => item.id !== application.id));
       addToast('Job removed from tracker.', 'success');

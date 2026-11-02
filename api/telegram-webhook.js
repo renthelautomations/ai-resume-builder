@@ -76,7 +76,7 @@ async function publishDecisionFeedback(callbackQuery, callbackText, messageText,
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'This request method is not supported.' });
   }
 
   if (!isTelegramWebhookConfigured()) {
@@ -104,11 +104,11 @@ export default async function handler(req, res) {
   const parsedAction = parsePurchaseAction(callbackQuery.data);
   if (!parsedAction) {
     try {
-      await answerCallback(callbackQuery.id, 'Invalid purchase action.', true);
+      await answerCallback(callbackQuery.id, 'This purchase action is no longer valid.', true);
     } catch (error) {
       console.error('Telegram invalid callback response failed:', error.message);
     }
-    return submittedResponse(res, { ok: false, error: 'Invalid action' });
+    return submittedResponse(res, { ok: false, error: 'This purchase action is no longer valid.' });
   }
 
   try {
@@ -162,11 +162,11 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Telegram purchase action failed:', error.message);
     try {
-      await answerCallback(callbackQuery.id, 'Action failed. Check admin dashboard.', true);
-      await editCallbackMessage(callbackQuery, '<b>⚠️ Purchase action failed</b>\n\nCheck the admin dashboard and try again.');
+      await answerCallback(callbackQuery.id, 'We could not complete this purchase action.', true);
+      await editCallbackMessage(callbackQuery, '<b>⚠️ Purchase action could not be completed</b>\n\nCheck the admin dashboard and try again.');
     } catch (telegramError) {
       console.error('Telegram failure response failed:', telegramError.message);
     }
-    return submittedResponse(res, { ok: false, error: 'Purchase action failed' });
+    return submittedResponse(res, { ok: false, error: 'Purchase action could not be completed.' });
   }
 }

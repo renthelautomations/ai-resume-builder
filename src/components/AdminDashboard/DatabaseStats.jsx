@@ -55,7 +55,7 @@ export default function DatabaseStats() {
     } catch (err) {
       console.error('Error fetching stats:', err);
       setError('Database statistics unavailable. Try refreshing.');
-      addToast('Could not load database statistics', 'error');
+      addToast("We couldn't load database statistics. Please try again.", 'error');
     } finally {
       setLoading(false);
     }

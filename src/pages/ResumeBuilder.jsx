@@ -4,6 +4,7 @@ import EditorPanel from '../components/EditorPanel';
 import ResumePreview from '../components/ResumePreview';
 import { generateResumeApi } from '../utils/api';
 import { downloadDocx } from '../utils/docxGenerator';
+import { getResumeError, getUserFacingError } from '../utils/userFacingError';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../utils/supabaseClient';
@@ -219,9 +220,10 @@ export default function ResumeBuilder() {
       setStatus({ type: 'success', text: '' });
       addToast('Resume generated successfully! 1 Credit used.', 'success');
     } catch (err) {
-      console.error(err);
-      setStatus({ type: 'err', text: 'Error: ' + err.message });
-      addToast(err.message, 'error');
+      console.error('Resume generation failed:', { name: err?.name });
+      const friendlyError = getResumeError(err);
+      setStatus({ type: 'err', text: friendlyError });
+      addToast(friendlyError, 'error');
     } finally {
       clearInterval(stepInterval);
       setIsLoading(false);
@@ -234,7 +236,7 @@ export default function ResumeBuilder() {
         await downloadDocx(resumeData, user);
         addToast('DOCX download started!', 'info');
       } catch (err) {
-        addToast(err.message, 'error');
+        addToast(getUserFacingError(err, "We couldn't download your DOCX resume. Please try again."), 'error');
       }
     }
   };
@@ -284,7 +286,7 @@ export default function ResumeBuilder() {
       addToast('Resume saved successfully!', 'success');
     } catch (err) {
       console.error('Error saving resume:', err);
-      addToast('Failed to save resume. Please try again.', 'error');
+      addToast("We couldn't save your resume. Please try again.", 'error');
     } finally {
       setIsSavingResume(false);
     }
@@ -296,7 +298,7 @@ export default function ResumeBuilder() {
       await signInWithGoogle();
     } catch (error) {
       console.error('Error logging in with Google:', error);
-      addToast('Failed to login with Google.', 'error');
+      addToast("Google sign-in didn't complete. Please try again.", 'error');
     }
   };
 

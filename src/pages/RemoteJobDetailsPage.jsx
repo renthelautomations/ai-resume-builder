@@ -119,7 +119,7 @@ export default function RemoteJobDetailsPage() {
 
         if (deleteError) {
           console.error('Failed to untrack job:', deleteError);
-          addToast('Could not remove job from tracker.', 'error');
+          addToast("We couldn't remove that job from your tracker. Please try again.", 'error');
         } else {
           setIsTracked(false);
           addToast('Job removed from your tracker.', 'success');
@@ -145,7 +145,7 @@ export default function RemoteJobDetailsPage() {
             addToast('Job is already in your tracker.', 'info');
           } else {
             console.error('Failed to track job:', insertError);
-            addToast('Could not add job to tracker.', 'error');
+            addToast("We couldn't add that job to your tracker. Please try again.", 'error');
           }
         } else {
           setIsTracked(true);

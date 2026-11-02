@@ -211,12 +211,12 @@ export default function CreditsTab({ user }) {
         await sendPurchaseNotification(data[0].id);
       } catch (emailError) {
         console.error('Purchase submitted, but email notification failed:', emailError);
-        addToast('Purchase submitted, but email notification failed.', 'info');
+        addToast("Purchase submitted. We couldn't send the confirmation email, but your request is saved.", 'info');
       }
       return true;
     } catch (err) {
       console.error(err);
-      addToast('Failed to submit purchase request.', 'error');
+      addToast("We couldn't submit your purchase request. Please try again.", 'error');
       return false;
     } finally {
       setIsRequesting(false);

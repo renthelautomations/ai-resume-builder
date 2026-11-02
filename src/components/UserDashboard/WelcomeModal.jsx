@@ -7,6 +7,7 @@ import './WelcomeModal.css';
 export default function WelcomeModal({ user, onClaimed }) {
   const [isClaiming, setIsClaiming] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState('');
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -29,6 +30,7 @@ export default function WelcomeModal({ user, onClaimed }) {
 
   const handleClaim = async () => {
     setIsClaiming(true);
+    setError('');
     try {
       const { error } = await supabase.rpc('claim_welcome_credits');
       if (error) throw error;
@@ -40,6 +42,7 @@ export default function WelcomeModal({ user, onClaimed }) {
     } catch (error) {
       console.error('Error claiming credits:', error);
       setIsClaiming(false);
+      setError("We couldn't claim your welcome credits. Please try again.");
     }
   };
 
@@ -88,6 +91,12 @@ export default function WelcomeModal({ user, onClaimed }) {
                 <span className="gift-text">Free Credits</span>
               </div>
               <p className="welcome-subtext">To get you started, we're giving you 2 free credits so you can generate your first ATS-optimized resume right away!</p>
+
+              {error && (
+                <p role="alert" style={{ color: '#FCA5A5', margin: '16px 0 0', fontSize: '14px' }}>
+                  {error}
+                </p>
+              )}
               
               <button 
                 className="welcome-claim-btn"

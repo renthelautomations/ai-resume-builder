@@ -95,7 +95,7 @@ export default function SettingsTab({ user, onProfileSelect }) {
       .single();
 
     if (error) {
-      addToast('Error saving profile', 'error');
+      addToast("We couldn't save your profile. Please try again.", 'error');
     } else {
       setProfiles([newProfile, ...profiles]);
       addToast('Profile added successfully!', 'success');
@@ -136,7 +136,7 @@ export default function SettingsTab({ user, onProfileSelect }) {
       .eq('id', selectedProfile.id);
 
     if (error) {
-      addToast('Error updating profile', 'error');
+      addToast("We couldn't update your profile. Please try again.", 'error');
     } else {
       const updatedProfile = { ...selectedProfile, profile_name: updatedName, raw_text: editRawText, parsed_data: parsedData };
       setSelectedProfile(updatedProfile);
@@ -503,7 +503,7 @@ export default function SettingsTab({ user, onProfileSelect }) {
             setShowViewModal(false);
             addToast('Profile deleted', 'success');
           } else {
-            addToast('Error deleting profile', 'error');
+            addToast("We couldn't delete that profile. Please try again.", 'error');
           }
           setSaving(false);
           setShowDeleteModal(false);

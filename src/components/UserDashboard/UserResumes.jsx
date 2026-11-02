@@ -45,7 +45,7 @@ export default function UserResumes({ user, onSelectResume }) {
     setResumeToDelete(null);
     const { error } = await supabase.from('resumes').delete().eq('id', id);
     if (error) {
-      addToast('Failed to delete resume', 'error');
+      addToast("We couldn't delete that resume. Please try again.", 'error');
     } else {
       addToast('Resume deleted', 'success');
       setResumes(resumes.filter(r => r.id !== id));

@@ -303,7 +303,7 @@ export default function RemoteJobsPage() {
 
         if (deleteError) {
           console.error('Failed to untrack job:', deleteError);
-          addToast('Could not remove job from tracker.', 'error');
+          addToast("We couldn't remove that job from your tracker. Please try again.", 'error');
         } else {
           setTrackedJobIds(previous => previous.filter(jobId => jobId !== job.id));
           addToast('Job removed from your tracker.', 'success');
@@ -329,7 +329,7 @@ export default function RemoteJobsPage() {
             addToast('Job is already in your tracker.', 'info');
           } else {
             console.error('Failed to track job:', insertError);
-            addToast('Could not add job to tracker.', 'error');
+            addToast("We couldn't add that job to your tracker. Please try again.", 'error');
           }
         } else {
           setTrackedJobIds(previous => previous.includes(job.id) ? previous : [...previous, job.id]);

@@ -132,7 +132,7 @@ export async function downloadDocx(resumeData, user) {
     
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   } catch(err) {
-    console.error("Couldn't build the .docx file:", err);
-    throw new Error("Couldn't build the .docx file: " + (err.message || err));
+    console.error("Couldn't build the .docx file:", { name: err?.name });
+    throw new Error("We couldn't prepare your DOCX download. Please try again.");
   }
 }

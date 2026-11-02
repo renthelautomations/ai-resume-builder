@@ -5,6 +5,7 @@ import { stringifyProfileText } from '../../utils/stringifyProfileText';
 import StructuredProfileView from './StructuredProfileView';
 import { UserCircle, Upload, ArrowRight, Mail, Phone, Link as LinkIcon, FileText, FileJson, Zap, Camera } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
+import { getUserFacingError } from '../../utils/userFacingError';
 
 const MOTIVATIONAL_MESSAGES = [
   "Your dream awaits", "Keep moving forward", "Youve got this", "Great things await", "Believe in yourself",
@@ -139,7 +140,7 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
       addToast('Avatar uploaded successfully!', 'success');
     } catch (error) {
       console.error(error);
-      addToast('Error uploading avatar: ' + error.message, 'error');
+      addToast(getUserFacingError(error, "We couldn't upload your profile photo. Please try again."), 'error');
     } finally {
       setUploading(false);
     }
@@ -199,7 +200,7 @@ export default function ProfileTab({ user, onAvatarUpdate, onSwitchTab }) {
       addToast('Profile mapped and saved successfully!', 'success');
     } catch (error) {
       console.error(error);
-      addToast('Error saving profile.', 'error');
+      addToast("We couldn't save your profile. Please try again.", 'error');
     } finally {
       setSaving(false);
     }

@@ -1,3 +1,5 @@
+import { getResumeError } from './userFacingError';
+
 export async function generateResumeApi(profileText, jobDescription, token) {
   const systemPrompt = `You are an expert resume writer and ATS optimization specialist. You will be given a candidate's master profile and a target job description. Select and rewrite the most relevant summary, skills, experience bullets, projects, education, and certifications to match the job description as closely as possible, using strong action verbs and quantified results where the profile supports it. Do not invent facts, employers, dates, or numbers not present in the profile. Keep bullets concise (one line each where possible).
 
@@ -37,10 +39,10 @@ Include ALL THREE employers from the experience section (Chasm Opps, Bee Fearles
   try {
     data = JSON.parse(textBody);
   } catch (err) {
-    throw new Error(`API Error (${response.status}): The server took too long to respond or returned invalid data.`);
+    throw new Error(getResumeError(`API Error (${response.status})`));
   }
 
-  if(data.error) throw new Error(data.error);
+  if (data.error) throw new Error(getResumeError(data.error));
 
   const text = data.choices?.[0]?.message?.content || "";
   
@@ -60,7 +62,7 @@ Include ALL THREE employers from the experience section (Chasm Opps, Bee Fearles
   try {
     return JSON.parse(jsonString);
   } catch(parseErr) {
-    console.error("JSON Parse Error on string:", jsonString);
-    throw new Error("Failed to parse the AI response as JSON. Please try again.");
+    console.error('AI response formatting failed:', { name: parseErr?.name });
+    throw new Error("We couldn't format your resume response. Please try again.");
   }
 }
