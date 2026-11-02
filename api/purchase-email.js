@@ -5,6 +5,7 @@ const DEFAULT_ADMIN_EMAIL = 'rnthlcueto@gmail.com';
 const DEFAULT_FROM_EMAIL = 'AI Resume Builder <onboarding@resend.dev>';
 const BRAND = {
   background: '#0B0E14',
+  emailCanvas: '#FFFFFF',
   surface: '#111827',
   surfaceRaised: '#17223A',
   border: '#26344D',
@@ -68,9 +69,9 @@ function renderPurchaseEmail({ audience, subscription, userEmail, submittedAt, a
   return `
 <!doctype html>
 <html lang="en">
-  <body style="margin: 0; padding: 0; background: ${BRAND.background}; color: ${BRAND.text}; font-family: Arial, Helvetica, sans-serif;">
+  <body style="margin: 0; padding: 0; background: ${BRAND.emailCanvas}; color: ${BRAND.text}; font-family: Arial, Helvetica, sans-serif;">
     <div style="display: none; max-height: 0; overflow: hidden; opacity: 0;">${escapeHtml(intro)}</div>
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background: ${BRAND.background};">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background: ${BRAND.emailCanvas};">
       <tr>
         <td align="center" style="padding: 32px 16px;">
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width: 620px; background: ${BRAND.surface}; border: 1px solid ${BRAND.border}; border-radius: 18px; overflow: hidden;">
