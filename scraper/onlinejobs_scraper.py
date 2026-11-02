@@ -327,7 +327,7 @@ def trim_detail_text(value: str) -> str:
         marker_index = text.casefold().find(marker.casefold())
         if marker_index > 0:
             text = text[:marker_index].strip()
-    return text[:40000]
+    return text
 
 
 def hash_job(title: str, description: str, tags: Iterable[str]) -> str:
@@ -571,7 +571,7 @@ class OnlineJobsScraper:
             external_id=external_id,
             title=title[:500],
             job_url=job_url,
-            description=description[:40000] or title,
+            description=description or title,
             employment_type=employment_type[:120] if employment_type else None,
             salary_text=extract_salary(card_text),
             posted_at=posted_at,

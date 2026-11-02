@@ -143,12 +143,19 @@ export default function ResumeBuilder() {
 
   // Handle restoring job description after OAuth redirect
   useEffect(() => {
+    const routedJobDescription = location.state?.jobDescription;
+    if (typeof routedJobDescription === 'string' && routedJobDescription.trim()) {
+      setJobDescription(routedJobDescription);
+      localStorage.removeItem('savedJobDescription');
+      return;
+    }
+
     const savedJobDesc = localStorage.getItem('savedJobDescription');
     if (savedJobDesc) {
       setJobDescription(savedJobDesc);
       localStorage.removeItem('savedJobDescription');
     }
-  }, [user]);
+  }, [location.state, user]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);

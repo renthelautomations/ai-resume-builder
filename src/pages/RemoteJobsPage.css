@@ -543,7 +543,14 @@
   border: 1px solid rgba(52, 211, 153, 0.3);
   color: #a7f3d0;
   background: rgba(16, 185, 129, 0.12);
-  cursor: default;
+  cursor: pointer;
+}
+
+.remote-jobs-button.tracked:hover {
+  border-color: rgba(248, 113, 113, 0.35);
+  color: #fecaca;
+  background: rgba(239, 68, 68, 0.12);
+  transform: translateY(-1px);
 }
 
 .remote-job-external-link {

@@ -197,14 +197,10 @@ export default function RemoteJobsPage() {
   const goToSignIn = () => navigate('/?signin=1');
 
   const handleBuildResume = job => {
-    const description = job.description || [
-      job.title,
-      job.company && `Company: ${job.company}`,
-      job.location && `Location: ${job.location}`
-    ].filter(Boolean).join('\n');
+    const description = buildJobDescription(job);
 
     localStorage.setItem('savedJobDescription', description);
-    navigate('/');
+    navigate('/', { state: { jobDescription: description } });
   };
 
   const handleTrackJob = async job => {
@@ -214,33 +210,54 @@ export default function RemoteJobsPage() {
       return;
     }
 
+    const isTracked = trackedJobIds.includes(job.id);
     setTrackingId(job.id);
-    const { error: insertError } = await supabase
-      .from('job_applications')
-      .insert({
-        user_id: user.id,
-        job_id: job.id,
-        job_title: job.title,
-        company: job.company,
-        location: job.location,
-        source: job.source,
-        job_url: job.job_url,
-        description: job.description,
-        status: 'saved'
-      });
+    try {
+      if (isTracked) {
+        const { error: deleteError } = await supabase
+          .from('job_applications')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('job_id', job.id);
 
-    if (insertError) {
-      if (insertError.code === '23505') {
-        addToast('Job is already in your tracker.', 'info');
+        if (deleteError) {
+          console.error('Failed to untrack job:', deleteError);
+          addToast('Could not remove job from tracker.', 'error');
+        } else {
+          setTrackedJobIds(previous => previous.filter(jobId => jobId !== job.id));
+          addToast('Job removed from your tracker.', 'success');
+        }
       } else {
-        console.error('Failed to track job:', insertError);
-        addToast('Could not add job to tracker.', 'error');
+        const { error: insertError } = await supabase
+          .from('job_applications')
+          .insert({
+            user_id: user.id,
+            job_id: job.id,
+            job_title: job.title,
+            company: job.company,
+            location: job.location,
+            source: job.source,
+            job_url: job.job_url,
+            description: buildJobDescription(job),
+            status: 'saved'
+          });
+
+        if (insertError) {
+          if (insertError.code === '23505') {
+            setTrackedJobIds(previous => previous.includes(job.id) ? previous : [...previous, job.id]);
+            addToast('Job is already in your tracker.', 'info');
+          } else {
+            console.error('Failed to track job:', insertError);
+            addToast('Could not add job to tracker.', 'error');
+          }
+        } else {
+          setTrackedJobIds(previous => previous.includes(job.id) ? previous : [...previous, job.id]);
+          addToast('Job added to your tracker.', 'success');
+        }
       }
-    } else {
-      setTrackedJobIds(previous => [...previous, job.id]);
-      addToast('Job added to your tracker.', 'success');
+    } finally {
+      setTrackingId(null);
     }
-    setTrackingId(null);
   };
 
   return (
@@ -437,9 +454,11 @@ export default function RemoteJobsPage() {
                       type="button"
                       className={`remote-jobs-button ${isTracked ? 'tracked' : 'secondary'}`}
                       onClick={() => handleTrackJob(job)}
-                      disabled={isTracked || trackingId === job.id}
+                      disabled={trackingId === job.id}
                     >
-                      {isTracked ? 'Tracked' : trackingId === job.id ? 'Saving' : 'Track Job'}
+                      {trackingId === job.id
+                        ? isTracked ? 'Removing' : 'Saving'
+                        : isTracked ? 'Untrack' : 'Track Job'}
                     </button>
                     {job.job_url && (
                       <a className="remote-job-external-link" href={job.job_url} target="_blank" rel="noopener noreferrer" aria-label={`Open ${job.title} listing`}>
@@ -461,6 +480,17 @@ function formatSource(source) {
   if (!source) return 'Remote source';
   if (source.toLowerCase() === 'onlinejobs.ph') return 'OnlineJobs.ph';
   return source.replace(/[-_]+/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
+}
+
+function buildJobDescription(job) {
+  const description = typeof job.description === 'string' ? job.description.trim() : '';
+  if (description) return description;
+
+  return [
+    job.title,
+    job.company && `Company: ${job.company}`,
+    job.location && `Location: ${job.location}`
+  ].filter(Boolean).join('\n');
 }
 
 function formatDate(value) {
