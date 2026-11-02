@@ -29,6 +29,8 @@ const JOB_CATEGORIES = [
 const JOB_FIELDS = 'id, source, title, company, location, job_url, description, employment_type, salary_text, category, source_tags, posted_at, created_at';
 const RECENT_SEARCHES_KEY = 'remoteJobsRecentSearches';
 const MAX_RECENT_SEARCHES = 5;
+const SEARCH_DEBOUNCE_MS = 320;
+const RECENT_SEARCH_IDLE_MS = 900;
 const RECOMMENDED_SEARCHES = [
   { query: 'AI automation', label: 'AI and automation roles' },
   { query: 'Virtual assistant', label: 'Virtual assistant roles' },
@@ -44,10 +46,13 @@ export default function RemoteJobsPage() {
   const { addToast } = useToast();
   const searchFieldRef = useRef(null);
   const fetchSequenceRef = useRef(0);
+  const lastRecordedSearchRef = useRef(null);
   const [jobs, setJobs] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [recentSearches, setRecentSearches] = useState(() => readRecentSearches());
+  const [recommendedSearches, setRecommendedSearches] = useState(RECOMMENDED_SEARCHES);
+  const [hasPersonalizedRecommendations, setHasPersonalizedRecommendations] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [sourceFilter, setSourceFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -77,24 +82,82 @@ export default function RemoteJobsPage() {
 
   const visibleRecommendations = useMemo(() => {
     const query = searchInput.trim().toLowerCase();
-    if (!query) return RECOMMENDED_SEARCHES.slice(0, 4);
-    return RECOMMENDED_SEARCHES
+    if (!query) return recommendedSearches.slice(0, 4);
+    return recommendedSearches
       .filter(item => `${item.query} ${item.label}`.toLowerCase().includes(query))
       .slice(0, 4);
-  }, [searchInput]);
+  }, [recommendedSearches, searchInput]);
 
   useEffect(() => {
     fetchJobs(searchTerm, sourceFilter, categoryFilter);
   }, [searchTerm, sourceFilter, categoryFilter, user?.id]);
 
   useEffect(() => {
-    const normalized = searchInput.trim();
-    const timer = setTimeout(() => {
-      setSearchTerm(normalized);
-      if (normalized.length >= 3) saveRecentSearch(setRecentSearches, normalized);
-    }, 320);
+    let isActive = true;
 
-    return () => clearTimeout(timer);
+    if (!user?.id) {
+      setRecentSearches(readRecentSearches());
+      setRecommendedSearches(RECOMMENDED_SEARCHES);
+      setHasPersonalizedRecommendations(false);
+      return () => {
+        isActive = false;
+      };
+    }
+
+    const loadSearchSuggestions = async () => {
+      const [historyResult, recommendationResult] = await Promise.all([
+        supabase
+          .from('job_searches')
+          .select('query, normalized_query, searched_at')
+          .eq('user_id', user.id)
+          .order('searched_at', { ascending: false })
+          .limit(MAX_RECENT_SEARCHES * 2),
+        supabase.rpc('get_job_search_recommendations', { p_limit: 6 })
+      ]);
+
+      if (!isActive) return;
+
+      if (historyResult.error) {
+        console.warn('Could not load saved job searches:', historyResult.error);
+        setRecentSearches(readRecentSearches());
+      } else {
+        setRecentSearches(dedupeRecentSearches((historyResult.data || []).map(item => item.query)));
+      }
+
+      if (recommendationResult.error || !recommendationResult.data?.length) {
+        if (recommendationResult.error) {
+          console.warn('Could not load personalized job recommendations:', recommendationResult.error);
+        }
+        setRecommendedSearches(RECOMMENDED_SEARCHES);
+        setHasPersonalizedRecommendations(false);
+      } else {
+        const personalized = recommendationResult.data
+          .map(item => ({ query: item.query, label: item.label }))
+          .filter(item => item.query && item.label);
+        setRecommendedSearches(personalized.length ? personalized : RECOMMENDED_SEARCHES);
+        setHasPersonalizedRecommendations(personalized.length > 0);
+      }
+    };
+
+    loadSearchSuggestions();
+    return () => {
+      isActive = false;
+    };
+  }, [user?.id]);
+
+  useEffect(() => {
+    const normalized = searchInput.trim();
+    const searchTimer = setTimeout(() => {
+      setSearchTerm(normalized);
+    }, SEARCH_DEBOUNCE_MS);
+    const recentSearchTimer = setTimeout(() => {
+      if (normalized.length >= 3) recordSearch(normalized);
+    }, RECENT_SEARCH_IDLE_MS);
+
+    return () => {
+      clearTimeout(searchTimer);
+      clearTimeout(recentSearchTimer);
+    };
   }, [searchInput]);
 
   useEffect(() => {
@@ -117,23 +180,6 @@ export default function RemoteJobsPage() {
     setError('');
 
     try {
-      let query = supabase
-        .from('remote_jobs')
-        .select(JOB_FIELDS)
-        .eq('is_active', true)
-        .order('posted_at', { ascending: false, nullsFirst: false })
-        .limit(300);
-
-      const normalizedTerm = term.trim();
-      if (normalizedTerm) {
-        query = query.textSearch('search_vector', normalizedTerm, {
-          config: 'simple',
-          type: 'websearch'
-        });
-      }
-      if (source !== 'all') query = query.eq('source', source);
-      if (category !== 'all') query = query.eq('category', category);
-
       let refreshQuery = supabase
         .from('remote_jobs')
         .select('source, scraped_at')
@@ -144,7 +190,7 @@ export default function RemoteJobsPage() {
       if (source !== 'all') refreshQuery = refreshQuery.eq('source', source);
 
       const [{ data, error: jobsError }, { data: tracked, error: trackedError }, { data: refreshRows, error: refreshError }] = await Promise.all([
-        query,
+        fetchRemoteJobs(term, source, category),
         user
           ? supabase
               .from('job_applications')
@@ -181,8 +227,35 @@ export default function RemoteJobsPage() {
     const normalized = value.trim();
     setSearchInput(normalized);
     setSearchTerm(normalized);
-    if (normalized.length >= 3) saveRecentSearch(setRecentSearches, normalized);
+    if (normalized.length >= 3) recordSearch(normalized);
     setSearchFocused(false);
+  };
+
+  const recordSearch = async value => {
+    const normalized = normalizeSearchTerm(value);
+    if (normalized.length < 3) return;
+
+    const searchKey = `${normalized}|${sourceFilter}|${categoryFilter}`;
+    const now = Date.now();
+    if (lastRecordedSearchRef.current?.key === searchKey && now - lastRecordedSearchRef.current.at < RECENT_SEARCH_IDLE_MS) return;
+    lastRecordedSearchRef.current = { key: searchKey, at: now };
+
+    saveRecentSearch(setRecentSearches, value);
+    if (!user?.id) return;
+
+    const { error: searchError } = await supabase
+      .from('job_searches')
+      .upsert({
+        user_id: user.id,
+        query: value.trim(),
+        normalized_query: normalized,
+        source: sourceFilter,
+        category: categoryFilter,
+        result_count: jobs.length,
+        searched_at: new Date().toISOString()
+      }, { onConflict: 'user_id,normalized_query' });
+
+    if (searchError) console.warn('Could not save job search:', searchError);
   };
 
   const handleSearch = event => {
@@ -190,9 +263,16 @@ export default function RemoteJobsPage() {
     applySearch(searchInput);
   };
 
-  const clearRecentSearches = () => {
+  const clearRecentSearches = async () => {
     setRecentSearches([]);
     if (typeof window !== 'undefined') window.localStorage.removeItem(RECENT_SEARCHES_KEY);
+    if (user?.id) {
+      const { error: clearError } = await supabase
+        .from('job_searches')
+        .delete()
+        .eq('user_id', user.id);
+      if (clearError) console.warn('Could not clear saved job searches:', clearError);
+    }
   };
 
   const goToSignIn = () => navigate('/?signin=1');
@@ -323,7 +403,7 @@ export default function RemoteJobsPage() {
                 )}
                 <section className="remote-jobs-suggestion-group">
                   <div className="remote-jobs-suggestion-heading">
-                    <span><Sparkles size={14} aria-hidden="true" />Recommended searches</span>
+                    <span><Sparkles size={14} aria-hidden="true" />{hasPersonalizedRecommendations ? 'Recommended for you' : 'Recommended searches'}</span>
                   </div>
                   {visibleRecommendations.length > 0 ? (
                     <div className="remote-jobs-suggestion-list">
@@ -484,6 +564,41 @@ export default function RemoteJobsPage() {
   );
 }
 
+async function fetchRemoteJobs(term, source, category) {
+  const rankedResult = await supabase.rpc('search_remote_jobs', {
+    p_query: term.trim(),
+    p_source: source,
+    p_category: category,
+    p_limit: 300
+  });
+
+  if (!rankedResult.error || !isMissingSearchFunction(rankedResult.error)) return rankedResult;
+
+  console.warn('Ranked search is not installed yet. Using compatible fallback search.');
+  let query = supabase
+    .from('remote_jobs')
+    .select(JOB_FIELDS)
+    .eq('is_active', true)
+    .order('posted_at', { ascending: false, nullsFirst: false })
+    .limit(300);
+
+  const normalizedTerm = term.trim();
+  if (normalizedTerm) {
+    query = query.textSearch('search_vector', normalizedTerm, {
+      config: 'simple',
+      type: 'websearch'
+    });
+  }
+  if (source !== 'all') query = query.eq('source', source);
+  if (category !== 'all') query = query.eq('category', category);
+  return query;
+}
+
+function isMissingSearchFunction(error) {
+  const message = String(error?.message || '').toLowerCase();
+  return error?.code === 'PGRST202' || message.includes('search_remote_jobs');
+}
+
 function formatSource(source) {
   if (!source) return 'Remote source';
   if (source.toLowerCase() === 'onlinejobs.ph') return 'OnlineJobs.ph';
@@ -519,10 +634,25 @@ function readRecentSearches() {
   if (typeof window === 'undefined') return [];
   try {
     const saved = JSON.parse(window.localStorage.getItem(RECENT_SEARCHES_KEY) || '[]');
-    return Array.isArray(saved) ? saved.filter(value => typeof value === 'string').slice(0, MAX_RECENT_SEARCHES) : [];
+    return Array.isArray(saved) ? dedupeRecentSearches(saved) : [];
   } catch {
     return [];
   }
+}
+
+function normalizeSearchTerm(value) {
+  return String(value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function dedupeRecentSearches(values) {
+  return values
+    .filter(value => typeof value === 'string' && value.trim().length >= 3)
+    .reduce((searches, value) => {
+      const normalized = normalizeSearchTerm(value);
+      if (!searches.some(item => normalizeSearchTerm(item) === normalized)) searches.push(value.trim());
+      return searches;
+    }, [])
+    .slice(0, MAX_RECENT_SEARCHES);
 }
 
 function saveRecentSearch(setRecentSearches, value) {
@@ -530,8 +660,7 @@ function saveRecentSearch(setRecentSearches, value) {
   if (normalized.length < 3) return;
 
   setRecentSearches(previous => {
-    const next = [normalized, ...previous.filter(item => item.toLowerCase() !== normalized.toLowerCase())]
-      .slice(0, MAX_RECENT_SEARCHES);
+    const next = dedupeRecentSearches([normalized, ...previous]);
     if (typeof window !== 'undefined') window.localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
     return next;
   });
