@@ -245,8 +245,8 @@
 .job-tracker-kanban-card {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 14px;
+  gap: 10px;
+  padding: 12px;
   cursor: grab;
 }
 
@@ -261,7 +261,7 @@
 
 .job-tracker-kanban-card .job-tracker-card-heading {
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .job-tracker-kanban-card .job-tracker-status,
@@ -270,12 +270,26 @@
 }
 
 .job-tracker-kanban-card .job-tracker-meta {
+  gap: 6px;
   margin: 0;
+}
+
+.job-tracker-kanban-card .job-tracker-meta span {
+  padding: 4px 8px;
 }
 
 .job-tracker-kanban-card .job-tracker-actions {
   width: 100%;
   min-width: 0;
+  gap: 6px;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.job-tracker-kanban-card .job-tracker-status .custom-select-trigger {
+  min-height: 36px;
+  padding: 7px 10px;
 }
 
 .job-tracker-card-main {
@@ -480,5 +494,39 @@
     min-width: 0;
     padding-top: 12px;
     border-top: 1px solid rgba(148, 163, 184, 0.12);
+  }
+
+  .job-tracker-board {
+    gap: 10px;
+    padding-bottom: 6px;
+  }
+
+  .job-tracker-column {
+    padding: 10px;
+  }
+
+  .job-tracker-column-header {
+    margin-bottom: 8px;
+    padding: 1px 1px 8px;
+  }
+
+  .job-tracker-column-list {
+    min-height: 280px;
+    gap: 8px;
+  }
+
+  .job-tracker-kanban-card {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .job-tracker-kanban-card .job-tracker-card-heading {
+    gap: 8px;
+  }
+
+  .job-tracker-kanban-card .job-tracker-actions {
+    gap: 6px;
+    padding-top: 0;
+    border-top: 0;
   }
 }
