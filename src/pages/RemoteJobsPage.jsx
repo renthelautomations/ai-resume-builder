@@ -562,11 +562,24 @@ export default function RemoteJobsPage() {
 }
 
 async function fetchRemoteJobs(term, source, category) {
+  const normalizedTerm = term.trim();
+
+  if (!normalizedTerm) {
+    let query = supabase
+      .from('remote_jobs')
+      .select(JOB_FIELDS)
+      .eq('is_active', true)
+      .order('posted_at', { ascending: false, nullsFirst: false });
+
+    if (source !== 'all') query = query.eq('source', source);
+    if (category !== 'all') query = query.eq('category', category);
+    return query;
+  }
+
   const rankedResult = await supabase.rpc('search_remote_jobs', {
-    p_query: term.trim(),
+    p_query: normalizedTerm,
     p_source: source,
-    p_category: category,
-    p_limit: 300
+    p_category: category
   });
 
   if (!rankedResult.error || !isMissingSearchFunction(rankedResult.error)) return rankedResult;
@@ -576,10 +589,8 @@ async function fetchRemoteJobs(term, source, category) {
     .from('remote_jobs')
     .select(JOB_FIELDS)
     .eq('is_active', true)
-    .order('posted_at', { ascending: false, nullsFirst: false })
-    .limit(300);
+    .order('posted_at', { ascending: false, nullsFirst: false });
 
-  const normalizedTerm = term.trim();
   if (normalizedTerm) {
     query = query.textSearch('search_vector', normalizedTerm, {
       config: 'simple',

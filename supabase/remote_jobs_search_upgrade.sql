@@ -99,7 +99,8 @@ CREATE OR REPLACE FUNCTION public.search_remote_jobs(
     p_query TEXT DEFAULT '',
     p_source TEXT DEFAULT 'all',
     p_category TEXT DEFAULT 'all',
-    p_limit INTEGER DEFAULT 300
+    -- Kept for backwards compatibility with older clients. Search returns every matching active job.
+    p_limit INTEGER DEFAULT NULL
 )
 RETURNS TABLE (
     id UUID,
@@ -136,8 +137,7 @@ WITH params AS (
         lower(regexp_replace(trim(coalesce(p_query, '')), '\s+', ' ', 'g')) AS term,
         websearch_to_tsquery('simple', trim(coalesce(p_query, ''))) AS ts_query,
         lower(coalesce(p_source, 'all')) AS source_filter,
-        coalesce(p_category, 'all') AS category_filter,
-        least(greatest(coalesce(p_limit, 300), 1), 300) AS row_limit
+        coalesce(p_category, 'all') AS category_filter
 ), ranked AS (
     SELECT
         r.id,
@@ -214,8 +214,7 @@ SELECT
     ranked.updated_at,
     ranked.search_score
 FROM ranked
-ORDER BY ranked.search_score DESC, ranked.posted_at DESC NULLS LAST, ranked.created_at DESC
-LIMIT (SELECT row_limit FROM params);
+ORDER BY ranked.search_score DESC, ranked.posted_at DESC NULLS LAST, ranked.created_at DESC;
 $$;
 
 REVOKE ALL ON FUNCTION public.search_remote_jobs(TEXT, TEXT, TEXT, INTEGER) FROM PUBLIC;
