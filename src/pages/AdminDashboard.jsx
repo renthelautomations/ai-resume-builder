@@ -3,11 +3,12 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
 import { useToast } from '../context/ToastContext';
-import { Users, Database, LogOut, LayoutDashboard, CreditCard, CheckCircle, XCircle, Globe, TrendingUp, AlertCircle, Award, Clock, FileText, Home, RefreshCw, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Users, Database, LogOut, LayoutDashboard, CreditCard, CheckCircle, XCircle, Globe, TrendingUp, AlertCircle, Award, Clock, FileText, Home, RefreshCw, Search, ChevronLeft, ChevronRight, BriefcaseBusiness } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import '../components/UserDashboard/UserDashboard.css'; // Reuse dashboard styles
 import './AdminDashboard.css'; // Admin specific styles
 import DatabaseStats from '../components/AdminDashboard/DatabaseStats';
+import JobAnalytics from '../components/AdminDashboard/JobAnalytics';
 
 export default function AdminDashboard() {
   const { signOut } = useAuth();
@@ -591,6 +592,8 @@ export default function AdminDashboard() {
         );
       case 'database':
         return <DatabaseStats />;
+      case 'jobs':
+        return <JobAnalytics />;
       case 'subscriptions':
         return (
           <>
@@ -778,6 +781,13 @@ export default function AdminDashboard() {
             className={`dashboard-nav-item ${activeTab === 'database' ? 'active' : ''}`}
           >
             <Database size={18} /> Database Stats
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('jobs')}
+            className={`dashboard-nav-item ${activeTab === 'jobs' ? 'active' : ''}`}
+          >
+            <BriefcaseBusiness size={18} /> Job Insights
           </button>
         </div>
 

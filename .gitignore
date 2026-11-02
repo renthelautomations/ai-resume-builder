@@ -4,3 +4,8 @@ node_modules/
 .env.push.local
 .DS_Store
 .vercel
+scraper/.venv/
+scraper/.env*
+!scraper/env.example
+__pycache__/
+*.pyc

@@ -5,6 +5,7 @@ import ResumePDF from './ResumePDF';
 import ResumeEditForm from './ResumeEditForm';
 import ConfirmationModal from './ConfirmationModal';
 import { useToast } from '../context/ToastContext';
+import { getResumeFilename } from '../utils/resumeFilename';
 
 class PDFErrorBoundary extends React.Component {
   constructor(props) {
@@ -620,8 +621,7 @@ export default function ResumePreview({ user, resumeData, setResumeData, isLoadi
     return <LoadingView loadingStep={loadingStep} profileText={profileText} user={user} />;
   }
 
-  const safeTitle = (resumeData?.target_role || "Resume").replace(/[^a-zA-Z0-9_-]/g, "_");
-  const finalPdfFilename = `Renthel_Cueto_${safeTitle}.pdf`;
+  const finalPdfFilename = getResumeFilename(resumeData, user, 'pdf');
 
   const handleDownloadPdf = async () => {
     setIsGeneratingPdf(true);

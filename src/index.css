@@ -470,7 +470,10 @@ button {
   padding: 12px 32px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: initial;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 20px;
   position: relative;
   z-index: 10;
 }
@@ -479,9 +482,9 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 20px;
-  font-weight: 700;
+  width: fit-content;
   color: var(--text-main);
+  text-decoration: none;
   transition: color 0.2s ease;
 }
 
@@ -492,7 +495,47 @@ button {
 .nav-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 16px;
+}
+
+.nav-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.nav-primary-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.nav-primary-link:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-primary-link.active {
+  border-color: rgba(96, 165, 250, 0.25);
+  color: #dbeafe;
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.mobile-nav-label {
+  display: none;
 }
 
 .step-header {
@@ -603,7 +646,35 @@ button {
   }
   
   .nav-logo {
-    font-size: 18px;
+    gap: 8px;
+  }
+
+  .top-nav {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .nav-primary {
+    gap: 2px;
+  }
+
+  .nav-primary-link {
+    gap: 5px;
+    padding: 7px 6px;
+    font-size: 11px;
+  }
+
+  .nav-primary-link svg {
+    display: none;
+  }
+
+  .nav-actions {
+    gap: 8px;
+  }
+
+  .nav-profile-text,
+  .nav-actions .nav-link {
+    display: none;
   }
   
   .nav-actions button {
@@ -613,6 +684,22 @@ button {
   
   h1 {
     font-size: 28px;
+  }
+}
+
+@media (max-width: 420px) {
+  .desktop-nav-label {
+    display: none;
+  }
+
+  .mobile-nav-label {
+    display: inline;
+  }
+
+  .nav-primary-link {
+    font-size: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
   }
 }
 
@@ -634,6 +721,7 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
+  width: auto;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -673,6 +761,7 @@ button {
 }
 
 .nav-btn.primary {
+  width: auto;
   font-size: 14px;
   font-weight: 600;
   color: white;

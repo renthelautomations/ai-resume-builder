@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../utils/supabaseClient';
 import { useAuth } from '../../context/AuthContext';
-import { User, Zap, LogOut, X, FileText, FolderOpen } from 'lucide-react';
+import { User, Zap, LogOut, FileText, FolderOpen, ListChecks } from 'lucide-react';
 import ProfileTab from './ProfileTab';
 import CreditsTab from './CreditsTab';
 import SettingsTab from './SettingsTab';
 import UserResumes from './UserResumes';
+import UserJobTracker from './UserJobTracker';
 import WelcomeModal from './WelcomeModal';
 import ConfirmationModal from '../ConfirmationModal';
 import './UserDashboard.css';
@@ -21,6 +22,7 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
   if (path === '/loadprofile') activeTab = 'settings';
   else if (path === '/savedresumes') activeTab = 'resumes';
   else if (path === '/credits') activeTab = 'credits';
+  else if (path === '/jobtracker') activeTab = 'tracker';
 
   const [credits, setCredits] = useState(0);
   const [showWelcome, setShowWelcome] = useState(false);
@@ -68,6 +70,7 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
           if (tab === 'settings') navigate('/loadprofile');
           else if (tab === 'resumes') navigate('/savedresumes');
           else if (tab === 'credits') navigate('/credits');
+          else if (tab === 'tracker') navigate('/jobtracker');
           else navigate('/contactcard');
         }} />;
       case 'credits':
@@ -76,6 +79,8 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
         return <SettingsTab user={user} onProfileSelect={onProfileSelect} />;
       case 'resumes':
         return <UserResumes user={user} onSelectResume={onSelectResume} />;
+      case 'tracker':
+        return <UserJobTracker user={user} />;
       default:
         return null;
     }
@@ -112,6 +117,12 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
               className={`dashboard-nav-item ${activeTab === 'credits' ? 'active' : ''}`}
             >
               <Zap size={18} /> Credits
+            </button>
+            <button
+              onClick={() => navigate('/jobtracker')}
+              className={`dashboard-nav-item ${activeTab === 'tracker' ? 'active' : ''}`}
+            >
+              <ListChecks size={18} /> Job Tracker
             </button>
           </div>
           

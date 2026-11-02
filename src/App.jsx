@@ -6,6 +6,7 @@ import { Analytics } from '@vercel/analytics/react';
 import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboard from './pages/AdminDashboard';
 import ResumeBuilder from './pages/ResumeBuilder';
+import RemoteJobsPage from './pages/RemoteJobsPage';
 import AdminRoute from './components/AdminRoute';
 
 function LogoutRoute() {
@@ -84,10 +85,12 @@ export default function App() {
             />
             
             <Route path="/" element={<ResumeBuilder />} />
+            <Route path="/remote-jobs" element={<RemoteJobsPage />} />
             <Route path="/contactcard" element={<ResumeBuilder />} />
             <Route path="/loadprofile" element={<ResumeBuilder />} />
             <Route path="/savedresumes" element={<ResumeBuilder />} />
             <Route path="/credits" element={<ResumeBuilder />} />
+            <Route path="/jobtracker" element={<ResumeBuilder />} />
             
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

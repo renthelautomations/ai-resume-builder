@@ -7,11 +7,11 @@ import { downloadDocx } from '../utils/docxGenerator';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../utils/supabaseClient';
-import { LogOut, LayoutDashboard, UserCircle } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import UserDashboard from '../components/UserDashboard/UserDashboard';
 import InsufficientCreditsModal from '../components/InsufficientCreditsModal';
 import PurchaseSuccessModal from '../components/PurchaseSuccessModal';
+import SiteNav from '../components/SiteNav';
 
 const isInAppBrowser = () => {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
@@ -27,7 +27,7 @@ const isInAppBrowser = () => {
 
 export default function ResumeBuilder() {
   const { addToast } = useToast();
-  const { user, isAdmin, signOut, signInWithGoogle } = useAuth();
+  const { user, signInWithGoogle } = useAuth();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,6 +39,7 @@ export default function ResumeBuilder() {
   if (path === '/loadprofile') dashboardTab = 'settings';
   else if (path === '/savedresumes') dashboardTab = 'resumes';
   else if (path === '/credits') dashboardTab = 'credits';
+  else if (path === '/jobtracker') dashboardTab = 'tracker';
   const [userAvatar, setUserAvatar] = useState(null);
   const [profileText, setProfileText] = useState('');
   const [jobDescription, setJobDescription] = useState('');
@@ -149,6 +150,14 @@ export default function ResumeBuilder() {
     }
   }, [user]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (location.pathname === '/' && params.get('signin') === '1') {
+      setShowLoginModal(true);
+      navigate('/', { replace: true });
+    }
+  }, [location.pathname, location.search, navigate]);
+
   const handleGenerate = async (overrideJobDesc = null) => {
     const jdToUse = typeof overrideJobDesc === 'string' ? overrideJobDesc : jobDescription;
     
@@ -215,7 +224,7 @@ export default function ResumeBuilder() {
   const handleDownloadDocx = async () => {
     if (resumeData) {
       try {
-        await downloadDocx(resumeData);
+        await downloadDocx(resumeData, user);
         addToast('DOCX download started!', 'info');
       } catch (err) {
         addToast(err.message, 'error');
@@ -234,7 +243,7 @@ export default function ResumeBuilder() {
     try {
       const payload = {
         user_id: user.id,
-        target_role: resumeData.target_role || jobDescription.substring(0, 50) || 'Tailored Resume',
+        target_role: resumeData.target_role || resumeData.target_title || jobDescription.substring(0, 50) || 'Tailored Resume',
         job_description: jobDescription,
         full_name: resumeData.full_name,
         contact_line: resumeData.contact_line,
@@ -288,53 +297,7 @@ export default function ResumeBuilder() {
 
   return (
     <div className="layout-container">
-      {/* Top Navbar */}
-      <nav className="top-nav">
-        <div 
-          className="nav-logo cursor-pointer" 
-          onClick={() => navigate('/')}
-          style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-        >
-          <img src="/favicon.png" alt="Icon" style={{ width: '24px', height: '24px' }} />
-          <span className="font-bold tracking-tight nav-brand-text">AI Resume Builder</span>
-        </div>
-        <div className="nav-actions">
-          {user ? (
-            <>
-              {isAdmin && (
-                <Link 
-                  to="/admin/dashboard"
-                  className="nav-link"
-                >
-                  <LayoutDashboard size={16} />
-                  Admin
-                </Link>
-              )}
-              
-              <button 
-                onClick={() => navigate('/contactcard')}
-                className="nav-profile-btn"
-              >
-                {userAvatar ? (
-                  <img src={userAvatar} alt="Profile" className="nav-avatar" />
-                ) : (
-                  <div className="nav-avatar fallback">
-                    <UserCircle size={20} />
-                  </div>
-                )}
-                <span className="font-medium" style={{ fontSize: '15px' }}>Profile</span>
-              </button>
-            </>
-          ) : (
-            <button 
-              onClick={() => setShowLoginModal(true)}
-              className="nav-btn primary"
-            >
-              Sign In
-            </button>
-          )}
-        </div>
-      </nav>
+      <SiteNav userAvatar={userAvatar} onSignIn={() => setShowLoginModal(true)} />
 
       {showUserDashboard ? (
         <UserDashboard 

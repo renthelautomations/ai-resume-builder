@@ -1,4 +1,5 @@
 import JSZip from 'jszip';
+import { getResumeFilename } from './resumeFilename';
 
 function escXml(s){
   return (s || "").toString()
@@ -108,7 +109,7 @@ function buildDocumentXml(r){
 </w:document>`;
 }
 
-export async function downloadDocx(resumeData) {
+export async function downloadDocx(resumeData, user) {
   try {
     const r = resumeData;
     const documentXml = buildDocumentXml(r);
@@ -121,8 +122,7 @@ export async function downloadDocx(resumeData) {
     zip.folder("word").file("document.xml", documentXml);
     
     const blob = await zip.generateAsync({type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
-    const safeTitle = (r.target_title || "Resume").replace(/[^a-z0-9]+/gi, "_");
-    const filename = `Renthel_Cueto_${safeTitle}.docx`;
+    const filename = getResumeFilename(r, user, 'docx');
     
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
