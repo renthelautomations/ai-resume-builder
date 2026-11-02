@@ -1,5 +1,5 @@
 import React from 'react';
-import { BriefcaseBusiness, LayoutDashboard, UserCircle } from 'lucide-react';
+import { BriefcaseBusiness, FileText, LayoutDashboard, UserCircle } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -25,6 +25,7 @@ export default function SiteNav({ userAvatar, onSignIn }) {
           className={`nav-primary-link ${isBuilderActive ? 'active' : ''}`}
           aria-current={isBuilderActive ? 'page' : undefined}
         >
+          <FileText size={16} aria-hidden="true" />
           <span className="desktop-nav-label">AI Resume Builder</span>
           <span className="mobile-nav-label">Resume Builder</span>
         </Link>
