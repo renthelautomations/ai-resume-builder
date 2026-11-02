@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { BriefcaseBusiness, ExternalLink, Search, Sparkles } from 'lucide-react';
+import { BriefcaseBusiness, ExternalLink, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
 import { useAuth } from '../context/AuthContext';
@@ -154,18 +154,18 @@ export default function RemoteJobsPage() {
     <div className="remote-jobs-page layout-container">
       <SiteNav onSignIn={goToSignIn} />
       <main className="remote-jobs-main">
-        <section className="remote-jobs-hero">
+        <section className="remote-jobs-heading">
           <div>
-            <p className="remote-jobs-kicker">Remote work, organized</p>
-            <h1>Find roles worth tailoring for.</h1>
+            <h1>Find Remote Jobs</h1>
             <p className="remote-jobs-intro">
-              Search remote jobs, save strong matches, and turn any posting into a resume built for that role.
+              Search roles, then build a resume tailored to one.
             </p>
           </div>
-          <div className="remote-jobs-hero-note">
-            <Sparkles size={18} aria-hidden="true" />
-            <span>New jobs will appear here as sources are connected.</span>
-          </div>
+          {user && (
+            <button type="button" className="remote-jobs-tracker-link" onClick={() => navigate('/jobtracker')}>
+              View job tracker
+            </button>
+          )}
         </section>
 
         <form className="remote-jobs-search" onSubmit={handleSearch}>
@@ -203,11 +203,6 @@ export default function RemoteJobsPage() {
             <span className="remote-jobs-results-label">Open roles</span>
             <h2>{loading ? 'Loading jobs' : `${jobs.length} ${jobs.length === 1 ? 'role' : 'roles'} found`}</h2>
           </div>
-          {user && (
-            <button type="button" className="remote-jobs-tracker-link" onClick={() => navigate('/jobtracker')}>
-              View job tracker
-            </button>
-          )}
         </div>
 
         {error ? (
