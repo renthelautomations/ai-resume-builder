@@ -18,8 +18,9 @@ printf '%s\n' \
   'SHELL=/bin/bash' \
   'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' \
   'MAILTO=""' \
-  "15 * * * * root /usr/bin/flock -n /run/lock/ai-resume-job-scraper.lock /bin/bash $SCRAPER_ROOT/run.sh >> $LOG_FILE 2>&1" \
+  "15,45 * * * * root /usr/bin/flock -n /run/lock/ai-resume-job-scraper.lock /bin/bash $SCRAPER_ROOT/run.sh new >> $LOG_FILE 2>&1" \
+  "5 3 * * * root /usr/bin/flock -n /run/lock/ai-resume-job-scraper.lock /bin/bash $SCRAPER_ROOT/run.sh daily >> $LOG_FILE 2>&1" \
   > "$CRON_FILE"
 
 chmod 644 "$CRON_FILE"
-echo "Installed hourly scraper cron: $CRON_FILE"
+echo "Installed 30-minute new-listing and daily refresh cron: $CRON_FILE"

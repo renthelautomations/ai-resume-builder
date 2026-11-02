@@ -14,4 +14,13 @@ set -a
 source "$SCRAPER_ENV_FILE"
 set +a
 
-exec "$SCRAPER_ROOT/venv/bin/python" "$SCRAPER_ROOT/onlinejobs_scraper.py"
+SCRAPER_MODE="${1:-${SCRAPER_MODE:-full}}"
+case "$SCRAPER_MODE" in
+  full|new|daily) ;;
+  *)
+    echo "Usage: $0 [full|new|daily]" >&2
+    exit 2
+    ;;
+esac
+
+exec "$SCRAPER_ROOT/venv/bin/python" "$SCRAPER_ROOT/onlinejobs_scraper.py" "$SCRAPER_MODE"
