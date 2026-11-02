@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { BriefcaseBusiness, Clock3, ExternalLink, LayoutGrid, List as ListIcon, Search, Sparkles, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
+import { buildJobDescription } from '../utils/jobDescription';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import SiteNav from '../components/SiteNav';
@@ -432,20 +433,27 @@ export default function RemoteJobsPage() {
               const isTracked = trackedJobIds.includes(job.id);
               return (
                 <article className="remote-job-card" key={job.id}>
-                  <div className="remote-job-card-top">
-                    <span className="remote-job-source">{formatSource(job.source)}</span>
-                    <span className="remote-job-date">{formatDate(job.posted_at || job.created_at)}</span>
-                  </div>
-                  <h2>{job.title}</h2>
-                  <p className="remote-job-company">{job.company || 'Company not listed'}</p>
-                  <div className="remote-job-meta">
-                    {job.category && <span className="remote-job-category">{job.category}</span>}
-                    {job.location && <span>{job.location}</span>}
-                    {job.employment_type && <span>{job.employment_type}</span>}
-                    {job.salary_text && <span>{job.salary_text}</span>}
-                    {(Array.isArray(job.source_tags) ? job.source_tags : []).slice(0, 3).map(tag => <span key={tag}>{tag}</span>)}
-                  </div>
-                  <p className="remote-job-description">{truncate(job.description, 210)}</p>
+                  <Link
+                    className="remote-job-card-content"
+                    to={`/remote-jobs/${job.id}`}
+                    state={{ job }}
+                    aria-label={`View details for ${job.title}`}
+                  >
+                    <div className="remote-job-card-top">
+                      <span className="remote-job-source">{formatSource(job.source)}</span>
+                      <span className="remote-job-date">{formatDate(job.posted_at || job.created_at)}</span>
+                    </div>
+                    <h2>{job.title}</h2>
+                    <p className="remote-job-company">{job.company || 'Company not listed'}</p>
+                    <div className="remote-job-meta">
+                      {job.category && <span className="remote-job-category">{job.category}</span>}
+                      {job.location && <span>{job.location}</span>}
+                      {job.employment_type && <span>{job.employment_type}</span>}
+                      {job.salary_text && <span>{job.salary_text}</span>}
+                      {(Array.isArray(job.source_tags) ? job.source_tags : []).slice(0, 3).map(tag => <span key={tag}>{tag}</span>)}
+                    </div>
+                    <p className="remote-job-description">{truncate(job.description, 210)}</p>
+                  </Link>
                   <div className="remote-job-actions">
                     <button type="button" className="remote-jobs-button primary" onClick={() => handleBuildResume(job)}>
                       Build a Resume
@@ -480,17 +488,6 @@ function formatSource(source) {
   if (!source) return 'Remote source';
   if (source.toLowerCase() === 'onlinejobs.ph') return 'OnlineJobs.ph';
   return source.replace(/[-_]+/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
-}
-
-function buildJobDescription(job) {
-  const description = typeof job.description === 'string' ? job.description.trim() : '';
-  if (description) return description;
-
-  return [
-    job.title,
-    job.company && `Company: ${job.company}`,
-    job.location && `Location: ${job.location}`
-  ].filter(Boolean).join('\n');
 }
 
 function formatDate(value) {

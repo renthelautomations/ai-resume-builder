@@ -439,7 +439,7 @@ class OnlineJobsScraper:
         ).astimezone(timezone.utc)
         self.scrape_started_at = datetime.now(timezone.utc)
         self.fetch_details = env_bool("ONLINEJOBS_FETCH_DETAILS", True)
-        self.detail_limit = env_int("ONLINEJOBS_DETAIL_LIMIT", 15, minimum=0)
+        self.detail_limit = env_int("ONLINEJOBS_DETAIL_LIMIT", self.max_jobs, minimum=0)
         self.closure_enabled = env_bool("ONLINEJOBS_CLOSURE_CHECK_ENABLED", True)
         self.closure_check_limit = env_int("ONLINEJOBS_CLOSURE_CHECK_LIMIT", 100, minimum=1)
         self.closure_check_hours = env_int("ONLINEJOBS_CLOSURE_CHECK_HOURS", 24, minimum=1)

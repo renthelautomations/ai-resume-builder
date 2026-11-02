@@ -7,6 +7,7 @@ import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboard from './pages/AdminDashboard';
 import ResumeBuilder from './pages/ResumeBuilder';
 import RemoteJobsPage from './pages/RemoteJobsPage';
+import RemoteJobDetailsPage from './pages/RemoteJobDetailsPage';
 import AdminRoute from './components/AdminRoute';
 
 function LogoutRoute() {
@@ -86,6 +87,7 @@ export default function App() {
             
             <Route path="/" element={<ResumeBuilder />} />
             <Route path="/remote-jobs" element={<RemoteJobsPage />} />
+            <Route path="/remote-jobs/:jobId" element={<RemoteJobDetailsPage />} />
             <Route path="/contactcard" element={<ResumeBuilder />} />
             <Route path="/loadprofile" element={<ResumeBuilder />} />
             <Route path="/savedresumes" element={<ResumeBuilder />} />

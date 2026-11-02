@@ -7,7 +7,7 @@ export default function SiteNav({ userAvatar, onSignIn }) {
   const { user, isAdmin } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const isRemoteJobsActive = location.pathname === '/remote-jobs';
+  const isRemoteJobsActive = location.pathname === '/remote-jobs' || location.pathname.startsWith('/remote-jobs/');
   const isBuilderActive = !isRemoteJobsActive && !location.pathname.startsWith('/admin');
   const avatar = userAvatar
     || user?.user_metadata?.avatar_url

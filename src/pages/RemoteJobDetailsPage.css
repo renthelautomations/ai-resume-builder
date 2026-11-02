@@ -1,0 +1,454 @@
+.remote-job-detail-page {
+  min-height: 100%;
+  background:
+    radial-gradient(circle at 82% 8%, rgba(59, 130, 246, 0.14), transparent 31%),
+    radial-gradient(circle at 8% 92%, rgba(139, 92, 246, 0.12), transparent 28%);
+}
+
+.remote-job-detail-main {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 30px 40px 80px;
+  overflow-y: auto;
+}
+
+.remote-job-detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  color: #93c5fd;
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.remote-job-detail-back:hover {
+  color: #dbeafe;
+  transform: translateX(-2px);
+}
+
+.remote-job-detail-hero,
+.remote-job-detail-panel,
+.remote-job-detail-state {
+  border: 1px solid var(--border);
+  background: rgba(22, 27, 34, 0.68);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 8px 30px rgba(2, 6, 23, 0.14);
+}
+
+.remote-job-detail-hero {
+  padding: 28px 30px 30px;
+  border-radius: 16px;
+}
+
+.remote-job-detail-hero-top,
+.remote-job-detail-eyebrows,
+.remote-job-detail-subtitle,
+.remote-job-detail-tags,
+.remote-job-detail-section-heading,
+.remote-job-detail-source-link,
+.remote-job-detail-fact,
+.remote-job-detail-source {
+  display: flex;
+  align-items: center;
+}
+
+.remote-job-detail-hero-top {
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.remote-job-detail-eyebrows,
+.remote-job-detail-tags {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.remote-job-detail-source {
+  gap: 7px;
+  color: #93c5fd;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.remote-job-detail-status {
+  padding: 5px 9px;
+  border: 1px solid rgba(52, 211, 153, 0.28);
+  border-radius: 999px;
+  color: #a7f3d0;
+  background: rgba(16, 185, 129, 0.1);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.remote-job-detail-date {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.remote-job-detail-hero h1 {
+  max-width: 980px;
+  margin: 20px 0 12px;
+  color: #f8fafc;
+  font-size: clamp(32px, 4.5vw, 58px);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+
+.remote-job-detail-subtitle {
+  flex-wrap: wrap;
+  gap: 18px;
+  color: #cbd5e1;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.remote-job-detail-subtitle span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.remote-job-detail-subtitle svg {
+  color: #93c5fd;
+}
+
+.remote-job-detail-tags {
+  margin-top: 24px;
+}
+
+.remote-job-detail-tags span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.035);
+  font-size: 12px;
+}
+
+.remote-job-detail-tags span.is-category {
+  border-color: rgba(167, 139, 250, 0.3);
+  color: #ddd6fe;
+  background: rgba(139, 92, 246, 0.12);
+}
+
+.remote-job-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.75fr);
+  align-items: start;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.remote-job-detail-panel {
+  border-radius: 14px;
+}
+
+.remote-job-detail-description-panel {
+  min-height: 560px;
+  padding: 28px 30px 34px;
+}
+
+.remote-job-detail-section-heading {
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.13);
+}
+
+.remote-job-detail-section-heading.compact {
+  padding-bottom: 16px;
+}
+
+.remote-job-detail-section-heading > svg {
+  color: #93c5fd;
+}
+
+.remote-job-detail-kicker {
+  display: block;
+  margin-bottom: 6px;
+  color: #60a5fa;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.remote-job-detail-section-heading h2,
+.remote-job-detail-actions-panel h2,
+.remote-job-detail-state h1 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 22px;
+  letter-spacing: -0.025em;
+}
+
+.remote-job-detail-description {
+  margin-top: 24px;
+  overflow-wrap: anywhere;
+  color: #cbd5e1;
+  font-size: 15px;
+  line-height: 1.78;
+  white-space: pre-wrap;
+}
+
+.remote-job-detail-sidebar {
+  display: grid;
+  gap: 18px;
+}
+
+.remote-job-detail-actions-panel,
+.remote-job-detail-facts-panel {
+  padding: 24px;
+}
+
+.remote-job-detail-actions-panel h2 {
+  font-size: 24px;
+}
+
+.remote-job-detail-actions-panel p {
+  margin: 10px 0 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.remote-job-detail-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.remote-job-detail-button + .remote-job-detail-button {
+  margin-top: 9px;
+}
+
+.remote-job-detail-button.primary {
+  border: 1px solid transparent;
+  color: #fff;
+  background: var(--accent);
+  box-shadow: 0 5px 18px rgba(59, 130, 246, 0.3);
+}
+
+.remote-job-detail-button.primary:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 7px 22px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.remote-job-detail-button.secondary {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.remote-job-detail-button.secondary:hover {
+  border-color: rgba(96, 165, 250, 0.4);
+  background: rgba(96, 165, 250, 0.1);
+  transform: translateY(-1px);
+}
+
+.remote-job-detail-button.tracked {
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: #a7f3d0;
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.remote-job-detail-button.tracked:hover {
+  border-color: rgba(248, 113, 113, 0.35);
+  color: #fecaca;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.remote-job-detail-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.remote-job-detail-source-link {
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(148, 163, 184, 0.13);
+  color: #93c5fd;
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.remote-job-detail-source-link:hover {
+  color: #dbeafe;
+}
+
+.remote-job-detail-facts {
+  display: grid;
+  gap: 2px;
+  margin-top: 14px;
+}
+
+.remote-job-detail-fact {
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 0;
+}
+
+.remote-job-detail-fact-icon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  border-radius: 8px;
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.remote-job-detail-fact > span:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.remote-job-detail-fact small {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.remote-job-detail-fact strong {
+  overflow: hidden;
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remote-job-detail-state {
+  display: grid;
+  min-height: 360px;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  padding: 40px 24px;
+  border-radius: 16px;
+  color: #93c5fd;
+  text-align: center;
+}
+
+.remote-job-detail-state p {
+  max-width: 460px;
+  margin: 0 0 8px;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.remote-job-detail-state .remote-job-detail-button {
+  width: auto;
+  min-width: 170px;
+}
+
+.remote-job-detail-skeleton {
+  display: grid;
+  gap: 18px;
+}
+
+.remote-job-detail-skeleton-hero,
+.remote-job-detail-skeleton-body,
+.remote-job-detail-skeleton-side {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: linear-gradient(110deg, rgba(255, 255, 255, 0.04) 30%, rgba(255, 255, 255, 0.09) 45%, rgba(255, 255, 255, 0.04) 60%);
+  background-size: 200% 100%;
+  animation: remote-job-detail-shimmer 1.4s ease-in-out infinite;
+}
+
+.remote-job-detail-skeleton-hero {
+  min-height: 230px;
+}
+
+.remote-job-detail-skeleton-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.75fr);
+  gap: 18px;
+}
+
+.remote-job-detail-skeleton-body {
+  min-height: 560px;
+}
+
+.remote-job-detail-skeleton-side {
+  min-height: 360px;
+}
+
+@keyframes remote-job-detail-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -20% 0; }
+}
+
+@media (max-width: 900px) {
+  .remote-job-detail-grid,
+  .remote-job-detail-skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .remote-job-detail-description-panel {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .remote-job-detail-main {
+    padding: 26px 20px 70px;
+  }
+
+  .remote-job-detail-hero {
+    padding: 22px 20px 24px;
+  }
+
+  .remote-job-detail-hero-top {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .remote-job-detail-hero h1 {
+    font-size: 38px;
+  }
+
+  .remote-job-detail-description-panel,
+  .remote-job-detail-actions-panel,
+  .remote-job-detail-facts-panel {
+    padding: 22px 20px 26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .remote-job-detail-back,
+  .remote-job-detail-button,
+  .remote-job-detail-skeleton-hero,
+  .remote-job-detail-skeleton-body,
+  .remote-job-detail-skeleton-side {
+    animation: none;
+    transition: none;
+  }
+}
