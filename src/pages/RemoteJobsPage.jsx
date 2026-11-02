@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { BriefcaseBusiness, ExternalLink, Search } from 'lucide-react';
+import { BriefcaseBusiness, ExternalLink, LayoutGrid, List as ListIcon, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
 import { useAuth } from '../context/AuthContext';
@@ -35,6 +35,11 @@ export default function RemoteJobsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sourceFilter, setSourceFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [viewMode, setViewMode] = useState(() => (
+    typeof window !== 'undefined' && window.localStorage.getItem('remoteJobsViewMode') === 'list'
+      ? 'list'
+      : 'cards'
+  ));
   const [trackedJobIds, setTrackedJobIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [trackingId, setTrackingId] = useState(null);
@@ -47,6 +52,10 @@ export default function RemoteJobsPage() {
   useEffect(() => {
     fetchJobs(searchTerm, sourceFilter, categoryFilter);
   }, [searchTerm, sourceFilter, categoryFilter, user?.id]);
+
+  useEffect(() => {
+    window.localStorage.setItem('remoteJobsViewMode', viewMode);
+  }, [viewMode]);
 
   const fetchJobs = async (term, source, category) => {
     setLoading(true);
@@ -203,6 +212,28 @@ export default function RemoteJobsPage() {
             <span className="remote-jobs-results-label">Open roles</span>
             <h2>{loading ? 'Loading jobs' : `${jobs.length} ${jobs.length === 1 ? 'role' : 'roles'} found`}</h2>
           </div>
+          <div className="remote-jobs-view-toggle" role="group" aria-label="Job display mode">
+            <button
+              type="button"
+              className={viewMode === 'cards' ? 'active' : ''}
+              onClick={() => setViewMode('cards')}
+              aria-label="Show jobs as cards"
+              aria-pressed={viewMode === 'cards'}
+              title="Card view"
+            >
+              <LayoutGrid size={17} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className={viewMode === 'list' ? 'active' : ''}
+              onClick={() => setViewMode('list')}
+              aria-label="Show jobs as a list"
+              aria-pressed={viewMode === 'list'}
+              title="List view"
+            >
+              <ListIcon size={18} aria-hidden="true" />
+            </button>
+          </div>
         </div>
 
         {error ? (
@@ -215,7 +246,7 @@ export default function RemoteJobsPage() {
             </button>
           </div>
         ) : loading ? (
-          <div className="remote-jobs-grid" aria-label="Loading remote jobs">
+          <div className={`remote-jobs-grid ${viewMode === 'list' ? 'is-list' : ''}`} aria-label="Loading remote jobs">
             {Array.from({ length: 6 }).map((_, index) => <div className="remote-job-skeleton" key={index} />)}
           </div>
         ) : jobs.length === 0 ? (
@@ -225,7 +256,7 @@ export default function RemoteJobsPage() {
             <p>Try another search, or check back after the first job source is connected.</p>
           </div>
         ) : (
-          <div className="remote-jobs-grid">
+          <div className={`remote-jobs-grid ${viewMode === 'list' ? 'is-list' : ''}`}>
             {jobs.map(job => {
               const isTracked = trackedJobIds.includes(job.id);
               return (
