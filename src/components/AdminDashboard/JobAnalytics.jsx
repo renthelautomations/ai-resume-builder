@@ -32,7 +32,7 @@ export default function JobAnalytics() {
     if (statsError) {
       console.error('Failed to load job analytics:', statsError);
       setStats(null);
-      setError('Job analytics needs the remote jobs SQL setup.');
+      setError("Job insights are temporarily unavailable. Please try again shortly.");
       addToast('Could not load job analytics.', 'error');
     } else {
       setStats(data || null);

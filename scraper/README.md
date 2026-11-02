@@ -4,7 +4,7 @@ This worker fetches public OnlineJobs.ph listings with Scrapling, classifies nic
 
 The worker follows `robots.txt`, enforces at least five seconds between requests, and stops on HTTP 403 or 429. It does not log in, solve CAPTCHAs, or bypass access controls.
 
-Each run upserts newly seen jobs. A job stays in database history, but becomes inactive when it disappears for `ONLINEJOBS_STALE_HOURS` or fails a daily detail-page closure check. The closure check marks HTTP 404/410 pages and explicit closed or filled notices inactive.
+Each run upserts jobs posted within `ONLINEJOBS_LOOKBACK_DAYS` days. A job stays in database history, but becomes inactive when it disappears for `ONLINEJOBS_STALE_HOURS` or fails a daily detail-page closure check. The closure check marks HTTP 404/410 pages and explicit closed or filled notices inactive.
 
 ## Local dry run
 

@@ -34,6 +34,7 @@ USER_AGENT = (
 SOURCE_TIMEZONE = ZoneInfo("Asia/Manila")
 PAGE_SIZE = 30
 DEFAULT_CRAWL_DELAY = 5.0
+DEFAULT_LOOKBACK_DAYS = 21
 DETAIL_SELECTORS = (
     ".job-description",
     "#job-description",
@@ -317,7 +318,7 @@ def parse_posted_at(value: str) -> str | None:
 
 def extract_salary(value: str) -> str | None:
     match = SALARY_PATTERN.search(value)
-    return clean_text(match.group(1)) if match else None
+    return clean_text(match.group(0)) if match else None
 
 
 def trim_detail_text(value: str) -> str:
@@ -430,8 +431,13 @@ class ScrapeBlocked(RuntimeError):
 class OnlineJobsScraper:
     def __init__(self) -> None:
         self.timeout = env_int("SCRAPER_HTTP_TIMEOUT", 30, minimum=5)
-        self.max_pages = env_int("ONLINEJOBS_MAX_PAGES", 3, minimum=1)
-        self.max_jobs = env_int("ONLINEJOBS_MAX_JOBS", 90, minimum=1)
+        self.max_pages = env_int("ONLINEJOBS_MAX_PAGES", 10, minimum=1)
+        self.max_jobs = env_int("ONLINEJOBS_MAX_JOBS", 300, minimum=1)
+        lookback_days = env_int("ONLINEJOBS_LOOKBACK_DAYS", DEFAULT_LOOKBACK_DAYS, minimum=1)
+        self.cutoff_at = (
+            datetime.now(SOURCE_TIMEZONE) - timedelta(days=lookback_days)
+        ).astimezone(timezone.utc)
+        self.scrape_started_at = datetime.now(timezone.utc)
         self.fetch_details = env_bool("ONLINEJOBS_FETCH_DETAILS", True)
         self.detail_limit = env_int("ONLINEJOBS_DETAIL_LIMIT", 15, minimum=0)
         self.closure_enabled = env_bool("ONLINEJOBS_CLOSURE_CHECK_ENABLED", True)
@@ -553,6 +559,11 @@ class OnlineJobsScraper:
         job_id_match = JOB_ID_PATTERN.search(urllib.parse.urlparse(job_url).path)
         external_id = job_id_match.group(1) if job_id_match else hashlib.sha256(job_url.encode()).hexdigest()[:40]
         posted_at = parse_posted_at(card_text)
+        if not posted_at:
+            return None
+        posted_datetime = datetime.fromisoformat(posted_at)
+        if posted_datetime < self.cutoff_at or posted_datetime > self.scrape_started_at + timedelta(minutes=5):
+            return None
         employment_type = first_element_text(card, "span.badge") or None
         tags = extract_tags(card)
 

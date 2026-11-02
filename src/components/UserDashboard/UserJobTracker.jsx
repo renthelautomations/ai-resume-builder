@@ -50,7 +50,7 @@ export default function UserJobTracker({ user }) {
 
     if (fetchError) {
       console.error('Failed to load job tracker:', fetchError);
-      setError('Job tracker is not available yet. Run the remote jobs SQL setup, then try again.');
+      setError("We couldn't load your tracker right now. Please try again shortly.");
       setApplications([]);
     } else {
       setApplications(data || []);
@@ -137,9 +137,9 @@ export default function UserJobTracker({ user }) {
       ) : error ? (
         <div className="job-tracker-empty" role="alert">
           <ListChecks size={36} aria-hidden="true" />
-          <h3>Tracker needs setup</h3>
+          <h3>Your tracker is temporarily unavailable</h3>
           <p>{error}</p>
-          <button type="button" className="dash-btn" onClick={fetchApplications}>Try again</button>
+          <button type="button" className="dash-btn" onClick={fetchApplications}>Refresh tracker</button>
         </div>
       ) : loading ? (
         <div className="job-tracker-loading">Loading your tracked roles...</div>

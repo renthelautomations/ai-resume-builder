@@ -42,6 +42,7 @@ export default function RemoteJobsPage() {
       : 'cards'
   ));
   const [trackedJobIds, setTrackedJobIds] = useState([]);
+  const [sourceRefreshes, setSourceRefreshes] = useState({});
   const [loading, setLoading] = useState(true);
   const [trackingId, setTrackingId] = useState(null);
   const [error, setError] = useState('');
@@ -49,6 +50,15 @@ export default function RemoteJobsPage() {
   const sources = useMemo(() => (
     [...new Set(jobs.map(job => job.source).filter(Boolean))].sort()
   ), [jobs]);
+
+  const latestRefreshAt = useMemo(() => {
+    const values = sourceFilter === 'all'
+      ? Object.values(sourceRefreshes)
+      : [sourceRefreshes[sourceFilter]];
+    return values
+      .filter(Boolean)
+      .sort((left, right) => new Date(right) - new Date(left))[0] || null;
+  }, [sourceFilter, sourceRefreshes]);
 
   useEffect(() => {
     fetchJobs(searchTerm, sourceFilter, categoryFilter);
@@ -80,7 +90,16 @@ export default function RemoteJobsPage() {
       if (source !== 'all') query = query.eq('source', source);
       if (category !== 'all') query = query.eq('category', category);
 
-      const [{ data, error: jobsError }, { data: tracked, error: trackedError }] = await Promise.all([
+      let refreshQuery = supabase
+        .from('remote_jobs')
+        .select('source, scraped_at')
+        .eq('is_active', true)
+        .not('scraped_at', 'is', null)
+        .order('scraped_at', { ascending: false })
+        .limit(500);
+      if (source !== 'all') refreshQuery = refreshQuery.eq('source', source);
+
+      const [{ data, error: jobsError }, { data: tracked, error: trackedError }, { data: refreshRows, error: refreshError }] = await Promise.all([
         query,
         user
           ? supabase
@@ -88,7 +107,8 @@ export default function RemoteJobsPage() {
               .select('job_id')
               .eq('user_id', user.id)
               .not('job_id', 'is', null)
-          : Promise.resolve({ data: [], error: null })
+          : Promise.resolve({ data: [], error: null }),
+        refreshQuery
       ]);
 
       if (jobsError) throw jobsError;
@@ -96,11 +116,16 @@ export default function RemoteJobsPage() {
 
       setJobs(data || []);
       setTrackedJobIds((tracked || []).map(item => item.job_id));
+      if (refreshError) {
+        console.warn('Could not load job source refresh time:', refreshError);
+      } else {
+        setSourceRefreshes(buildSourceRefreshes(refreshRows || []));
+      }
     } catch (fetchError) {
       console.error('Failed to load remote jobs:', fetchError);
       setJobs([]);
       setTrackedJobIds([]);
-      setError('Job feed is not available yet. Run the remote jobs SQL setup, then try again.');
+      setError("We couldn't load job listings right now. Please try again shortly.");
     } finally {
       setLoading(false);
     }
@@ -217,6 +242,11 @@ export default function RemoteJobsPage() {
               ]}
             />
           </label>
+          {latestRefreshAt && (
+            <p className="remote-jobs-refresh-note" aria-live="polite">
+              {sourceFilter === 'all' ? 'Latest source refresh:' : `${formatSource(sourceFilter)} refreshed:`} {formatRefreshTime(latestRefreshAt)}
+            </p>
+          )}
         </form>
 
         <div className="remote-jobs-results-header">
@@ -251,10 +281,10 @@ export default function RemoteJobsPage() {
         {error ? (
           <div className="remote-jobs-empty" role="alert">
             <BriefcaseBusiness size={34} aria-hidden="true" />
-            <h2>Job feed needs setup</h2>
+            <h2>Job listings are temporarily unavailable</h2>
             <p>{error}</p>
             <button type="button" className="remote-jobs-button secondary" onClick={() => fetchJobs(searchTerm, sourceFilter, categoryFilter)}>
-              Try again
+              Refresh listings
             </button>
           </div>
         ) : loading ? (
@@ -264,8 +294,8 @@ export default function RemoteJobsPage() {
         ) : jobs.length === 0 ? (
           <div className="remote-jobs-empty">
             <BriefcaseBusiness size={34} aria-hidden="true" />
-            <h2>No matching roles yet</h2>
-            <p>Try another search, or check back after the first job source is connected.</p>
+            <h2>No open roles match your search</h2>
+            <p>Try a broader keyword or adjust your filters to find more opportunities.</p>
           </div>
         ) : (
           <div className={`remote-jobs-grid ${viewMode === 'list' ? 'is-list' : ''}`}>
@@ -326,6 +356,24 @@ function formatDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return 'Recently listed';
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+function buildSourceRefreshes(rows) {
+  return rows.reduce((latestBySource, row) => {
+    if (!row.source || !row.scraped_at || latestBySource[row.source]) return latestBySource;
+    latestBySource[row.source] = row.scraped_at;
+    return latestBySource;
+  }, {});
+}
+
+function formatRefreshTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'recently';
+  const elapsedMinutes = Math.max(0, Math.round((Date.now() - date.getTime()) / 60000));
+  if (elapsedMinutes < 1) return 'just now';
+  if (elapsedMinutes < 60) return `${elapsedMinutes} min ago`;
+  if (elapsedMinutes < 1440) return `${Math.floor(elapsedMinutes / 60)} hr ago`;
+  return `on ${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} at ${date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}`;
 }
 
 function truncate(value, length) {
