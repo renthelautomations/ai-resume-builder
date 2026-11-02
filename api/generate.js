@@ -121,7 +121,7 @@ export default async function handler(req, res) {
         "X-Title": "AI Resume Builder"
       },
       body: JSON.stringify({
-        model: "deepseek/deepseek-chat", // DeepSeek v4 flash / DeepSeek Chat
+        model: "deepseek/deepseek-v4-flash",
         max_tokens: 4000,
         messages: [
           { role: "system", content: systemPrompt },
