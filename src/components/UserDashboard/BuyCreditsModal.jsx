@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../../modal.css';
 import { X, ChevronRight, CheckCircle, Info, CreditCard, Smartphone, Check, Upload, Copy } from 'lucide-react';
 
-export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchase, isSubmitting }) {
+export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchase, isSubmitting, userEmail }) {
   const [step, setStep] = useState(1);
   const [copied, setCopied] = useState(false);
   const [formData, setFormData] = useState({
@@ -250,6 +250,18 @@ export default function BuyCreditsModal({ onClose, selectedPack, onSubmitPurchas
                     </div>
                   </div>
                   
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)' }}>Notification Email</label>
+                    <input
+                      type="email"
+                      value={userEmail || ''}
+                      readOnly
+                      aria-describedby="purchase-email-help"
+                      style={{ width: '100%', boxSizing: 'border-box', padding: '14px 16px', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border)', color: '#fff', fontSize: '15px', outline: 'none' }}
+                    />
+                    <p id="purchase-email-help" style={{ margin: '6px 0 0', color: 'var(--text-muted)', fontSize: '12px' }}>We send purchase updates to your signed-in account email and our admin inbox.</p>
+                  </div>
+
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)' }}>Full Name</label>
                     <input 

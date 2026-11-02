@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../../utils/supabaseClient';
 import { useToast } from '../../context/ToastContext';
+import { sendPurchaseNotification } from '../../utils/purchaseEmail';
 import { CreditCard, Zap, Check, Star, Shield, Sparkles, Clock, CheckCircle } from 'lucide-react';
 import './CreditsTab.css';
 import BuyCreditsModal from './BuyCreditsModal';
@@ -206,6 +207,12 @@ export default function CreditsTab({ user }) {
       if (error) throw error;
       
       setSubscriptions(prev => [data[0], ...prev]);
+      try {
+        await sendPurchaseNotification(data[0].id);
+      } catch (emailError) {
+        console.error('Purchase submitted, but email notification failed:', emailError);
+        addToast('Purchase submitted, but email notification failed.', 'info');
+      }
       return true;
     } catch (err) {
       console.error(err);
@@ -376,6 +383,7 @@ export default function CreditsTab({ user }) {
       {showBuyModal && (
         <BuyCreditsModal 
           selectedPack={selectedPack}
+          userEmail={user?.email}
           isSubmitting={isRequesting}
           onClose={() => setShowBuyModal(false)}
           onSubmitPurchase={handleSubmitPurchase}

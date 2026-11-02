@@ -3,11 +3,14 @@ import { supabase } from '../../utils/supabaseClient';
 import { 
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer 
 } from 'recharts';
-import { Users, FileText, CreditCard, DollarSign } from 'lucide-react';
+import { Users, FileText, CreditCard, DollarSign, RefreshCw } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 
 export default function DatabaseStats() {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [rangeDays, setRangeDays] = useState(30);
+  const [lastRefreshedAt, setLastRefreshedAt] = useState(null);
   const { addToast } = useToast();
   
   // KPI state
@@ -21,14 +24,21 @@ export default function DatabaseStats() {
   const [signupsOverTime, setSignupsOverTime] = useState([]);
 
   useEffect(() => {
-    fetchDatabaseStats();
-  }, []);
+    fetchDatabaseStats(rangeDays);
+  }, [rangeDays]);
 
-  const fetchDatabaseStats = async () => {
+  const fetchDatabaseStats = async (days = rangeDays) => {
     setLoading(true);
+    setError('');
     try {
-      const { data, error } = await supabase.rpc('get_database_stats');
-      if (error) throw error;
+      let { data, error: statsError } = await supabase.rpc('get_database_stats', { p_days: days });
+      if (statsError) {
+        // Keep older deployments working until the new function signature is applied.
+        const fallbackResult = await supabase.rpc('get_database_stats');
+        data = fallbackResult.data;
+        statsError = fallbackResult.error;
+      }
+      if (statsError) throw statsError;
 
       if (data) {
         setTotalUsers(data.total_users || 0);
@@ -37,12 +47,14 @@ export default function DatabaseStats() {
         setTotalCreditsSold(data.total_credits_sold || 0);
 
         // Format dates and bucket missing days
-        setSignupsOverTime(bucketDataByDate(data.signups_over_time || [], 30));
-        setResumesOverTime(bucketDataByDate(data.resumes_over_time || [], 30));
+        setSignupsOverTime(bucketDataByDate(data.signups_over_time || [], days));
+        setResumesOverTime(bucketDataByDate(data.resumes_over_time || [], days));
+        setLastRefreshedAt(new Date());
       }
     } catch (err) {
       console.error('Error fetching stats:', err);
-      addToast('Failed to load database statistics', 'error');
+      setError('Database statistics unavailable. Try refreshing.');
+      addToast('Could not load database statistics', 'error');
     } finally {
       setLoading(false);
     }
@@ -85,10 +97,37 @@ export default function DatabaseStats() {
 
   return (
     <div style={{ animation: 'fadeIn 0.3s ease' }}>
-      <div className="admin-header-container" style={{ marginBottom: '32px' }}>
-        <h2 className="admin-header-title">Database Stats & Analytics</h2>
-        <p className="admin-header-desc">Real-time usage metrics and system health indicators.</p>
+      <div className="admin-header-container">
+        <div className="admin-header-row">
+          <div>
+            <h2 className="admin-header-title">Database stats and analytics</h2>
+            <p className="admin-header-desc">Usage metrics with an adjustable reporting window.</p>
+          </div>
+          <div className="admin-header-actions">
+            <span className="admin-last-refreshed">
+              {lastRefreshedAt ? `Updated ${lastRefreshedAt.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}` : 'Not refreshed'}
+            </span>
+            <label className="admin-select-field">
+              <span>Range</span>
+              <select value={rangeDays} onChange={event => setRangeDays(Number(event.target.value))} aria-label="Database statistics date range">
+                <option value="7">7 days</option>
+                <option value="30">30 days</option>
+                <option value="90">90 days</option>
+              </select>
+            </label>
+            <button type="button" className="admin-icon-button" onClick={() => fetchDatabaseStats(rangeDays)} disabled={loading} aria-label="Refresh database statistics" title="Refresh database statistics">
+              <RefreshCw size={18} className={loading ? 'spin' : ''} />
+            </button>
+          </div>
+        </div>
       </div>
+
+      {error && (
+        <div className="admin-inline-error" role="alert">
+          <span>{error}</span>
+          <button type="button" className="admin-text-button" onClick={() => fetchDatabaseStats(rangeDays)}>Retry</button>
+        </div>
+      )}
 
       {/* KPI Cards Grid */}
       <div className="kpi-grid" style={{ 
@@ -119,7 +158,7 @@ export default function DatabaseStats() {
           overflow: 'hidden'
         }}>
           <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#FFFFFF', marginBottom: '24px' }}>
-            Resumes Generated (Last 30 Days)
+            Resumes Generated (Last {rangeDays} Days)
           </h3>
           <div style={{ width: '100%', height: '300px' }}>
             <ResponsiveContainer>
@@ -147,7 +186,7 @@ export default function DatabaseStats() {
           overflow: 'hidden'
         }}>
           <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#FFFFFF', marginBottom: '24px' }}>
-            New User Signups (Last 30 Days)
+            New User Signups (Last {rangeDays} Days)
           </h3>
           <div style={{ width: '100%', height: '300px' }}>
             <ResponsiveContainer>

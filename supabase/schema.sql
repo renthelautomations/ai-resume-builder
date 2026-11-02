@@ -282,7 +282,7 @@ DECLARE
     v_status TEXT;
 BEGIN
     -- Verify Admin
-    IF auth.uid() != 'b0b909eb-4831-445a-9622-733a1d823f35' THEN
+    IF auth.uid() IS DISTINCT FROM 'b0b909eb-4831-445a-9622-733a1d823f35'::uuid THEN
         RAISE EXCEPTION 'Unauthorized - Admin Only';
     END IF;
 
@@ -298,7 +298,7 @@ BEGIN
         UPDATE public.profiles SET credits = credits + v_credits WHERE id = v_user_id;
     END IF;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- 7. Reject Subscription RPC (For Admin Use)
 CREATE OR REPLACE FUNCTION reject_subscription(p_subscription_id UUID)
@@ -307,7 +307,7 @@ DECLARE
     v_status TEXT;
 BEGIN
     -- Verify Admin
-    IF auth.uid() != 'b0b909eb-4831-445a-9622-733a1d823f35' THEN
+    IF auth.uid() IS DISTINCT FROM 'b0b909eb-4831-445a-9622-733a1d823f35'::uuid THEN
         RAISE EXCEPTION 'Unauthorized - Admin Only';
     END IF;
 
@@ -321,7 +321,7 @@ BEGIN
         UPDATE public.credit_subscriptions SET status = 'rejected', acknowledged = TRUE WHERE id = p_subscription_id;
     END IF;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- ==========================================
 -- 8. Storage Setup for Receipts
@@ -346,9 +346,11 @@ CREATE POLICY "Users can upload receipts"
 
 -- 8. Get Database Stats (Admin Only)
 DROP FUNCTION IF EXISTS get_database_stats();
-CREATE OR REPLACE FUNCTION get_database_stats()
+DROP FUNCTION IF EXISTS get_database_stats(integer);
+CREATE OR REPLACE FUNCTION get_database_stats(p_days INT DEFAULT 30)
 RETURNS json AS $$
 DECLARE
+    report_days INT := LEAST(GREATEST(COALESCE(p_days, 30), 7), 90);
     total_users INT;
     total_resumes INT;
     total_revenue NUMERIC;
@@ -357,7 +359,7 @@ DECLARE
     signups_time JSON;
 BEGIN
     -- Verify Admin
-    IF auth.uid() != 'b0b909eb-4831-445a-9622-733a1d823f35' THEN
+    IF auth.uid() IS DISTINCT FROM 'b0b909eb-4831-445a-9622-733a1d823f35'::uuid THEN
         RAISE EXCEPTION 'Unauthorized - Admin Only';
     END IF;
 
@@ -370,11 +372,11 @@ BEGIN
     WHERE status = 'approved';
 
     SELECT json_agg(row_to_json(r)) INTO resumes_time FROM (
-        SELECT created_at FROM public.resumes WHERE created_at >= NOW() - INTERVAL '30 days' ORDER BY created_at ASC
+        SELECT created_at FROM public.resumes WHERE created_at >= NOW() - (report_days || ' days')::interval ORDER BY created_at ASC
     ) r;
 
     SELECT json_agg(row_to_json(s)) INTO signups_time FROM (
-        SELECT created_at FROM public.profiles WHERE created_at >= NOW() - INTERVAL '30 days' ORDER BY created_at ASC
+        SELECT created_at FROM public.profiles WHERE created_at >= NOW() - (report_days || ' days')::interval ORDER BY created_at ASC
     ) s;
 
     RETURN json_build_object(
@@ -382,11 +384,12 @@ BEGIN
         'total_resumes', total_resumes,
         'total_revenue', COALESCE(total_revenue, 0),
         'total_credits_sold', COALESCE(total_credits_sold, 0),
+        'period_days', report_days,
         'resumes_over_time', COALESCE(resumes_time, '[]'::json),
         'signups_over_time', COALESCE(signups_time, '[]'::json)
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- 9. Get Admin User Stats (Admin Only)
 DROP FUNCTION IF EXISTS get_admin_user_stats();
@@ -396,7 +399,7 @@ DECLARE
     result JSON;
 BEGIN
     -- Verify Admin
-    IF auth.uid() != 'b0b909eb-4831-445a-9622-733a1d823f35' THEN
+    IF auth.uid() IS DISTINCT FROM 'b0b909eb-4831-445a-9622-733a1d823f35'::uuid THEN
         RAISE EXCEPTION 'Unauthorized - Admin Only';
     END IF;
 
@@ -416,7 +419,7 @@ BEGIN
 
     RETURN COALESCE(result, '[]'::json);
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- 10. Get Recent Activity (Admin Only)
 DROP FUNCTION IF EXISTS get_recent_activity();
@@ -426,7 +429,7 @@ DECLARE
     result JSON;
 BEGIN
     -- Verify Admin
-    IF auth.uid() != 'b0b909eb-4831-445a-9622-733a1d823f35' THEN
+    IF auth.uid() IS DISTINCT FROM 'b0b909eb-4831-445a-9622-733a1d823f35'::uuid THEN
         RAISE EXCEPTION 'Unauthorized - Admin Only';
     END IF;
 
@@ -445,7 +448,7 @@ BEGIN
 
     RETURN COALESCE(result, '[]'::json);
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- ==========================================
 -- WEB ANALYTICS
@@ -460,24 +463,31 @@ CREATE TABLE IF NOT EXISTS public.page_views (
 ALTER TABLE public.page_views ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Anyone can insert page views" ON public.page_views;
-CREATE POLICY "Anyone can insert page views" 
-    ON public.page_views FOR INSERT 
-    WITH CHECK (true);
+DROP POLICY IF EXISTS "Public can insert non-admin page views" ON public.page_views;
+CREATE POLICY "Public can insert non-admin page views"
+    ON public.page_views FOR INSERT
+    WITH CHECK (path IS NOT NULL AND path <> '' AND path NOT LIKE '/admin%');
 
 DROP POLICY IF EXISTS "Anyone can view page views" ON public.page_views;
-CREATE POLICY "Anyone can view page views" 
-    ON public.page_views FOR SELECT 
-    USING (true);
+DROP POLICY IF EXISTS "Admins can view page views" ON public.page_views;
+CREATE POLICY "Admins can view page views"
+    ON public.page_views FOR SELECT
+    USING (auth.uid() = 'b0b909eb-4831-445a-9622-733a1d823f35'::uuid);
 
 CREATE OR REPLACE FUNCTION get_web_analytics()
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
     total_views INT;
     unique_visitors INT;
 BEGIN
+    IF auth.uid() IS DISTINCT FROM 'b0b909eb-4831-445a-9622-733a1d823f35'::uuid THEN
+        RAISE EXCEPTION 'Unauthorized - Admin Only';
+    END IF;
+
     SELECT count(*) INTO total_views FROM public.page_views;
     SELECT count(DISTINCT session_id) INTO unique_visitors FROM public.page_views;
     
@@ -488,35 +498,62 @@ BEGIN
 END;
 $$;
 
--- 11. Get Pending Subscriptions (Admin Only)
+REVOKE ALL ON FUNCTION get_web_analytics() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_web_analytics() TO authenticated;
+
+-- 11. Get Admin Subscriptions (Admin Only)
+DROP FUNCTION IF EXISTS get_admin_subscriptions(TEXT);
+CREATE OR REPLACE FUNCTION get_admin_subscriptions(p_status TEXT DEFAULT 'pending')
+RETURNS json AS $$
+DECLARE
+    result JSON;
+    requested_status TEXT := lower(coalesce(p_status, 'pending'));
+BEGIN
+    IF auth.uid() IS DISTINCT FROM 'b0b909eb-4831-445a-9622-733a1d823f35'::uuid THEN
+        RAISE EXCEPTION 'Unauthorized - Admin Only';
+    END IF;
+
+    IF requested_status NOT IN ('pending', 'approved', 'rejected', 'all') THEN
+        RAISE EXCEPTION 'Invalid subscription status';
+    END IF;
+
+    SELECT json_agg(row_to_json(t)) INTO result FROM (
+        SELECT
+            cs.id,
+            cs.user_id,
+            cs.credits_amount,
+            cs.price_php,
+            cs.status,
+            cs.created_at,
+            cs.updated_at,
+            cs.full_name,
+            cs.mobile_number,
+            cs.reference_number,
+            cs.receipt_url,
+            au.email AS user_email
+        FROM public.credit_subscriptions cs
+        LEFT JOIN auth.users au ON au.id = cs.user_id
+        WHERE requested_status = 'all' OR cs.status = requested_status
+        ORDER BY cs.created_at DESC
+    ) t;
+
+    RETURN COALESCE(result, '[]'::json);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+REVOKE ALL ON FUNCTION get_admin_subscriptions(TEXT) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_admin_subscriptions(TEXT) TO authenticated;
+
+-- 12. Get Pending Subscriptions (Legacy Admin RPC)
 DROP FUNCTION IF EXISTS get_pending_subscriptions();
 CREATE OR REPLACE FUNCTION get_pending_subscriptions()
 RETURNS json AS $$
 DECLARE
     result JSON;
 BEGIN
-    -- Verify Admin
-    IF auth.uid() != 'b0b909eb-4831-445a-9622-733a1d823f35' THEN
-        RAISE EXCEPTION 'Unauthorized - Admin Only';
-    END IF;
-
-    SELECT json_agg(row_to_json(t)) INTO result FROM (
-        SELECT 
-            cs.id, 
-            cs.credits_amount, 
-            cs.price_php, 
-            cs.status, 
-            cs.created_at, 
-            cs.full_name, 
-            cs.mobile_number, 
-            cs.reference_number, 
-            cs.receipt_url,
-            json_build_object('id', cs.user_id) as profiles
-        FROM public.credit_subscriptions cs
-        WHERE cs.status = 'pending'
-        ORDER BY cs.created_at DESC
-    ) t;
-
-    RETURN COALESCE(result, '[]'::json);
+    RETURN get_admin_subscriptions('pending');
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+REVOKE ALL ON FUNCTION get_pending_subscriptions() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_pending_subscriptions() TO authenticated;

@@ -21,6 +21,10 @@ function PageTracker() {
   const location = useLocation();
 
   useEffect(() => {
+    if (location.pathname.startsWith('/admin')) {
+      return;
+    }
+
     const trackPageView = async () => {
       let sessionId = localStorage.getItem('session_id');
       if (!sessionId) {
