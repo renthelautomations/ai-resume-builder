@@ -1,6 +1,6 @@
 .job-tracker-container {
   width: 100%;
-  padding-bottom: 60px;
+  padding-bottom: 48px;
   animation: slideUpFade 0.35s ease;
 }
 
@@ -9,7 +9,9 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
 }
 
 .job-tracker-kicker {
@@ -22,9 +24,9 @@
 }
 
 .job-tracker-title {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   color: #f8fafc;
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.03em;
 }
@@ -32,7 +34,7 @@
 .job-tracker-subtitle {
   margin: 0;
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .job-tracker-view-toggle {
@@ -42,8 +44,8 @@
   gap: 3px;
   padding: 3px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  background: rgba(22, 27, 34, 0.6);
+  border-radius: 11px;
+  background: rgba(15, 23, 42, 0.72);
 }
 
 .job-tracker-view-toggle button {
@@ -51,10 +53,10 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
-  min-height: 34px;
-  padding: 7px 11px;
+  min-height: 36px;
+  padding: 7px 12px;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: 8px;
   color: var(--text-muted);
   background: transparent;
   font-size: 12px;
@@ -81,24 +83,24 @@
 .job-tracker-summary {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .job-tracker-metric {
   display: flex;
-  min-height: 86px;
+  min-height: 76px;
   flex-direction: column;
   justify-content: center;
-  padding: 14px 16px;
+  padding: 12px 15px;
   border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.025);
+  border-radius: 13px;
+  background: rgba(15, 23, 42, 0.5);
 }
 
 .job-tracker-metric strong {
   color: #f8fafc;
-  font-size: 25px;
+  font-size: 23px;
   line-height: 1;
 }
 
@@ -110,7 +112,7 @@
 
 .job-tracker-list {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .job-tracker-board {
@@ -124,11 +126,11 @@
 
 .job-tracker-column {
   min-width: 0;
-  min-height: 420px;
+  min-height: 390px;
   padding: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  background: rgba(15, 23, 42, 0.42);
+  border-radius: 15px;
+  background: rgba(15, 23, 42, 0.52);
 }
 
 .job-tracker-column-header {
@@ -182,7 +184,7 @@
 
 .job-tracker-column-list {
   display: grid;
-  min-height: 350px;
+  min-height: 320px;
   align-content: start;
   gap: 10px;
 }
@@ -222,13 +224,22 @@
 }
 
 .job-tracker-card {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
   justify-content: space-between;
-  gap: 24px;
-  padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  background: rgba(15, 23, 42, 0.58);
+  gap: 22px;
+  padding: 21px 22px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.52));
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.job-tracker-card:hover {
+  border-color: rgba(96, 165, 250, 0.34);
+  background: linear-gradient(135deg, rgba(19, 33, 58, 0.88), rgba(15, 23, 42, 0.58));
+  transform: translateY(-1px);
 }
 
 .job-tracker-kanban-card {
@@ -276,7 +287,6 @@
 
 .job-tracker-card-main {
   min-width: 0;
-  flex: 1;
 }
 
 .job-tracker-card-heading {
@@ -287,7 +297,7 @@
 }
 
 .job-tracker-source {
-  margin: 0 0 7px;
+  margin: 0 0 6px;
   color: #93c5fd;
   font-size: 11px;
   font-weight: 700;
@@ -296,10 +306,11 @@
 }
 
 .job-tracker-card h3 {
-  margin: 0 0 5px;
+  margin: 0 0 6px;
   color: #f8fafc;
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .job-tracker-company {
@@ -310,15 +321,15 @@
 }
 
 .job-tracker-status {
-  min-width: 118px;
+  min-width: 124px;
 }
 
 .job-tracker-status .custom-select-trigger {
-  min-width: 118px;
-  min-height: 40px;
-  padding: 8px 10px;
+  min-width: 124px;
+  min-height: 38px;
+  padding: 8px 11px;
   border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 8px;
+  border-radius: 9px;
   outline: 0;
   color: #e2e8f0;
   background: rgba(255, 255, 255, 0.05);
@@ -344,15 +355,15 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 16px 0;
+  margin: 14px 0 16px;
   color: var(--text-muted);
   font-size: 12px;
 }
 
 .job-tracker-meta span {
-  padding: 5px 8px;
+  padding: 5px 9px;
   border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 6px;
+  border-radius: 7px;
   background: rgba(255, 255, 255, 0.03);
 }
 
@@ -367,25 +378,29 @@
 
 .job-tracker-notes span {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 7px;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .job-tracker-notes textarea {
-  min-height: 62px;
-  padding: 10px 12px;
-  border-radius: 8px;
+  min-height: 68px;
+  padding: 11px 12px;
+  border-radius: 9px;
   background: rgba(2, 6, 23, 0.4);
   font-size: 13px;
+  line-height: 1.45;
   resize: vertical;
 }
 
 .job-tracker-actions {
   display: flex;
-  min-width: 122px;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 1px;
 }
 
 .job-tracker-open-link,
@@ -394,18 +409,23 @@
   width: auto;
   align-items: center;
   gap: 6px;
-  padding: 8px 0;
-  border: 0;
+  min-height: 36px;
+  padding: 8px 11px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 9px;
   color: #93c5fd;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.025);
   font-size: 12px;
+  font-weight: 700;
   text-decoration: none;
   white-space: nowrap;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
 .job-tracker-open-link:hover {
   color: #dbeafe;
-  text-decoration: underline;
+  border-color: rgba(96, 165, 250, 0.4);
+  background: rgba(59, 130, 246, 0.12);
 }
 
 .job-tracker-delete {
@@ -414,6 +434,8 @@
 
 .job-tracker-delete:hover:not(:disabled) {
   color: #fecaca;
+  border-color: rgba(248, 113, 113, 0.35);
+  background: rgba(248, 113, 113, 0.1);
 }
 
 .job-tracker-delete:disabled {
@@ -466,14 +488,27 @@
   }
 
   .job-tracker-card {
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr);
     gap: 16px;
+    padding: 18px;
+  }
+
+  .job-tracker-card-heading {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .job-tracker-status,
+  .job-tracker-status .custom-select-trigger {
+    width: 100%;
   }
 
   .job-tracker-actions {
+    width: 100%;
     min-width: 0;
-    flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
   }
 }

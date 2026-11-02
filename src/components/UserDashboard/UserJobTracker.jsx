@@ -194,7 +194,7 @@ export default function UserJobTracker({ user }) {
         <div>
           <p className="job-tracker-kicker">Your job search</p>
           <h2 className="job-tracker-title">Job Tracker</h2>
-          <p className="job-tracker-subtitle">Keep promising roles moving from saved to applied to hired.</p>
+          <p className="job-tracker-subtitle">Keep every application moving forward.</p>
         </div>
         <div className="job-tracker-view-toggle" role="group" aria-label="Tracker display mode">
           <button
@@ -248,8 +248,8 @@ export default function UserJobTracker({ user }) {
       ) : applications.length === 0 ? (
         <div className="job-tracker-empty">
           <ListChecks size={36} aria-hidden="true" />
-          <h3>Your tracker is empty</h3>
-          <p>Open Find Remote Jobs and track roles you want to revisit.</p>
+          <h3>No tracked roles yet</h3>
+          <p>Track a role from Find Remote Jobs to keep it here.</p>
         </div>
       ) : viewMode === 'kanban' ? (
         <div className="job-tracker-board" aria-label="Job tracker kanban board">

@@ -94,7 +94,7 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
       <div className="dashboard-sidebar panel" style={{ padding: 0 }}>
 
           <div className="dashboard-nav dashboard-padded-section">
-            <button 
+            <button
               onClick={() => navigate('/contactcard')}
               className={`dashboard-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
             >
@@ -112,17 +112,17 @@ export default function UserDashboard({ onClose, onProfileSelect, onSelectResume
             >
               <FileText size={18} /> Saved Resumes
             </button>
-            <button 
-              onClick={() => navigate('/credits')}
-              className={`dashboard-nav-item ${activeTab === 'credits' ? 'active' : ''}`}
-            >
-              <Zap size={18} /> Credits
-            </button>
             <button
               onClick={() => navigate('/jobtracker')}
               className={`dashboard-nav-item ${activeTab === 'tracker' ? 'active' : ''}`}
             >
               <ListChecks size={18} /> Job Tracker
+            </button>
+            <button
+              onClick={() => navigate('/credits')}
+              className={`dashboard-nav-item ${activeTab === 'credits' ? 'active' : ''}`}
+            >
+              <Zap size={18} /> Credits
             </button>
           </div>
           
