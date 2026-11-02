@@ -78,7 +78,7 @@ export default function RemoteJobsPage() {
         .select(JOB_FIELDS)
         .eq('is_active', true)
         .order('posted_at', { ascending: false, nullsFirst: false })
-        .limit(100);
+        .limit(300);
 
       const normalizedTerm = term.trim();
       if (normalizedTerm) {
