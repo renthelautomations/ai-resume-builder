@@ -165,9 +165,7 @@
 }
 
 .remote-jobs-suggestion-heading span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: block;
 }
 
 .remote-jobs-clear-searches,
@@ -193,7 +191,7 @@
 .remote-jobs-suggestion {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: flex-start;
   width: 100%;
   min-height: 38px;
   padding: 8px 10px;
@@ -209,11 +207,6 @@
   border-color: rgba(96, 165, 250, 0.25);
   background: rgba(59, 130, 246, 0.12);
   outline: 0;
-}
-
-.remote-jobs-suggestion > svg {
-  flex: 0 0 auto;
-  color: #93c5fd;
 }
 
 .remote-jobs-suggestion > span {
@@ -244,11 +237,10 @@
 }
 
 .remote-jobs-suggestion-close {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+  display: block;
   margin: 8px 8px 3px;
   padding: 0;
+  text-align: left;
 }
 
 .remote-jobs-filter .custom-select-trigger {

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { BriefcaseBusiness, Clock3, ExternalLink, LayoutGrid, List as ListIcon, Search, Sparkles, X } from 'lucide-react';
+import { BriefcaseBusiness, ExternalLink, LayoutGrid, List as ListIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
 import { buildJobDescription } from '../utils/jobDescription';
@@ -363,7 +363,6 @@ export default function RemoteJobsPage() {
           <div className="remote-jobs-search-field" ref={searchFieldRef}>
             <label htmlFor="remote-job-search">Search roles, skills, or companies</label>
             <div className="remote-jobs-input-row">
-              <Search size={18} aria-hidden="true" />
               <input
                 id="remote-job-search"
                 type="search"
@@ -388,13 +387,12 @@ export default function RemoteJobsPage() {
                 {recentSearches.length > 0 && (
                   <section className="remote-jobs-suggestion-group">
                     <div className="remote-jobs-suggestion-heading">
-                      <span><Clock3 size={14} aria-hidden="true" />Recent searches</span>
+                      <span>Recent searches</span>
                       <button type="button" className="remote-jobs-clear-searches" onClick={clearRecentSearches}>Clear</button>
                     </div>
                     <div className="remote-jobs-suggestion-list">
                       {recentSearches.map(search => (
                         <button key={search} type="button" className="remote-jobs-suggestion" role="option" onClick={() => applySearch(search)}>
-                          <Clock3 size={15} aria-hidden="true" />
                           <span>{search}</span>
                         </button>
                       ))}
@@ -403,13 +401,12 @@ export default function RemoteJobsPage() {
                 )}
                 <section className="remote-jobs-suggestion-group">
                   <div className="remote-jobs-suggestion-heading">
-                    <span><Sparkles size={14} aria-hidden="true" />{hasPersonalizedRecommendations ? 'Recommended for you' : 'Recommended searches'}</span>
+                    <span>{hasPersonalizedRecommendations ? 'Recommended for you' : 'Recommended searches'}</span>
                   </div>
                   {visibleRecommendations.length > 0 ? (
                     <div className="remote-jobs-suggestion-list">
                       {visibleRecommendations.map(item => (
                         <button key={item.query} type="button" className="remote-jobs-suggestion" role="option" onClick={() => applySearch(item.query)}>
-                          <Sparkles size={15} aria-hidden="true" />
                           <span>
                             <strong>{item.query}</strong>
                             <small>{item.label}</small>
@@ -422,7 +419,7 @@ export default function RemoteJobsPage() {
                   )}
                 </section>
                 <button type="button" className="remote-jobs-suggestion-close" onClick={() => setSearchFocused(false)}>
-                  <X size={14} aria-hidden="true" /> Close suggestions
+                  Close suggestions
                 </button>
               </div>
             )}
