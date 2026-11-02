@@ -5,6 +5,7 @@ import {
 } from 'recharts';
 import { Users, FileText, CreditCard, DollarSign, RefreshCw } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
+import CustomSelect from '../CustomSelect';
 
 export default function DatabaseStats() {
   const [loading, setLoading] = useState(true);
@@ -109,11 +110,16 @@ export default function DatabaseStats() {
             </span>
             <label className="admin-select-field">
               <span>Range</span>
-              <select value={rangeDays} onChange={event => setRangeDays(Number(event.target.value))} aria-label="Database statistics date range">
-                <option value="7">7 days</option>
-                <option value="30">30 days</option>
-                <option value="90">90 days</option>
-              </select>
+              <CustomSelect
+                value={rangeDays}
+                onChange={setRangeDays}
+                ariaLabel="Database statistics date range"
+                options={[
+                  { value: 7, label: '7 days' },
+                  { value: 30, label: '30 days' },
+                  { value: 90, label: '90 days' }
+                ]}
+              />
             </label>
             <button type="button" className="admin-icon-button" onClick={() => fetchDatabaseStats(rangeDays)} disabled={loading} aria-label="Refresh database statistics" title="Refresh database statistics">
               <RefreshCw size={18} className={loading ? 'spin' : ''} />

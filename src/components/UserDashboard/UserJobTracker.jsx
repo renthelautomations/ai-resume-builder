@@ -3,6 +3,7 @@ import { ExternalLink, ListChecks, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../utils/supabaseClient';
 import { useToast } from '../../context/ToastContext';
+import CustomSelect from '../CustomSelect';
 import './UserJobTracker.css';
 
 const STATUS_OPTIONS = [
@@ -159,15 +160,14 @@ export default function UserJobTracker({ user }) {
                     <h3>{application.job_title}</h3>
                     <p className="job-tracker-company">{application.company || 'Company not listed'}</p>
                   </div>
-                  <select
+                  <CustomSelect
                     className={`job-tracker-status status-${application.status}`}
                     value={application.status}
-                    onChange={event => handleStatusChange(application, event.target.value)}
+                    onChange={status => handleStatusChange(application, status)}
                     disabled={updatingId === application.id}
-                    aria-label={`Status for ${application.job_title}`}
-                  >
-                    {STATUS_OPTIONS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-                  </select>
+                    ariaLabel={`Status for ${application.job_title}`}
+                    options={STATUS_OPTIONS}
+                  />
                 </div>
                 <div className="job-tracker-meta">
                   {application.location && <span>{application.location}</span>}

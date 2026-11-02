@@ -7,6 +7,7 @@ import { Users, Database, LogOut, LayoutDashboard, CreditCard, CheckCircle, XCir
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import '../components/UserDashboard/UserDashboard.css'; // Reuse dashboard styles
 import './AdminDashboard.css'; // Admin specific styles
+import CustomSelect from '../components/CustomSelect';
 import DatabaseStats from '../components/AdminDashboard/DatabaseStats';
 import JobAnalytics from '../components/AdminDashboard/JobAnalytics';
 
@@ -519,12 +520,17 @@ export default function AdminDashboard() {
               </label>
               <label className="admin-select-field">
                 <span>Sort</span>
-                <select value={userSort} onChange={event => { setUserSort(event.target.value); setUserPage(1); }} aria-label="Sort users">
-                  <option value="newest">Newest first</option>
-                  <option value="name">Name</option>
-                  <option value="resumes">Most resumes</option>
-                  <option value="credits">Most credits</option>
-                </select>
+                <CustomSelect
+                  value={userSort}
+                  onChange={value => { setUserSort(value); setUserPage(1); }}
+                  ariaLabel="Sort users"
+                  options={[
+                    { value: 'newest', label: 'Newest first' },
+                    { value: 'name', label: 'Name' },
+                    { value: 'resumes', label: 'Most resumes' },
+                    { value: 'credits', label: 'Most credits' }
+                  ]}
+                />
               </label>
             </div>
 
@@ -615,12 +621,17 @@ export default function AdminDashboard() {
             <div className="admin-toolbar">
               <label className="admin-select-field">
                 <span>Status</span>
-                <select value={subscriptionFilter} onChange={event => { setSubscriptionFilter(event.target.value); fetchSubscriptions(event.target.value); }} aria-label="Filter subscriptions by status">
-                  <option value="pending">Pending</option>
-                  <option value="approved">Approved</option>
-                  <option value="rejected">Rejected</option>
-                  <option value="all">All history</option>
-                </select>
+                <CustomSelect
+                  value={subscriptionFilter}
+                  onChange={value => { setSubscriptionFilter(value); fetchSubscriptions(value); }}
+                  ariaLabel="Filter subscriptions by status"
+                  options={[
+                    { value: 'pending', label: 'Pending' },
+                    { value: 'approved', label: 'Approved' },
+                    { value: 'rejected', label: 'Rejected' },
+                    { value: 'all', label: 'All history' }
+                  ]}
+                />
               </label>
             </div>
 

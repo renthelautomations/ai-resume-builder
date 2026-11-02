@@ -3,6 +3,7 @@ import { BriefcaseBusiness, ClipboardList, RefreshCw, SearchCheck, Sparkles } fr
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { supabase } from '../../utils/supabaseClient';
 import { useToast } from '../../context/ToastContext';
+import CustomSelect from '../CustomSelect';
 import './JobAnalytics.css';
 
 export default function JobAnalytics() {
@@ -54,11 +55,16 @@ export default function JobAnalytics() {
             </span>
             <label className="admin-select-field">
               <span>Range</span>
-              <select value={rangeDays} onChange={event => setRangeDays(Number(event.target.value))} aria-label="Job analytics date range">
-                <option value="7">7 days</option>
-                <option value="30">30 days</option>
-                <option value="90">90 days</option>
-              </select>
+              <CustomSelect
+                value={rangeDays}
+                onChange={setRangeDays}
+                ariaLabel="Job analytics date range"
+                options={[
+                  { value: 7, label: '7 days' },
+                  { value: 30, label: '30 days' },
+                  { value: 90, label: '90 days' }
+                ]}
+              />
             </label>
             <button type="button" className="admin-icon-button" onClick={() => fetchStats(rangeDays)} disabled={loading} aria-label="Refresh job analytics" title="Refresh job analytics">
               <RefreshCw size={18} className={loading ? 'spin' : ''} />

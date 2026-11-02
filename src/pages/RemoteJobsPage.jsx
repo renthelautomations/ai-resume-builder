@@ -5,6 +5,7 @@ import { supabase } from '../utils/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import SiteNav from '../components/SiteNav';
+import CustomSelect from '../components/CustomSelect';
 import './RemoteJobsPage.css';
 
 const JOB_CATEGORIES = [
@@ -193,17 +194,28 @@ export default function RemoteJobsPage() {
           </label>
           <label className="remote-jobs-filter">
             <span>Source</span>
-            <select value={sourceFilter} onChange={event => setSourceFilter(event.target.value)}>
-              <option value="all">All sources</option>
-              {sources.map(source => <option key={source} value={source}>{formatSource(source)}</option>)}
-            </select>
+            <CustomSelect
+              value={sourceFilter}
+              onChange={setSourceFilter}
+              ariaLabel="Filter jobs by source"
+              options={[
+                { value: 'all', label: 'All sources' },
+                ...sources.map(source => ({ value: source, label: formatSource(source) }))
+              ]}
+            />
           </label>
           <label className="remote-jobs-filter">
             <span>Niche</span>
-            <select value={categoryFilter} onChange={event => setCategoryFilter(event.target.value)}>
-              <option value="all">All niches</option>
-              {JOB_CATEGORIES.map(category => <option key={category} value={category}>{category}</option>)}
-            </select>
+            <CustomSelect
+              className="menu-right"
+              value={categoryFilter}
+              onChange={setCategoryFilter}
+              ariaLabel="Filter jobs by niche"
+              options={[
+                { value: 'all', label: 'All niches' },
+                ...JOB_CATEGORIES.map(category => ({ value: category, label: category }))
+              ]}
+            />
           </label>
         </form>
 

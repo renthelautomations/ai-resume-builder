@@ -113,6 +113,11 @@
 
 .job-tracker-status {
   min-width: 118px;
+}
+
+.job-tracker-status .custom-select-trigger {
+  min-width: 118px;
+  min-height: 40px;
   padding: 8px 10px;
   border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 8px;
@@ -125,13 +130,16 @@
   text-transform: capitalize;
 }
 
-.job-tracker-status:focus {
+.job-tracker-status .custom-select-trigger:focus-visible,
+.job-tracker-status.is-open .custom-select-trigger {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-.job-tracker-status option {
-  color: #0f172a;
+.job-tracker-status .custom-select-menu {
+  right: 0;
+  left: auto;
+  min-width: 170px;
 }
 
 .job-tracker-meta {
