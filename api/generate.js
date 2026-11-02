@@ -122,7 +122,8 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "deepseek/deepseek-v4-flash",
-        max_tokens: 4000,
+        max_tokens: 8000,
+        response_format: { type: "json_object" },
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userMsg }
