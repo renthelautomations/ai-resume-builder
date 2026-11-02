@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ExternalLink, ListChecks, Trash2 } from 'lucide-react';
+import { ExternalLink, Kanban, List, ListChecks, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../utils/supabaseClient';
 import { useToast } from '../../context/ToastContext';
@@ -14,6 +14,7 @@ const STATUS_OPTIONS = [
   { value: 'rejected', label: 'Rejected' },
   { value: 'withdrawn', label: 'Withdrawn' }
 ];
+const VIEW_MODE_KEY = 'jobTrackerViewMode';
 
 export default function UserJobTracker({ user }) {
   const { addToast } = useToast();
@@ -23,10 +24,20 @@ export default function UserJobTracker({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [updatingId, setUpdatingId] = useState(null);
+  const [draggingId, setDraggingId] = useState(null);
+  const [viewMode, setViewMode] = useState(() => (
+    typeof window !== 'undefined' && window.localStorage.getItem(VIEW_MODE_KEY) === 'kanban'
+      ? 'kanban'
+      : 'list'
+  ));
 
   useEffect(() => {
     fetchApplications();
   }, [user?.id]);
+
+  useEffect(() => {
+    window.localStorage.setItem(VIEW_MODE_KEY, viewMode);
+  }, [viewMode]);
 
   const summary = useMemo(() => ({
     total: applications.length,
@@ -34,6 +45,11 @@ export default function UserJobTracker({ user }) {
     interviews: applications.filter(application => application.status === 'interview').length,
     offers: applications.filter(application => application.status === 'offer').length
   }), [applications]);
+
+  const applicationsByStatus = useMemo(() => STATUS_OPTIONS.reduce((groups, status) => {
+    groups[status.value] = applications.filter(application => application.status === status.value);
+    return groups;
+  }, {}), [applications]);
 
   const fetchApplications = async () => {
     if (!user) {
@@ -86,6 +102,13 @@ export default function UserJobTracker({ user }) {
     updateApplication(application, { status, applied_at: appliedAt });
   };
 
+  const handleDrop = status => {
+    if (!draggingId) return;
+    const application = applications.find(item => item.id === draggingId);
+    setDraggingId(null);
+    if (application && application.status !== status) handleStatusChange(application, status);
+  };
+
   const handleNotesBlur = application => {
     const notes = notesById[application.id] || '';
     if (notes !== (application.notes || '')) updateApplication(application, { notes });
@@ -110,6 +133,61 @@ export default function UserJobTracker({ user }) {
     setUpdatingId(null);
   };
 
+  const renderApplicationCard = application => (
+    <article
+      className={`job-tracker-card ${viewMode === 'kanban' ? 'job-tracker-kanban-card' : ''}`}
+      key={application.id}
+      draggable={viewMode === 'kanban' && updatingId !== application.id}
+      onDragStart={() => setDraggingId(application.id)}
+      onDragEnd={() => setDraggingId(null)}
+      aria-grabbed={draggingId === application.id}
+    >
+      <div className="job-tracker-card-main">
+        <div className="job-tracker-card-heading">
+          <div>
+            <p className="job-tracker-source">{formatSource(application.source)}</p>
+            <h3>{application.job_title}</h3>
+            <p className="job-tracker-company">{application.company || 'Company not listed'}</p>
+          </div>
+          <CustomSelect
+            className={`job-tracker-status status-${application.status}`}
+            value={application.status}
+            onChange={status => handleStatusChange(application, status)}
+            disabled={updatingId === application.id}
+            ariaLabel={`Status for ${application.job_title}`}
+            options={STATUS_OPTIONS}
+          />
+        </div>
+        <div className="job-tracker-meta">
+          {application.location && <span>{application.location}</span>}
+          <span>Updated {formatDate(application.updated_at)}</span>
+          {application.applied_at && <span>Applied {formatDate(application.applied_at)}</span>}
+        </div>
+        <label className="job-tracker-notes">
+          <span>Notes</span>
+          <textarea
+            value={notesById[application.id] ?? ''}
+            onChange={event => setNotesById(previous => ({ ...previous, [application.id]: event.target.value }))}
+            onBlur={() => handleNotesBlur(application)}
+            placeholder="Add next step, contact, or interview notes"
+            rows={2}
+          />
+        </label>
+      </div>
+      <div className="job-tracker-actions">
+        {application.job_url && (
+          <a href={application.job_url} target="_blank" rel="noopener noreferrer" className="job-tracker-open-link">
+            Open listing <ExternalLink size={15} aria-hidden="true" />
+          </a>
+        )}
+        <button type="button" className="job-tracker-delete" onClick={() => handleDelete(application)} disabled={updatingId === application.id}>
+          <Trash2 size={15} aria-hidden="true" />
+          Remove
+        </button>
+      </div>
+    </article>
+  );
+
   return (
     <div className="job-tracker-container">
       <div className="job-tracker-header">
@@ -117,6 +195,30 @@ export default function UserJobTracker({ user }) {
           <p className="job-tracker-kicker">Your job search</p>
           <h2 className="job-tracker-title">Job Tracker</h2>
           <p className="job-tracker-subtitle">Keep promising roles moving from saved to applied to hired.</p>
+        </div>
+        <div className="job-tracker-view-toggle" role="group" aria-label="Tracker display mode">
+          <button
+            type="button"
+            className={viewMode === 'list' ? 'active' : ''}
+            onClick={() => setViewMode('list')}
+            aria-label="Show tracker as a list"
+            aria-pressed={viewMode === 'list'}
+            title="List view"
+          >
+            <List size={17} aria-hidden="true" />
+            <span>List</span>
+          </button>
+          <button
+            type="button"
+            className={viewMode === 'kanban' ? 'active' : ''}
+            onClick={() => setViewMode('kanban')}
+            aria-label="Show tracker as a kanban board"
+            aria-pressed={viewMode === 'kanban'}
+            title="Kanban view"
+          >
+            <Kanban size={17} aria-hidden="true" />
+            <span>Kanban</span>
+          </button>
         </div>
       </div>
 
@@ -149,55 +251,37 @@ export default function UserJobTracker({ user }) {
           <h3>Your tracker is empty</h3>
           <p>Open Find Remote Jobs and track roles you want to revisit.</p>
         </div>
+      ) : viewMode === 'kanban' ? (
+        <div className="job-tracker-board" aria-label="Job tracker kanban board">
+          {STATUS_OPTIONS.map(status => {
+            const columnApplications = applicationsByStatus[status.value] || [];
+            return (
+              <section
+                className={`job-tracker-column status-${status.value}`}
+                key={status.value}
+                onDragOver={event => event.preventDefault()}
+                onDrop={() => handleDrop(status.value)}
+                aria-label={`${status.label} jobs`}
+              >
+                <header className="job-tracker-column-header">
+                  <div>
+                    <span className="job-tracker-column-dot" aria-hidden="true" />
+                    <h3>{status.label}</h3>
+                  </div>
+                  <span className="job-tracker-column-count">{columnApplications.length}</span>
+                </header>
+                <div className="job-tracker-column-list">
+                  {columnApplications.length > 0
+                    ? columnApplications.map(renderApplicationCard)
+                    : <p className="job-tracker-column-empty">Drop roles here</p>}
+                </div>
+              </section>
+            );
+          })}
+        </div>
       ) : (
         <div className="job-tracker-list">
-          {applications.map(application => (
-            <article className="job-tracker-card" key={application.id}>
-              <div className="job-tracker-card-main">
-                <div className="job-tracker-card-heading">
-                  <div>
-                    <p className="job-tracker-source">{formatSource(application.source)}</p>
-                    <h3>{application.job_title}</h3>
-                    <p className="job-tracker-company">{application.company || 'Company not listed'}</p>
-                  </div>
-                  <CustomSelect
-                    className={`job-tracker-status status-${application.status}`}
-                    value={application.status}
-                    onChange={status => handleStatusChange(application, status)}
-                    disabled={updatingId === application.id}
-                    ariaLabel={`Status for ${application.job_title}`}
-                    options={STATUS_OPTIONS}
-                  />
-                </div>
-                <div className="job-tracker-meta">
-                  {application.location && <span>{application.location}</span>}
-                  <span>Updated {formatDate(application.updated_at)}</span>
-                  {application.applied_at && <span>Applied {formatDate(application.applied_at)}</span>}
-                </div>
-                <label className="job-tracker-notes">
-                  <span>Notes</span>
-                  <textarea
-                    value={notesById[application.id] ?? ''}
-                    onChange={event => setNotesById(previous => ({ ...previous, [application.id]: event.target.value }))}
-                    onBlur={() => handleNotesBlur(application)}
-                    placeholder="Add next step, contact, or interview notes"
-                    rows={2}
-                  />
-                </label>
-              </div>
-              <div className="job-tracker-actions">
-                {application.job_url && (
-                  <a href={application.job_url} target="_blank" rel="noopener noreferrer" className="job-tracker-open-link">
-                    Open listing <ExternalLink size={15} aria-hidden="true" />
-                  </a>
-                )}
-                <button type="button" className="job-tracker-delete" onClick={() => handleDelete(application)} disabled={updatingId === application.id}>
-                  <Trash2 size={15} aria-hidden="true" />
-                  Remove
-                </button>
-              </div>
-            </article>
-          ))}
+          {applications.map(renderApplicationCard)}
         </div>
       )}
     </div>
