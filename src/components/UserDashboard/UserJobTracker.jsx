@@ -20,7 +20,6 @@ export default function UserJobTracker({ user }) {
   const { addToast } = useToast();
   const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
-  const [notesById, setNotesById] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [updatingId, setUpdatingId] = useState(null);
@@ -60,7 +59,7 @@ export default function UserJobTracker({ user }) {
     setError('');
     const { data, error: fetchError } = await supabase
       .from('job_applications')
-      .select('id, job_id, job_title, company, location, source, job_url, description, status, notes, applied_at, created_at, updated_at')
+      .select('id, job_id, job_title, company, location, source, job_url, description, status, applied_at, created_at, updated_at')
       .eq('user_id', user.id)
       .order('updated_at', { ascending: false });
 
@@ -70,7 +69,6 @@ export default function UserJobTracker({ user }) {
       setApplications([]);
     } else {
       setApplications(data || []);
-      setNotesById(Object.fromEntries((data || []).map(application => [application.id, application.notes || ''])));
     }
     setLoading(false);
   };
@@ -82,7 +80,7 @@ export default function UserJobTracker({ user }) {
       .update(updates)
       .eq('id', application.id)
       .eq('user_id', user.id)
-      .select('id, job_id, job_title, company, location, source, job_url, description, status, notes, applied_at, created_at, updated_at')
+      .select('id, job_id, job_title, company, location, source, job_url, description, status, applied_at, created_at, updated_at')
       .single();
 
     if (updateError) {
@@ -90,7 +88,6 @@ export default function UserJobTracker({ user }) {
       addToast('Could not update tracked job.', 'error');
     } else if (data) {
       setApplications(previous => previous.map(item => item.id === data.id ? data : item));
-      setNotesById(previous => ({ ...previous, [data.id]: data.notes || '' }));
     }
     setUpdatingId(null);
   };
@@ -107,11 +104,6 @@ export default function UserJobTracker({ user }) {
     const application = applications.find(item => item.id === draggingId);
     setDraggingId(null);
     if (application && application.status !== status) handleStatusChange(application, status);
-  };
-
-  const handleNotesBlur = application => {
-    const notes = notesById[application.id] || '';
-    if (notes !== (application.notes || '')) updateApplication(application, { notes });
   };
 
   const handleDelete = async application => {
@@ -149,32 +141,22 @@ export default function UserJobTracker({ user }) {
             <h3>{application.job_title}</h3>
             <p className="job-tracker-company">{application.company || 'Company not listed'}</p>
           </div>
-          <CustomSelect
-            className={`job-tracker-status status-${application.status}`}
-            value={application.status}
-            onChange={status => handleStatusChange(application, status)}
-            disabled={updatingId === application.id}
-            ariaLabel={`Status for ${application.job_title}`}
-            options={STATUS_OPTIONS}
-          />
         </div>
         <div className="job-tracker-meta">
           {application.location && <span>{application.location}</span>}
           <span>Updated {formatDate(application.updated_at)}</span>
           {application.applied_at && <span>Applied {formatDate(application.applied_at)}</span>}
         </div>
-        <label className="job-tracker-notes">
-          <span>Notes</span>
-          <textarea
-            value={notesById[application.id] ?? ''}
-            onChange={event => setNotesById(previous => ({ ...previous, [application.id]: event.target.value }))}
-            onBlur={() => handleNotesBlur(application)}
-            placeholder="Add next step, contact, or interview notes"
-            rows={2}
-          />
-        </label>
       </div>
       <div className="job-tracker-actions">
+        <CustomSelect
+          className={`job-tracker-status status-${application.status}`}
+          value={application.status}
+          onChange={status => handleStatusChange(application, status)}
+          disabled={updatingId === application.id}
+          ariaLabel={`Status for ${application.job_title}`}
+          options={STATUS_OPTIONS}
+        />
         {application.job_url && (
           <a href={application.job_url} target="_blank" rel="noopener noreferrer" className="job-tracker-open-link">
             Open listing <ExternalLink size={15} aria-hidden="true" />

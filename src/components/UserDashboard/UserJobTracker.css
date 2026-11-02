@@ -273,16 +273,9 @@
   margin: 0;
 }
 
-.job-tracker-kanban-card .job-tracker-notes textarea {
-  min-height: 74px;
-}
-
 .job-tracker-kanban-card .job-tracker-actions {
   width: 100%;
   min-width: 0;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .job-tracker-card-main {
@@ -321,11 +314,13 @@
 }
 
 .job-tracker-status {
-  min-width: 124px;
+  width: 100%;
+  min-width: 0;
 }
 
 .job-tracker-status .custom-select-trigger {
-  min-width: 124px;
+  width: 100%;
+  min-width: 0;
   min-height: 38px;
   padding: 8px 11px;
   border: 1px solid rgba(255, 255, 255, 0.13);
@@ -346,9 +341,10 @@
 }
 
 .job-tracker-status .custom-select-menu {
-  right: 0;
-  left: auto;
-  min-width: 170px;
+  right: auto;
+  left: 0;
+  width: 100%;
+  min-width: 100%;
 }
 
 .job-tracker-meta {
@@ -367,38 +363,12 @@
   background: rgba(255, 255, 255, 0.03);
 }
 
-.job-tracker-notes {
-  display: block;
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 11px;
-  letter-spacing: normal;
-  text-transform: none;
-}
-
-.job-tracker-notes span {
-  display: block;
-  margin-bottom: 7px;
-  color: #cbd5e1;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.job-tracker-notes textarea {
-  min-height: 68px;
-  padding: 11px 12px;
-  border-radius: 9px;
-  background: rgba(2, 6, 23, 0.4);
-  font-size: 13px;
-  line-height: 1.45;
-  resize: vertical;
-}
-
 .job-tracker-actions {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  justify-content: flex-end;
+  display: grid;
+  width: 180px;
+  min-width: 180px;
+  align-content: start;
+  justify-items: stretch;
   gap: 9px;
   margin-top: 1px;
 }
@@ -406,8 +376,10 @@
 .job-tracker-open-link,
 .job-tracker-delete {
   display: inline-flex;
-  width: auto;
+  width: 100%;
+  box-sizing: border-box;
   align-items: center;
+  justify-content: flex-start;
   gap: 6px;
   min-height: 36px;
   padding: 8px 11px;
@@ -506,8 +478,6 @@
   .job-tracker-actions {
     width: 100%;
     min-width: 0;
-    align-items: center;
-    justify-content: space-between;
     padding-top: 12px;
     border-top: 1px solid rgba(148, 163, 184, 0.12);
   }
