@@ -1,0 +1,44 @@
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.site-footer nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.site-footer a {
+  color: #93c5fd;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.site-footer a:hover {
+  color: #dbeafe;
+}
+
+.editor-footer {
+  margin-top: auto;
+  padding-top: 20px;
+  opacity: 0.78;
+}
+
+@media (max-width: 768px) {
+  .site-footer {
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .site-footer nav {
+    justify-content: center;
+  }
+}

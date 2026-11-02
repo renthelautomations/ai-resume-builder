@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { parseProfileText } from '../utils/parseProfileText';
+import LegalFooter from './LegalFooter';
 
 export default function EditorPanel({ profileText, setProfileText, jobDescription, setJobDescription, onGenerate, isLoading, status, onOpenDashboard }) {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -149,8 +150,8 @@ export default function EditorPanel({ profileText, setProfileText, jobDescriptio
         onChange={(e) => setJobDescription(e.target.value)}
       />
       </div>
-      <div className="mobile-order-7" style={{ textAlign: 'center', marginTop: 'auto', paddingTop: '20px', fontSize: '13px', color: 'var(--text-muted)', opacity: 0.7, fontWeight: 300, letterSpacing: '0.5px' }}>
-        Made by Renthel Automations
+      <div className="editor-footer mobile-order-7">
+        <LegalFooter />
       </div>
     </div>
   );
