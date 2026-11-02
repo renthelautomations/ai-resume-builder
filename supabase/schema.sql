@@ -280,22 +280,30 @@ DECLARE
     v_user_id UUID;
     v_credits INT;
     v_status TEXT;
+    v_request_role TEXT;
 BEGIN
-    -- Verify Admin
-    IF auth.uid() IS DISTINCT FROM 'b0b909eb-4831-445a-9622-733a1d823f35'::uuid THEN
+    v_request_role := COALESCE(
+        NULLIF(current_setting('request.jwt.claim.role', true), ''),
+        NULLIF(current_setting('request.jwt.claims', true), '')::jsonb ->> 'role'
+    );
+
+    -- Verify dashboard admin or server-side service role.
+    IF auth.uid() IS DISTINCT FROM 'b0b909eb-4831-445a-9622-733a1d823f35'::uuid
+       AND v_request_role IS DISTINCT FROM 'service_role' THEN
         RAISE EXCEPTION 'Unauthorized - Admin Only';
     END IF;
 
     -- Get subscription details
     SELECT user_id, credits_amount, status INTO v_user_id, v_credits, v_status 
     FROM public.credit_subscriptions 
-    WHERE id = p_subscription_id;
+    WHERE id = p_subscription_id
+    FOR UPDATE;
 
     IF v_status = 'pending' THEN
         -- Update subscription status
         UPDATE public.credit_subscriptions SET status = 'approved' WHERE id = p_subscription_id;
         -- Add credits to user profile
-        UPDATE public.profiles SET credits = credits + v_credits WHERE id = v_user_id;
+        UPDATE public.profiles SET credits = COALESCE(credits, 0) + v_credits WHERE id = v_user_id;
     END IF;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
@@ -305,16 +313,24 @@ CREATE OR REPLACE FUNCTION reject_subscription(p_subscription_id UUID)
 RETURNS void AS $$
 DECLARE
     v_status TEXT;
+    v_request_role TEXT;
 BEGIN
-    -- Verify Admin
-    IF auth.uid() IS DISTINCT FROM 'b0b909eb-4831-445a-9622-733a1d823f35'::uuid THEN
+    v_request_role := COALESCE(
+        NULLIF(current_setting('request.jwt.claim.role', true), ''),
+        NULLIF(current_setting('request.jwt.claims', true), '')::jsonb ->> 'role'
+    );
+
+    -- Verify dashboard admin or server-side service role.
+    IF auth.uid() IS DISTINCT FROM 'b0b909eb-4831-445a-9622-733a1d823f35'::uuid
+       AND v_request_role IS DISTINCT FROM 'service_role' THEN
         RAISE EXCEPTION 'Unauthorized - Admin Only';
     END IF;
 
     -- Get subscription details
     SELECT status INTO v_status 
     FROM public.credit_subscriptions 
-    WHERE id = p_subscription_id;
+    WHERE id = p_subscription_id
+    FOR UPDATE;
 
     IF v_status = 'pending' THEN
         -- Update subscription status
