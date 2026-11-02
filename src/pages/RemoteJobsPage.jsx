@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { BriefcaseBusiness, ExternalLink, LayoutGrid, List as ListIcon, Search } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { BriefcaseBusiness, Clock3, ExternalLink, LayoutGrid, List as ListIcon, Search, Sparkles, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
 import { useAuth } from '../context/AuthContext';
@@ -26,14 +26,28 @@ const JOB_CATEGORIES = [
 ];
 
 const JOB_FIELDS = 'id, source, title, company, location, job_url, description, employment_type, salary_text, category, source_tags, posted_at, created_at';
+const RECENT_SEARCHES_KEY = 'remoteJobsRecentSearches';
+const MAX_RECENT_SEARCHES = 5;
+const RECOMMENDED_SEARCHES = [
+  { query: 'AI automation', label: 'AI and automation roles' },
+  { query: 'Virtual assistant', label: 'Virtual assistant roles' },
+  { query: 'React developer', label: 'React developer roles' },
+  { query: 'Customer support', label: 'Customer support roles' },
+  { query: 'SEO specialist', label: 'SEO and marketing roles' },
+  { query: 'Data analyst', label: 'Data and analytics roles' }
+];
 
 export default function RemoteJobsPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { addToast } = useToast();
+  const searchFieldRef = useRef(null);
+  const fetchSequenceRef = useRef(0);
   const [jobs, setJobs] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [recentSearches, setRecentSearches] = useState(() => readRecentSearches());
+  const [searchFocused, setSearchFocused] = useState(false);
   const [sourceFilter, setSourceFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [viewMode, setViewMode] = useState(() => (
@@ -60,15 +74,44 @@ export default function RemoteJobsPage() {
       .sort((left, right) => new Date(right) - new Date(left))[0] || null;
   }, [sourceFilter, sourceRefreshes]);
 
+  const visibleRecommendations = useMemo(() => {
+    const query = searchInput.trim().toLowerCase();
+    if (!query) return RECOMMENDED_SEARCHES.slice(0, 4);
+    return RECOMMENDED_SEARCHES
+      .filter(item => `${item.query} ${item.label}`.toLowerCase().includes(query))
+      .slice(0, 4);
+  }, [searchInput]);
+
   useEffect(() => {
     fetchJobs(searchTerm, sourceFilter, categoryFilter);
   }, [searchTerm, sourceFilter, categoryFilter, user?.id]);
+
+  useEffect(() => {
+    const normalized = searchInput.trim();
+    const timer = setTimeout(() => {
+      setSearchTerm(normalized);
+      if (normalized.length >= 3) saveRecentSearch(setRecentSearches, normalized);
+    }, 320);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  useEffect(() => {
+    const handlePointerDown = event => {
+      if (!searchFieldRef.current?.contains(event.target)) setSearchFocused(false);
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, []);
 
   useEffect(() => {
     window.localStorage.setItem('remoteJobsViewMode', viewMode);
   }, [viewMode]);
 
   const fetchJobs = async (term, source, category) => {
+    const requestId = fetchSequenceRef.current + 1;
+    fetchSequenceRef.current = requestId;
     setLoading(true);
     setError('');
 
@@ -113,6 +156,7 @@ export default function RemoteJobsPage() {
 
       if (jobsError) throw jobsError;
       if (trackedError) throw trackedError;
+      if (requestId !== fetchSequenceRef.current) return;
 
       setJobs(data || []);
       setTrackedJobIds((tracked || []).map(item => item.job_id));
@@ -123,17 +167,31 @@ export default function RemoteJobsPage() {
       }
     } catch (fetchError) {
       console.error('Failed to load remote jobs:', fetchError);
+      if (requestId !== fetchSequenceRef.current) return;
       setJobs([]);
       setTrackedJobIds([]);
       setError("We couldn't load job listings right now. Please try again shortly.");
     } finally {
-      setLoading(false);
+      if (requestId === fetchSequenceRef.current) setLoading(false);
     }
+  };
+
+  const applySearch = value => {
+    const normalized = value.trim();
+    setSearchInput(normalized);
+    setSearchTerm(normalized);
+    if (normalized.length >= 3) saveRecentSearch(setRecentSearches, normalized);
+    setSearchFocused(false);
   };
 
   const handleSearch = event => {
     event.preventDefault();
-    setSearchTerm(searchInput);
+    applySearch(searchInput);
+  };
+
+  const clearRecentSearches = () => {
+    setRecentSearches([]);
+    if (typeof window !== 'undefined') window.localStorage.removeItem(RECENT_SEARCHES_KEY);
   };
 
   const goToSignIn = () => navigate('/?signin=1');
@@ -204,19 +262,73 @@ export default function RemoteJobsPage() {
         </section>
 
         <form className="remote-jobs-search" onSubmit={handleSearch}>
-          <label className="remote-jobs-search-field">
-            <span>Search roles, skills, or companies</span>
+          <div className="remote-jobs-search-field" ref={searchFieldRef}>
+            <label htmlFor="remote-job-search">Search roles, skills, or companies</label>
             <div className="remote-jobs-input-row">
               <Search size={18} aria-hidden="true" />
               <input
+                id="remote-job-search"
                 type="search"
                 value={searchInput}
                 onChange={event => setSearchInput(event.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onKeyDown={event => {
+                  if (event.key === 'Escape') {
+                    setSearchFocused(false);
+                    event.currentTarget.blur();
+                  }
+                }}
+                autoComplete="off"
+                aria-autocomplete="list"
+                aria-controls="remote-job-search-suggestions"
+                aria-expanded={searchFocused}
                 placeholder="Try product designer, React, or customer success"
               />
-              <button type="submit" className="remote-jobs-search-button">Search</button>
             </div>
-          </label>
+            {searchFocused && (
+              <div id="remote-job-search-suggestions" className="remote-jobs-search-suggestions" role="listbox" aria-label="Search suggestions">
+                {recentSearches.length > 0 && (
+                  <section className="remote-jobs-suggestion-group">
+                    <div className="remote-jobs-suggestion-heading">
+                      <span><Clock3 size={14} aria-hidden="true" />Recent searches</span>
+                      <button type="button" className="remote-jobs-clear-searches" onClick={clearRecentSearches}>Clear</button>
+                    </div>
+                    <div className="remote-jobs-suggestion-list">
+                      {recentSearches.map(search => (
+                        <button key={search} type="button" className="remote-jobs-suggestion" role="option" onClick={() => applySearch(search)}>
+                          <Clock3 size={15} aria-hidden="true" />
+                          <span>{search}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                )}
+                <section className="remote-jobs-suggestion-group">
+                  <div className="remote-jobs-suggestion-heading">
+                    <span><Sparkles size={14} aria-hidden="true" />Recommended searches</span>
+                  </div>
+                  {visibleRecommendations.length > 0 ? (
+                    <div className="remote-jobs-suggestion-list">
+                      {visibleRecommendations.map(item => (
+                        <button key={item.query} type="button" className="remote-jobs-suggestion" role="option" onClick={() => applySearch(item.query)}>
+                          <Sparkles size={15} aria-hidden="true" />
+                          <span>
+                            <strong>{item.query}</strong>
+                            <small>{item.label}</small>
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="remote-jobs-suggestion-empty">Keep typing to search all roles, skills, and companies.</p>
+                  )}
+                </section>
+                <button type="button" className="remote-jobs-suggestion-close" onClick={() => setSearchFocused(false)}>
+                  <X size={14} aria-hidden="true" /> Close suggestions
+                </button>
+              </div>
+            )}
+          </div>
           <label className="remote-jobs-filter">
             <span>Source</span>
             <CustomSelect
@@ -252,7 +364,7 @@ export default function RemoteJobsPage() {
         <div className="remote-jobs-results-header">
           <div>
             <span className="remote-jobs-results-label">Open roles</span>
-            <h2>{loading ? 'Loading jobs' : `${jobs.length} ${jobs.length === 1 ? 'role' : 'roles'} found`}</h2>
+            <h2>{loading || searchInput.trim() !== searchTerm ? 'Searching jobs' : `${jobs.length} ${jobs.length === 1 ? 'role' : 'roles'} found`}</h2>
           </div>
           <div className="remote-jobs-view-toggle" role="group" aria-label="Job display mode">
             <button
@@ -374,6 +486,28 @@ function formatRefreshTime(value) {
   if (elapsedMinutes < 60) return `${elapsedMinutes} min ago`;
   if (elapsedMinutes < 1440) return `${Math.floor(elapsedMinutes / 60)} hr ago`;
   return `on ${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} at ${date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}`;
+}
+
+function readRecentSearches() {
+  if (typeof window === 'undefined') return [];
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(RECENT_SEARCHES_KEY) || '[]');
+    return Array.isArray(saved) ? saved.filter(value => typeof value === 'string').slice(0, MAX_RECENT_SEARCHES) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRecentSearch(setRecentSearches, value) {
+  const normalized = value.trim();
+  if (normalized.length < 3) return;
+
+  setRecentSearches(previous => {
+    const next = [normalized, ...previous.filter(item => item.toLowerCase() !== normalized.toLowerCase())]
+      .slice(0, MAX_RECENT_SEARCHES);
+    if (typeof window !== 'undefined') window.localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
+    return next;
+  });
 }
 
 function truncate(value, length) {
