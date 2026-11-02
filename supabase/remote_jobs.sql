@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS public.remote_jobs (
     posted_at TIMESTAMP WITH TIME ZONE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     last_seen_at TIMESTAMP WITH TIME ZONE,
+    closure_checked_at TIMESTAMP WITH TIME ZONE,
+    closed_at TIMESTAMP WITH TIME ZONE,
     scraped_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     search_vector TSVECTOR GENERATED ALWAYS AS (
         to_tsvector(
@@ -39,6 +41,8 @@ ALTER TABLE public.remote_jobs ADD COLUMN IF NOT EXISTS category_confidence NUME
 ALTER TABLE public.remote_jobs ADD COLUMN IF NOT EXISTS source_tags JSONB NOT NULL DEFAULT '[]'::JSONB;
 ALTER TABLE public.remote_jobs ADD COLUMN IF NOT EXISTS content_hash TEXT;
 ALTER TABLE public.remote_jobs ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMP WITH TIME ZONE;
+ALTER TABLE public.remote_jobs ADD COLUMN IF NOT EXISTS closure_checked_at TIMESTAMP WITH TIME ZONE;
+ALTER TABLE public.remote_jobs ADD COLUMN IF NOT EXISTS closed_at TIMESTAMP WITH TIME ZONE;
 ALTER TABLE public.remote_jobs ADD COLUMN IF NOT EXISTS scraped_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL;
 
 DROP INDEX IF EXISTS public.remote_jobs_source_external_id_idx;
@@ -69,6 +73,10 @@ CREATE INDEX IF NOT EXISTS remote_jobs_search_vector_idx
 
 CREATE INDEX IF NOT EXISTS remote_jobs_category_active_idx
     ON public.remote_jobs (category, is_active, posted_at DESC);
+
+CREATE INDEX IF NOT EXISTS remote_jobs_closure_check_idx
+    ON public.remote_jobs (is_active, closure_checked_at)
+    WHERE is_active = TRUE;
 
 ALTER TABLE public.remote_jobs ENABLE ROW LEVEL SECURITY;
 

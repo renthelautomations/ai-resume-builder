@@ -45,6 +45,15 @@ SALARY_PATTERN = re.compile(
 )
 POSTED_PATTERN = re.compile(r"Posted on\s+(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})", re.I)
 JOB_ID_PATTERN = re.compile(r"-(\d+)(?:/)?$")
+CLOSED_MARKERS = (
+    "this job has been closed",
+    "job post has been closed",
+    "this job is no longer accepting applications",
+    "job post is no longer available",
+    "job posting has expired",
+    "this position has been filled",
+    "position has been filled",
+)
 
 FALLBACK_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
     (
@@ -369,6 +378,7 @@ class JobRecord:
             "content_hash": self.content_hash,
             "posted_at": self.posted_at,
             "is_active": True,
+            "closed_at": None,
             "last_seen_at": seen_at,
             "scraped_at": seen_at,
         }
@@ -409,6 +419,10 @@ class RobotsPolicy:
         return self.parser.can_fetch(USER_AGENT, url)
 
 
+class JobUnavailable(RuntimeError):
+    pass
+
+
 class ScrapeBlocked(RuntimeError):
     pass
 
@@ -420,6 +434,9 @@ class OnlineJobsScraper:
         self.max_jobs = env_int("ONLINEJOBS_MAX_JOBS", 90, minimum=1)
         self.fetch_details = env_bool("ONLINEJOBS_FETCH_DETAILS", True)
         self.detail_limit = env_int("ONLINEJOBS_DETAIL_LIMIT", 15, minimum=0)
+        self.closure_enabled = env_bool("ONLINEJOBS_CLOSURE_CHECK_ENABLED", True)
+        self.closure_check_limit = env_int("ONLINEJOBS_CLOSURE_CHECK_LIMIT", 100, minimum=1)
+        self.closure_check_hours = env_int("ONLINEJOBS_CLOSURE_CHECK_HOURS", 24, minimum=1)
         self.minimum_delay = env_float(
             "ONLINEJOBS_CRAWL_DELAY_SECONDS",
             DEFAULT_CRAWL_DELAY,
@@ -451,9 +468,28 @@ class OnlineJobsScraper:
         status = int(getattr(page, "status", 0) or 0)
         if status in {403, 429}:
             raise ScrapeBlocked(f"OnlineJobs.ph returned HTTP {status} for {url}")
+        if status in {404, 410}:
+            raise JobUnavailable(f"OnlineJobs.ph returned HTTP {status} for {url}")
         if status >= 400 or status == 0:
             raise RuntimeError(f"OnlineJobs.ph returned HTTP {status} for {url}")
         return page
+
+    def check_closure(self, job_url: str) -> bool | None:
+        try:
+            page = self.fetch_page(job_url)
+        except JobUnavailable:
+            return True
+        except ScrapeBlocked:
+            raise
+        except Exception:
+            LOGGER.exception("could not check job status for %s", job_url)
+            return None
+
+        try:
+            page_text = clean_text(page.get_all_text()).casefold()
+        except AttributeError:
+            page_text = first_element_text(page, "body").casefold()
+        return any(marker in page_text for marker in CLOSED_MARKERS)
 
     def scrape(self) -> list[JobRecord]:
         jobs: list[JobRecord] = []
@@ -538,6 +574,9 @@ class OnlineJobsScraper:
             except ScrapeBlocked:
                 LOGGER.exception("detail enrichment stopped because access was blocked")
                 break
+            except JobUnavailable:
+                LOGGER.info("job detail unavailable during enrichment: %s", job.job_url)
+                continue
             except Exception:
                 LOGGER.exception("could not enrich %s", job.job_url)
                 continue
@@ -723,6 +762,21 @@ class SupabaseClient:
             if isinstance(row, dict) and row.get("external_id")
         }
 
+    def fetch_due_closure_checks(self, cutoff: datetime, limit: int) -> list[dict[str, Any]]:
+        query = urllib.parse.urlencode(
+            {
+                "select": "id,external_id,job_url,closure_checked_at",
+                "source": f"eq.{SOURCE}",
+                "is_active": "eq.true",
+                "job_url": "not.is.null",
+                "or": f"(closure_checked_at.is.null,closure_checked_at.lt.{cutoff.astimezone(timezone.utc).isoformat()})",
+                "order": "closure_checked_at.asc.nullsfirst",
+                "limit": str(limit),
+            }
+        )
+        rows = self._request("GET", f"/remote_jobs?{query}") or []
+        return [row for row in rows if isinstance(row, dict) and row.get("id") and row.get("job_url")]
+
     def upsert(self, jobs: list[JobRecord], seen_at: str) -> None:
         path = "/remote_jobs?on_conflict=source%2Cexternal_id"
         for start in range(0, len(jobs), 50):
@@ -745,6 +799,41 @@ class SupabaseClient:
             prefer="return=minimal",
         )
 
+    def update_closure_check(self, row_id: str, checked_at: str, is_closed: bool) -> None:
+        query = urllib.parse.urlencode({"id": f"eq.{row_id}"})
+        payload: dict[str, Any] = {
+            "closure_checked_at": checked_at,
+            "closed_at": checked_at if is_closed else None,
+        }
+        if is_closed:
+            payload["is_active"] = False
+        self._request("PATCH", f"/remote_jobs?{query}", payload, prefer="return=minimal")
+
+
+def run_closure_checks(scraper: OnlineJobsScraper, client: SupabaseClient) -> int:
+    if not scraper.closure_enabled:
+        return 0
+
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=scraper.closure_check_hours)
+    rows = client.fetch_due_closure_checks(cutoff, scraper.closure_check_limit)
+    closed_count = 0
+    for row in rows:
+        try:
+            is_closed = scraper.check_closure(str(row["job_url"]))
+        except ScrapeBlocked:
+            LOGGER.exception("closure checks stopped because access was blocked")
+            break
+        if is_closed is None:
+            continue
+        checked_at = datetime.now(timezone.utc).isoformat()
+        client.update_closure_check(str(row["id"]), checked_at, is_closed)
+        if is_closed:
+            closed_count += 1
+            LOGGER.info("marked closed job inactive: %s", row.get("external_id", row["id"]))
+
+    LOGGER.info("closure checks complete: %d checked, %d closed", len(rows), closed_count)
+    return closed_count
+
 
 def main() -> int:
     logging.basicConfig(
@@ -759,17 +848,24 @@ def main() -> int:
         LOGGER.error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required")
         return 2
 
+    scraper = OnlineJobsScraper()
     try:
-        jobs = OnlineJobsScraper().scrape()
+        jobs = scraper.scrape()
     except Exception:
         LOGGER.exception("scraper failed")
         return 1
 
+    client = SupabaseClient(supabase_url, service_role_key) if supabase_url and service_role_key else None
     if not jobs:
         LOGGER.warning("no jobs collected; leaving existing Supabase jobs untouched")
+        if client:
+            try:
+                run_closure_checks(scraper, client)
+            except Exception:
+                LOGGER.exception("closure checks failed")
+                return 1
         return 0
 
-    client = SupabaseClient(supabase_url, service_role_key) if supabase_url and service_role_key else None
     try:
         existing = client.fetch_existing() if client else {}
         JevCategorizer(load_taxonomy()).categorize(jobs, existing)
@@ -792,6 +888,7 @@ def main() -> int:
         client.upsert(jobs, seen_at)
         stale_hours = env_int("ONLINEJOBS_STALE_HOURS", 72, minimum=1)
         client.mark_stale(datetime.now(timezone.utc) - timedelta(hours=stale_hours))
+        run_closure_checks(scraper, client)
         LOGGER.info("completed: %d jobs processed", len(jobs))
         return 0
     except Exception:

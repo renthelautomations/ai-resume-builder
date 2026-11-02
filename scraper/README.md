@@ -4,6 +4,8 @@ This worker fetches public OnlineJobs.ph listings with Scrapling, classifies nic
 
 The worker follows `robots.txt`, enforces at least five seconds between requests, and stops on HTTP 403 or 429. It does not log in, solve CAPTCHAs, or bypass access controls.
 
+Each run upserts newly seen jobs. A job stays in database history, but becomes inactive when it disappears for `ONLINEJOBS_STALE_HOURS` or fails a daily detail-page closure check. The closure check marks HTTP 404/410 pages and explicit closed or filled notices inactive.
+
 ## Local dry run
 
 ```bash
@@ -38,6 +40,8 @@ Set these values in `/etc/ai-resume-job-scraper.env`:
 - `TYPESAFE_API_KEY` or `JEV_API_KEY`
 
 The Supabase service-role key and JEV key stay on the VPS. Never prefix either key with `VITE_`.
+
+The hourly cron runs closure checks for records due after `ONLINEJOBS_CLOSURE_CHECK_HOURS`. The default checks each active job about once daily.
 
 ## Manual run and logs
 
