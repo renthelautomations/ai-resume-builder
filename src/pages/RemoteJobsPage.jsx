@@ -56,6 +56,7 @@ export default function RemoteJobsPage() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [sourceFilter, setSourceFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [jobCount, setJobCount] = useState(null);
   const [viewMode, setViewMode] = useState(() => (
     typeof window !== 'undefined' && window.localStorage.getItem('remoteJobsViewMode') === 'list'
       ? 'list'
@@ -189,7 +190,7 @@ export default function RemoteJobsPage() {
         .limit(500);
       if (source !== 'all') refreshQuery = refreshQuery.eq('source', source);
 
-      const [{ data, error: jobsError }, { data: tracked, error: trackedError }, { data: refreshRows, error: refreshError }] = await Promise.all([
+      const [{ data, count, error: jobsError }, { data: tracked, error: trackedError }, { data: refreshRows, error: refreshError }] = await Promise.all([
         fetchRemoteJobs(term, source, category),
         user
           ? supabase
@@ -206,6 +207,7 @@ export default function RemoteJobsPage() {
       if (requestId !== fetchSequenceRef.current) return;
 
       setJobs(data || []);
+      setJobCount(resolveJobCount(data, count));
       setTrackedJobIds((tracked || []).map(item => item.job_id));
       if (refreshError) {
         console.warn('Could not load job source refresh time:', refreshError);
@@ -216,6 +218,7 @@ export default function RemoteJobsPage() {
       console.error('Failed to load remote jobs:', fetchError);
       if (requestId !== fetchSequenceRef.current) return;
       setJobs([]);
+      setJobCount(null);
       setTrackedJobIds([]);
       setError("We couldn't load job listings right now. Please try again shortly.");
     } finally {
@@ -459,7 +462,7 @@ export default function RemoteJobsPage() {
         <div className="remote-jobs-results-header">
           <div>
             <span className="remote-jobs-results-label">Open roles</span>
-            <h2>{loading || searchInput.trim() !== searchTerm ? 'Searching jobs' : `${jobs.length} ${jobs.length === 1 ? 'role' : 'roles'} found`}</h2>
+            <h2>{loading || searchInput.trim() !== searchTerm ? 'Searching jobs' : `${(jobCount ?? jobs.length).toLocaleString()} ${(jobCount ?? jobs.length) === 1 ? 'role' : 'roles'} found`}</h2>
           </div>
           <div className="remote-jobs-view-toggle" role="group" aria-label="Job display mode">
             <button
@@ -567,7 +570,7 @@ async function fetchRemoteJobs(term, source, category) {
   if (!normalizedTerm) {
     let query = supabase
       .from('remote_jobs')
-      .select(JOB_FIELDS)
+      .select(JOB_FIELDS, { count: 'exact' })
       .eq('is_active', true)
       .order('posted_at', { ascending: false, nullsFirst: false });
 
@@ -587,7 +590,7 @@ async function fetchRemoteJobs(term, source, category) {
   console.warn('Ranked search is not installed yet. Using compatible fallback search.');
   let query = supabase
     .from('remote_jobs')
-    .select(JOB_FIELDS)
+    .select(JOB_FIELDS, { count: 'exact' })
     .eq('is_active', true)
     .order('posted_at', { ascending: false, nullsFirst: false });
 
@@ -600,6 +603,16 @@ async function fetchRemoteJobs(term, source, category) {
   if (source !== 'all') query = query.eq('source', source);
   if (category !== 'all') query = query.eq('category', category);
   return query;
+}
+
+function resolveJobCount(rows, count) {
+  const exactCount = Number(count);
+  if (Number.isFinite(exactCount)) return exactCount;
+
+  const embeddedCount = Number(rows?.[0]?.total_count);
+  if (Number.isFinite(embeddedCount)) return embeddedCount;
+
+  return rows?.length || 0;
 }
 
 function isMissingSearchFunction(error) {

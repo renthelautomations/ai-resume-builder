@@ -125,7 +125,8 @@ RETURNS TABLE (
     scraped_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE,
     updated_at TIMESTAMP WITH TIME ZONE,
-    search_score REAL
+    search_score REAL,
+    total_count BIGINT
 )
 LANGUAGE SQL
 STABLE
@@ -212,7 +213,8 @@ SELECT
     ranked.scraped_at,
     ranked.created_at,
     ranked.updated_at,
-    ranked.search_score
+    ranked.search_score,
+    count(*) OVER () AS total_count
 FROM ranked
 ORDER BY ranked.search_score DESC, ranked.posted_at DESC NULLS LAST, ranked.created_at DESC;
 $$;

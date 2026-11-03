@@ -576,7 +576,32 @@
 }
 
 .admin-table-scroll {
-  overflow-x: auto;
+  max-height: min(680px, calc(100vh - 360px));
+  overflow: auto;
+  scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+.admin-table-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.admin-table-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-table-scroll::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.35);
+  background-clip: padding-box;
+}
+
+.admin-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(147, 197, 253, 0.58);
+  background-clip: padding-box;
 }
 
 .admin-data-table {
@@ -759,6 +784,12 @@
     height: auto;
     min-height: calc(100vh - 70px);
     overflow: visible !important;
+  }
+
+  .admin-table-scroll {
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: visible;
   }
 
   .admin-header-row { flex-direction: column; gap: 16px; }
